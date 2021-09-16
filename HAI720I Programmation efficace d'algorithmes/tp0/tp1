@@ -1,0 +1,24 @@
+Ex1
+
+Code	min					max									incr				square
+A		1					max(x,y)-min(x,y)+1			max(x,y)-min(x,y)	max(x,y)-min(x,y)
+B		max(x,y)-min(x,y)+1	1							max(x,y)-min(x,y)	max(x,y)-min(x,y)
+C		1					1							max(x,y)-min(x,y)	max(x,y)-min(x,y)						
+Ex2
+
+z[i]=z[i]+ u[i]∗u[i]∗u[i] +x[i]∗y[i]∗ z[i];
+
+1/ 4 mul et 2 add
+complexité : 6N
+
+2/
+port1: 2n (+) n(*)
+port0: 2n(*) n(*)
+
+3n cycles
+
+avec FMA:
+port1: n(FMA) n(*)
+port2: n(FMA) n(*)
+
+2n cycles
