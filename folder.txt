@@ -1,9 +1,0 @@
-HAI909I	Conférences IMAGINE - Recherche et Industrie
-HAI911I	Développement d'applications interactives
-HAI917I	IG avancé, animation et rendu
-HAI918I	Image, sécurité et deep learning
-HAI921I	Jeux sérieux
-HAI927I	Projet IMAGE
-HAI928I	Projet JEUX/3D
-HAI930I	SMA avancé
-HAI935I	Vision, réalités virtuelle et augmentée
