@@ -1,9 +1,38 @@
+
+#include <x86intrin.h>
 #include "EvalPerf.h"
-#include <iostream>
+
 /* Only needed for the sake of this example. */
 #include <iostream>
 #include <thread>
 #include <math.h>
+#include <cmath>
+#include "reduce.hpp"
+#include "slowperformance.hpp"
+
+
+/*
+__m512i loadu_si512(void *x) { return _mm512_loadu_si512(x); }
+__m512i load_epi64(void *x)  {  return _mm512_load_epi64(x); }
+//__m512i loadu_epi64(void *x) {  return _mm512_loadu_epi64(x); }
+
+__m512i loadu_maskz(void *x) { return _mm512_maskz_loadu_epi64(0xf0, x); }
+__m512i loadu_mask(void *x)  { return _mm512_mask_loadu_epi64(_mm512_setzero_si512(), 0xf0, x); }
+
+*/
+
+void copyVect(double * A , const double * B, size_t n)
+{
+	size_t i;
+	__m256d R;
+	for(i=0;i<n-3;i+=4)
+	{
+		R= __mm256_loadu_pd(B+i);
+		__mm256_storeu_pd(A+i,R);
+	}
+	for(;i<n;i++)
+		A[i]=B[i];
+}	
 
 void long_operation()
 {
@@ -44,9 +73,9 @@ int calculPolynome(int tab[], int N, int alpha)
 	return result;
 }
 
-
 int main()
 {
+	/*
 	int N = 1000000;
 	int tab[1000000];
 	for (int i =0 ;i<N;i++ )
@@ -84,6 +113,8 @@ int main()
 	std::cout<<"Average nb seconds : "<<seconds/4<<std::endl;
 	std::cout<<"Average nb milliseconds : "<<milliseconds/4<<std::endl;
 	std::cout<<"Average CPI = "<<cpi/4<<std::endl;
+	*/
+
 	
 	return 0;
 }
