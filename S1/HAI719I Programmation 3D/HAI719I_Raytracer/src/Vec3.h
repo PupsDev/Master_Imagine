@@ -101,6 +101,10 @@ static inline Vec3 operator * (Vec3 const & b , float a ) {
 static inline Vec3 operator / (Vec3 const &  a , float b) {
    return Vec3(a[0]/b , a[1]/b , a[2]/b);
 }
+static inline float operator / (Vec3 const &  a , Vec3 const &  b) {
+    Vec3 division = Vec3::cross(a,b)/(a.length()*a.length());
+   return division.length();
+}
 static inline std::ostream & operator << (std::ostream & s , Vec3 const & p) {
     s << p[0] << " " << p[1] << " " << p[2];
     return s;

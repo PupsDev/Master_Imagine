@@ -1,5 +1,4 @@
-
-#include <x86intrin.h>
+#include <xmmintrin.h>
 #include "EvalPerf.h"
 
 /* Only needed for the sake of this example. */

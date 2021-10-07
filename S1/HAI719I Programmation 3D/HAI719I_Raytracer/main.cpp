@@ -35,7 +35,6 @@ using namespace std;
 
 #include "src/Material.h"
 
-
 // -------------------------------------------
 // OpenGL/GLUT application code.
 // -------------------------------------------
@@ -78,6 +77,7 @@ void usage () {
     printUsage ();
     exit (EXIT_FAILURE);
 }
+
 
 
 // ------------------------------------
@@ -272,6 +272,8 @@ void mouse (int button, int state, int x, int y) {
 }
 
 
+
+
 void motion (int x, int y) {
     if (mouseRotatePressed == true) {
         camera.rotate (x, y);
@@ -286,14 +288,9 @@ void motion (int x, int y) {
         lastZoom = y;
     }
 }
-
-
 void reshape(int w, int h) {
     camera.resize (w, h);
 }
-
-
-
 int main (int argc, char ** argv) {
     if (argc > 2) {
         printUsage ();
@@ -318,9 +315,9 @@ int main (int argc, char ** argv) {
     scenes[0].setup_single_sphere();
     scenes[1].setup_single_square();
 
-
     glutMainLoop ();
     return EXIT_SUCCESS;
 }
+
 
 

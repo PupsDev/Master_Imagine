@@ -58,7 +58,14 @@ public:
         // you should check first that the line is not parallel to the plane!
         Vec3 result;
         Plane supportPlane = Plane(m_c[0],m_normal);
-        result = supportPlane.getIntersectionPoint(p);
+        result = supportPlane.getIntersectionPoint(L);
+        return result;
+    }
+    float getIntersectionTWithSupportPlane( Line const & L ) const {
+        // you should check first that the line is not parallel to the plane!
+        float result;
+        Plane supportPlane = Plane(m_c[0],m_normal);
+        result = supportPlane.getIntersectionT(L);
         return result;
     }
     void computeBarycentricCoordinates( Vec3 const & p , float & u0 , float & u1 , float & u2 ) const {
@@ -73,9 +80,12 @@ public:
       u2 = 1.0f - u0 - u1 ; // gamma
 
     }
-
+    bool checkws(float w) const
+    {
+        return (w>=0);
+    }
     RayTriangleIntersection getIntersection( Ray const & ray ) const {
-        RayTriangleIntersection result;
+        
         // 1) check that the ray is not parallel to the triangle:
 
         // 2) check that the triangle is "in front of" the ray:
@@ -85,10 +95,28 @@ public:
 
         // 4) Finally, if all conditions were met, then there is an intersection! :
 
-        Vec3 intersection = getIntersectionPointWithSupportPlane(ray);
-        float t = (intersection - ray.origin())/ray.direction();
+        RayTriangleIntersection result;
+        float w0,w1,w2;
+        float t = getIntersectionTWithSupportPlane(ray);
+        Vec3 intersection =getIntersectionPointWithSupportPlane(ray);
+
+        //std::cout<<"t : " << t<<std::endl;
         if(t>0) // On face le triangle
         {
+            computeBarycentricCoordinates(intersection, w0,w1,w2);
+            if( checkws(w0) && checkws(w1) && checkws(w2))
+            {
+                
+                result.intersectionExists=true;
+                result.t = t;
+                result.w0=w0;
+                result.w1=w1;
+                result.w2=w2;
+                result.intersection=intersection;
+                result.normal = m_normal;
+
+
+            }
             
         }
 

@@ -46,9 +46,13 @@ public:
     }
 
     RaySquareIntersection intersect(const Ray &ray) const {
-        RaySquareIntersection intersection;
+      RaySquareIntersection intersection;
 
-        //TODO calculer l'intersection rayon triangle
+      RayTriangleIntersection intersectionT = Mesh::intersect(ray);
+      intersection.intersectionExists = intersectionT.intersectionExists;
+      intersection.intersection = intersectionT.intersection;
+      intersection.t = intersectionT.t;
+
 
         return intersection;
     }

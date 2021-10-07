@@ -35,8 +35,8 @@ public:
     float distance( Vec3 const & p ) const { return sqrt( squareDistance(p) ); }
     bool isParallelTo( Line const & L ) const {
         float dot = Vec3::dot(m_normal,L.direction());
-
-        return dot<1e-6;
+        //std::cout<<dot<<std::endl;
+        return (-dot)<1e-6;
     }
     Vec3 getIntersectionPoint( Line const & L ) const {
         // you should check first that the line is not parallel to the plane!
@@ -50,6 +50,23 @@ public:
             result = t*L.direction()+L.origin();
 
         }
+        return result;
+    }
+    float getIntersectionT( Line const & L ) const {
+        // you should check first that the line is not parallel to the plane!
+        float result=0.;
+        
+        if(! isParallelTo(L))
+        {
+            Vec3 co = m_center - L.origin();
+            //co.normalize();
+            float dot = Vec3::dot(m_normal,L.direction());
+            float t = Vec3::dot(co,m_normal)/dot;
+            result = t;
+
+
+        }
+
         return result;
     }
 };

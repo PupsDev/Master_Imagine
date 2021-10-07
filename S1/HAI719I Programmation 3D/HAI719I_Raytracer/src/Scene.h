@@ -85,21 +85,43 @@ public:
             mesh.draw();
         }
         */
+/*
         for( unsigned int It = 0 ; It < spheres.size() ; ++It ) {
             Sphere const & sphere = spheres[It];
-            RaySphereIntersection sphereIntersection = sphere.intersect(ray);
-            result.intersectionExists = sphereIntersection.intersectionExists;
-            result.typeOfIntersectedObject=1;
-            result.objectIndex=It;
-            result.t = sphereIntersection.t;
-            result.raySphereIntersection = sphereIntersection;
 
+            RaySphereIntersection sphereIntersection = sphere.intersect(ray);
+
+
+            if(sphereIntersection.t < result.t)
+            {
+                result.intersectionExists = sphereIntersection.intersectionExists;
+                result.typeOfIntersectedObject=1;
+                result.t = sphereIntersection.t;
+                result.objectIndex=It;
+                result.t = sphereIntersection.t;
+                result.raySphereIntersection = sphereIntersection;
+            }
+            
         }
-        /*
+        */
+        
         for( unsigned int It = 0 ; It < squares.size() ; ++It ) {
             Square const & square = squares[It];
-            square.draw();
-        }*/
+
+            RaySquareIntersection squareIntersection = square.intersect(ray);
+
+
+            if(squareIntersection.t < result.t)
+            {
+                //std::cout<<squareIntersection.t<<std::endl;
+                result.intersectionExists = squareIntersection.intersectionExists;
+                result.typeOfIntersectedObject=2;
+                result.t = squareIntersection.t;
+                result.objectIndex=It;
+                result.raySquareIntersection = squareIntersection;
+            }
+        }
+
         return result;
     }
 
@@ -120,8 +142,10 @@ public:
 
         RaySceneIntersection raySceneIntersection = computeIntersection(rayStart);
         Vec3 color=Vec3(0.2f, 0.2f, 0.3f);
+
         if(raySceneIntersection.intersectionExists)
         {
+            /*
             RaySphereIntersection sphereIntersection  = raySceneIntersection.raySphereIntersection;
 
             if(sphereIntersection.intersectionExists)
@@ -129,6 +153,18 @@ public:
                 unsigned int index = raySceneIntersection.objectIndex;
                 Vec3 colorMaterial = spheres[index].material.diffuse_material;
                 color = sphereIntersection.t * colorMaterial;
+               
+            }
+            */
+            RaySquareIntersection squareIntersection  = raySceneIntersection.raySquareIntersection;
+
+            if(squareIntersection.intersectionExists)
+            {
+
+                unsigned int index = raySceneIntersection.objectIndex;
+                Vec3 colorMaterial = squares[index].material.diffuse_material;
+                //std::cout<<colorMaterial<<std::endl;
+                color =  squareIntersection.t * colorMaterial;
                
             }
          
@@ -164,6 +200,16 @@ public:
             s.material.diffuse_material = Vec3( 1.,1.,1 );
             s.material.specular_material = Vec3( 0.2,0.2,0.2 );
             s.material.shininess = 20;
+
+            spheres.resize( spheres.size() + 1 );
+            Sphere & s2 = spheres[spheres.size() - 1];
+            s2.m_center = Vec3(-1. , 0. , -2.);
+            s2.m_radius = 1.f;
+            s2.build_arrays();
+            s2.material.type = Material_Mirror;
+            s2.material.diffuse_material = Vec3( 0.,1.,0 );
+            s2.material.specular_material = Vec3( 0.2,0.2,0.2 );
+            s2.material.shininess = 20;
         }
     }
 

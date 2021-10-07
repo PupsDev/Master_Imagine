@@ -151,6 +151,25 @@ public:
     RayTriangleIntersection intersect( Ray const & ray ) const {
         RayTriangleIntersection closestIntersection;
         //TODO iterer sur les triangles et calculer l'intersection la plus proche
+        closestIntersection.t = FLT_MAX;
+        for(size_t i=0 ; i < triangles.size();i++)
+        {
+            //Triangle triangleIntersection = Triangle(vertices[triangles[i]][0],vertices[triangles[i]][1],vertices[triangles[i]][2]);
+
+            MeshTriangle indiceTriangle = triangles[i];
+            Vec3 t0 = vertices[indiceTriangle[0]].position;
+            Vec3 t1 = vertices[indiceTriangle[1]].position;
+            Vec3 t2 = vertices[indiceTriangle[2]].position;
+            Triangle triangleIntersection = Triangle( t0, t1, t2);
+
+            RayTriangleIntersection  intersection = triangleIntersection.getIntersection(ray);
+            if(intersection.t < closestIntersection.t)
+            {
+                closestIntersection=intersection;
+
+                closestIntersection.tIndex = i;
+            }
+        }
         return closestIntersection;
     }
 };
