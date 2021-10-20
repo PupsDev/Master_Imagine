@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Basics</title>
+    
+
+    <!-- chargement des librairies : maths, divers et debug -->
+    <script type="text/javascript" src="./index_files/gl-matrix-min.js"></script>
+    <script type="text/javascript" src="./index_files/webgl-utils.js"></script>
+    <script type="text/javascript" src="./index_files/webgl-debug.js"></script>
+    <script type="text/javascript" src="./index_files/utils.js"></script>
+
+    <!-- définition d'un objet à dessiner -->
+    <script type="text/javascript" src="./index_files/Spoke.js"></script>
+
+    <!-- classes du projet -->
+    <script type="text/javascript" src="./index_files/Scene.js"></script>
+
+
+    <!-- initialisation du contexte OpenGL dans le canvas -->
+    <script type="text/javascript">
+
+        var scene = null;
+
+        function webGLStart()
+        {
+            // rechercher le canvas appelé "opengl-canvas"
+            let canvas=document.getElementById("opengl-canvas");
+            // le mettre en mode OpenGL
+            initGL(canvas, {antialias:true});
+
+            // créer la scène à dessiner
+            scene = new Scene();
+            scene.onSurfaceChanged(gl.viewportWidth, gl.viewportHeight);
+
+            
+            let vert = scene.m_spoke.vertices;
+            let P=[];
+            for(let i = 0 ; i < vert.length/2; i++)
+            {
+                P.push( vec2.fromValues(vert[i],vert[i+1]))
+            }
+            //let ve = vec2.fromValues(vert[0],vert[1]);
+            //console.log(vec2.dot(ve,ve));
+            /*console.log(P);
+            let vec=vec2.fromValues(P[2][0]-P[1][0],P[2][1]-P[1][1]);
+            console.log(vec);
+            console.log(projectionPoint(P[2] , vec));*/
+
+            // Ex 1-2
+            let P0 = vec2.fromValues(0.2174,0.0109);
+            let P1 = vec2.fromValues(0.2174,0.0109);
+            let P2 = vec2.fromValues(0.2826,0.1196);
+            let P4 = vec2.fromValues(0.2391,0.0109);
+
+            let P2P1=vec2.fromValues(P2[0]-P1[0],P2[1]-P1[1]);
+            let P3 = projectionPoint(P4 , P2P1);
+            console.log(P3);
+
+            let P5 = vec2.fromValues(0.3261,0.0109);
+            let P6 = vec2.fromValues(0.3696,0.0761);
+            let P8 = vec2.fromValues(0.3478,0.0109);
+
+            let P6P5=vec2.fromValues(P6[0]-P5[0],P6[1]-P5[1]);
+            let P7 = projectionPoint(P8 , P6P5);
+            console.log(P7);
+
+            // Ex 3
+            /*
+            Projection orthographique, transformation de modélisation
+            */
+             // Ex 4
+            /*
+            Projection orthographique rotation, symétrie
+            */
+            // Ex 4
+            /*
+            Projection orthographique scalaire
+            */
+
+
+            // demander de réafficher régulièrement
+            refresh();
+        }
+        function projectionPoint(point , vector)
+        {
+            let projection;
+            let out = vec2.create();
+            projection = vec2.dot(point,vector)/vec2.dot(vector,vector);
+            vec2.scale(out,vector,projection);
+            return out;
+        }
+
+        function refresh()
+        {
+
+            if (typeof(scene) == "object")
+                scene.onDrawFrame();
+        }
+    </script>
+
+</head>
+
+<body onload="webGLStart();" style="background-color:#666666; color:#FFFFFF">
+
+    <canvas id="opengl-canvas" width="642" height="480">
+        Your browser does not support WebGL
+    </canvas>
+
+
+
+
+</body></html>
