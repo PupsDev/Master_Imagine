@@ -1,0 +1,28 @@
+#!/usr/bin/env Rscript
+# x <- rnorm(1000)
+# y <- rnorm(1000)
+# x11()
+# #plot(x,y,xlab="blabla",ylab="lablab",xlim=c(-2,2), ylim=c(-2,2), pch=22, col="red", bg="yellow", bty="l", tcl=0.4, main="PTDR", las=1, cex=1.5)
+# hist(3*x+5)
+# hist(3*y+5)
+#!/usr/bin/env Rscript
+#make this example reproducible
+set.seed(1)
+x11()
+#define data
+x1 = rnorm(200, mean=0.8, sd=0.2)
+x2 = rnorm(200, mean=0.4, sd=0.1)
+
+#plot two histograms in same graph
+hist(x1,probability=T, col='red', xlim=c(0, 10), main='Multiple Histograms', xlab='x')
+# Compute the density data
+dens <- density(c(-20, rep(0,98), 20))
+# plot density
+plot(dens, frame = FALSE, col = "steelblue", 
+     main = "Density plot of tp") 
+
+#add legend
+legend('topright', c('x1 variable', 'x2 variable'), fill=c('red', 'green'))
+
+
+Sys.sleep(1000)
