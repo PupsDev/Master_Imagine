@@ -1,0 +1,7 @@
+Ex 20 :
+1/ Meilleur des cas : si 2n² < M : O(n²/B)
+2/ Pire des cas: si 2<M/B<=n : O(n²/B + n²)
+3/Si n(1+B)<=M on peut minimiser le nombre de cache miss car le nombre de ligne de cache M/B est supérieur à n + n/B.
+4/ taille cache L1 : 32768
+	B = 64
+	N<= 32768/8 / 1+64/8 = 455
