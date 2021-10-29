@@ -49,8 +49,10 @@ public:
     Transform(Mat3 i_transformation = Mat3::Identity(), Vec3 i_translation = Vec3(0., 0., 0.))
             : m_transformation(i_transformation), m_translation(i_translation) {
         //Question 1.3: TODO, calculer la matrice transformation m_vector_transformation à appliquer aux vecteurs normaux.
-        m_vector_transformation = Mat3::inverse(i_transformation).getTranspose();
+        m_vector_transformation = Mat3::inverse(i_transformation.getTranspose());
+            	
     }
+
 
     //Fonction pour appliquer la transformation à un point Vec3
     Vec3 apply_to_point(Vec3 const &i_position) {
@@ -201,15 +203,19 @@ static bool fullScreen = false;
 
 //Calcul de la projection d'un point sur un plan
 Vec3 project(Vec3 const &input_point, Plane const &i_plane) {
-    Vec3 result = input_point;
     //Question 2.3: TODO, projeter input_point sur le plan i_plane
+
+    Vec3 result = input_point - Vec3::dot(input_point - i_plane.point, i_plane.normal)*i_plane.normal;
     return result;
+
 }
 
 // Calcul de la projection d'un point sur une droite (définie par un vecteur et un point)
 Vec3 project(Vec3 const &input_point, Vec3 const &i_origin, Vec3 const &i_axis) {
-    Vec3 result = input_point;
+
     //Question 2.3: TODO, projeter input_point sur l'axe
+
+    Vec3 result = i_origin + (Vec3::dot(input_point-i_origin,i_axis)/Vec3::dot(i_axis,i_axis))*i_axis;
     return result;
 }
 
@@ -921,7 +927,9 @@ int main(int argc, char **argv) {
         project(mesh.vertices, projection_on_basis, basis.origin(), basis.normalized_axis(i));
 
         // Question 2.5: TODO Compléter
-        // variance[i] =...
+
+        variance[i] = (projection_on_basis[i] - ((projection_on_basis[0] + projection_on_basis[1] + projection_on_basis[2])/3)).squareLength() / 3;
+
     }
 
     // Comparaison de la variance et des racines des valeurs propres
@@ -943,7 +951,7 @@ int main(int argc, char **argv) {
     // Essayer une mise à l'échelle non uniforme
 
     //Example de transformation :
-    Vec3 scale(1., 1., 1.); //Mise à l'échelle non uniforme
+    Vec3 scale(1.5, 2., 0.5); //Mise à l'échelle non uniforme
     Mat3 scale_matrix(scale[0], 0., 0.,
                       0., scale[1], 0.,
                       0., 0., scale[2]); //Matrice de transformation de mise à l'échelle
@@ -963,13 +971,13 @@ int main(int argc, char **argv) {
                     0., 0., 1.);
 
     //Cumulate transformation by matrix multiplications
-    //Mat3 transformation = z_rotation * y_rotation * x_rotation * scale_matrix;
+    Mat3 transformation = z_rotation * y_rotation * x_rotation * scale_matrix;
     //Add a translation
     Vec3 translation = Vec3(1., 0., 0.);
 
-    Mat3 transformation(1., 2., 0.,
+    /*Mat3 transformation(1., 2., 0.,
                       0., 3., 0.,
-                      2.,0., 2.);
+                      2.,0., 2.);*/
 
     //Compute transform obejct with transformation matrix (roation and scale) and translation
     Transform mesh_transform (transformation, translation);
