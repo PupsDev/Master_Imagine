@@ -297,11 +297,11 @@ public:
         gsl_eigen_symmv_workspace *workspace = gsl_eigen_symmv_alloc(3);
 
         //Question 2.2: TODO, trouver la fonction gsl_eigen pour faire le calcul de la décomposition
-        // gsl_eigen_...
+        gsl_eigen_symmv(covariance_matrix,gsl_eigenvalues,gsl_eigenvectors,workspace);
 
         //Question 2.2: TODO, trouver la fonction gsl_eigen pour
         // ordonner des vecteurs et valeurs propres par ordre décroissant (plus grande valeur propre en premier)
-        // gsl_eigen_...
+        gsl_eigen_symmv_sort(gsl_eigenvalues,gsl_eigenvectors,GSL_EIGEN_SORT_VAL_DESC);
 
         //Assignation des valeurs aux vecteurs de sortie
         eigenvalues[0] = gsl_vector_get(gsl_eigenvalues, 0); //Recuperation de la valeur propre
@@ -344,6 +344,7 @@ public:
 
         //Question 3.2: TODO, trouver la fonction gsl_eigen pour faire le calcul de la décomposition SVD
         // gsl_linalg_...
+        gsl_linalg_SV_decomp(u, v, s, workspace);
 
         //Assignation des valeurs aux matrices de sortie
         sx = s->data[0];
