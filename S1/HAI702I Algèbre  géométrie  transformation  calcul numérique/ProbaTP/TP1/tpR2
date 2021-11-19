@@ -1,0 +1,62 @@
+#!/usr/bin/env Rscript
+# x <- rnorm(1000)
+# y <- rnorm(1000)
+# x11()
+# #plot(x,y,xlab="blabla",ylab="lablab",xlim=c(-2,2), ylim=c(-2,2), pch=22, col="red", bg="yellow", bty="l", tcl=0.4, main="PTDR", las=1, cex=1.5)
+# hist(3*x+5)
+# hist(3*y+5)
+#!/usr/bin/env Rscript
+#make this example reproducible
+set.seed(1)
+x11()
+
+## Using "log = TRUE" for an extended range :
+n <- 18
+k <- seq(0, n, by = 1)
+plot (k, pbinom(k, n, 1/6, log = TRUE), type = "l", ylab = "log density",
+      main = "dbinom(*, log=TRUE) is better than  log(dbinom(*))")
+lines(k, log(pbinom(k, n, 1/6)), col = "red", lwd = 2)
+
+message("ex7")
+
+message("Dbi")
+dbinom(3, size=18, prob=1/6) 
+pbinom(3, size=18, prob=1/6) 
+
+message("ex8 1/")
+message("pnorm")
+
+pnorm(1.41, mean=0, sd=1, lower.tail=TRUE)
+pnorm(-2.07, mean=0, sd=1, lower.tail=TRUE)
+pnorm(-1.26, mean=0, sd=1, lower.tail=FALSE)
+
+message("qnorm")
+
+qnorm(0.95,mean=0,sd=1)
+qnorm(0.1,mean=0,sd=1)
+qnorm(0.99,mean=0,sd=1, lower.tail=FALSE)
+
+message("ex8 2/")
+myf <- function(X,m,o) {
+
+  return((X-m)/o)
+}
+fym <- function(u,m,o) {
+
+  return((u*o)+m)
+}
+pnorm(myf(-5,-5,4), mean=0, sd=1, lower.tail=TRUE)
+pnorm(myf(0,-5,4), mean=0, sd=1, lower.tail=TRUE)
+pnorm(myf(5,-5,4), mean=0, sd=1, lower.tail=FALSE)
+message("ex8 2/b/")
+fym(qnorm(0.95,mean=0,sd=1),-5,4)
+fym(qnorm(0.05,mean=0,sd=1),-5,4)
+fym(qnorm(0.01,mean=0,sd=1, lower.tail=FALSE),-5,4)
+message("ex9")
+# Create a vector of x-values
+x <- seq(0, 10, by = 1)
+  
+# Calling pchisq() Function
+y <- pchisq(x, df = 5)
+
+Sys.sleep(1000)
