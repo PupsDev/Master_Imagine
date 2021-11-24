@@ -1,0 +1,231 @@
+#######################################################################################################################################
+Ex 20 :
+#######################################################################################################################################
+
+1/ Meilleur des cas : si 2n² < M : O(n²/B)
+2/ Pire des cas: si 2<M/B<=n : O(n²/B + n²)
+3/Si n(1+B)<=M on peut minimiser le nombre de cache miss car le nombre de ligne de cache M/B est supérieur à n + n/B.
+4/ taille cache L1 : 32768
+	B = 64
+	N<= 32768/8 / 1+64/8 = 455
+
+5/ En particulier, vous essaierez de d´eterminer de mani`ere
+empirique la meilleure valeur possible pour b avec des matrices de taille 2k pour 7 ≤ k ≤ 10. Que
+pouvez-vous conclure ?
+En testant des valeurs de b je trouve que b = 2 pour k =7 et k =8 et b = 4 pour k=9 et k =10;
+C'est loin de la valeur de b la plus optimisée avec b = 16
+
+7/ La meilleure taille possible est quand la matrice est réduite à 2 colonnes ou 2 lignes.
+On voit que la transposition avec la récursion est vraiment très rapide (100ms en moyenne contre 1000ms pour le naif ou 500-600 pour le block)
+
+Test blocksize:
+	Matrix Transpose blocksize 5 iterations ; n= 128; blocksize= 2
+	Average nbrcycles:645364
+	Average nb seconds : 0
+	Average nb milliseconds : 0
+	Average CPI = 5041
+
+	Matrix Transpose blocksize 5 iterations ; n= 256; blocksize= 2
+	Average nbrcycles:3341694
+	Average nb seconds : 0
+	Average nb milliseconds : 0
+	Average CPI = 13053
+
+	Matrix Transpose blocksize 5 iterations ; n= 512; blocksize= 4
+	Average nbrcycles:12642542
+	Average nb seconds : 0
+	Average nb milliseconds : 3
+	Average CPI = 24691
+
+	Matrix Transpose blocksize 5 iterations ; n= 1024; blocksize= 4
+	Average nbrcycles:47769728
+	Average nb seconds : 0
+	Average nb milliseconds : 13
+	Average CPI = 46649
+
+Test Matrix:
+
+Matrix Transpose naive 5 iterations ; n= 7000
+Average nbrcycles:547163577
+Average nb seconds : 1
+Average nb milliseconds : 1137
+Average CPI = 569019
+
+Matrix Transpose blocksize 5 iterations ; n= 7000; blocksize= 100
+Average nbrcycles:670605169
+Average nb seconds : 0
+Average nb milliseconds : 682
+Average CPI = 341226
+
+Matrix Transpose recursive 5 iterations ; n= 6000; m= 3000
+Average nbrcycles:407191860
+Average nb seconds : 0
+Average nb milliseconds : 116
+Average CPI = 67864
+
+#######################################################################################################################################
+Ex 21 :
+#######################################################################################################################################
+
+3/ 
+On voit que le bucketing est très efficace, c'est très impressionant.
+
+###########################
+Counting sort naif:
+###########################
+
+tableau de taille n = 65536
+
+Average nbrcycles:6524396
+Average nb seconds : 0
+Average nb milliseconds : 1
+Average CPI = 99
+
+tableau de taille n = 131072
+
+Average nbrcycles:12518913
+Average nb seconds : 0
+Average nb milliseconds : 3
+Average CPI = 95
+
+tableau de taille n = 262144
+
+Average nbrcycles:27697145
+Average nb seconds : 0
+Average nb milliseconds : 7
+Average CPI = 105
+
+tableau de taille n = 524288
+
+Average nbrcycles:126516268
+Average nb seconds : 0
+Average nb milliseconds : 35
+Average CPI = 240
+
+tableau de taille n = 1048576
+
+Average nbrcycles:351361301
+Average nb seconds : 0
+Average nb milliseconds : 100
+Average CPI = 334
+
+tableau de taille n = 2097152
+
+Average nbrcycles:17869495
+Average nb seconds : 0
+Average nb milliseconds : 250
+Average CPI = 417
+
+tableau de taille n = 4194304
+
+Average nbrcycles:185100636
+Average nb seconds : 0
+Average nb milliseconds : 543
+Average CPI = 453
+
+tableau de taille n = 8388608
+
+Average nbrcycles:27352049
+Average nb seconds : 1
+Average nb milliseconds : 1234
+Average CPI = 310
+
+tableau de taille n = 16777216
+
+Average nbrcycles:694212586
+Average nb seconds : 2
+Average nb milliseconds : 2652
+Average CPI = 40
+
+
+###########################
+Counting sort bucket:
+###########################
+
+tableau de taille n = 65536
+
+Average nbrcycles:4836480
+Average nb seconds : 0
+Average nb milliseconds : 1
+Average CPI = 73
+
+tableau de taille n = 131072
+
+Average nbrcycles:9240496
+Average nb seconds : 0
+Average nb milliseconds : 2
+Average CPI = 70
+
+tableau de taille n = 262144
+
+Average nbrcycles:18583972
+Average nb seconds : 0
+Average nb milliseconds : 4
+Average CPI = 70
+
+tableau de taille n = 524288
+
+Average nbrcycles:36196044
+Average nb seconds : 0
+Average nb milliseconds : 9
+Average CPI = 68
+
+tableau de taille n = 1048576
+
+Average nbrcycles:72822838
+Average nb seconds : 0
+Average nb milliseconds : 20
+Average CPI = 68
+
+tableau de taille n = 2097152
+
+Average nbrcycles:146808147
+Average nb seconds : 0
+Average nb milliseconds : 41
+Average CPI = 69
+
+tableau de taille n = 4194304
+
+Average nbrcycles:291466285
+Average nb seconds : 0
+Average nb milliseconds : 82
+Average CPI = 68
+
+tableau de taille n = 8388608
+
+Average nbrcycles:672192387
+Average nb seconds : 0
+Average nb milliseconds : 191
+Average CPI = 79
+
+tableau de taille n = 16777216
+
+Average nbrcycles:353235841
+Average nb seconds : 0
+Average nb milliseconds : 346
+Average CPI = 71
+
+4/
+
+size_t -> 1 octet
+B = 8 octets
+
+Je propose m = 8, comme ça le bucket tient dans la ligne de cache, en pratique on a une petite amélioration pour k = 24 de l'ordre de 15-20 ms.
+
+5/
+
+6/
+Comme merge sort utilise une approche dichotomique, on va faire log n +1 comparaison pour trouver le milieu,
+Et pour les fusionner il faudra du O(n) ainsi la complexité est de n(log n +1) = O(nlog n)
+
+7/
+Complexité en cache:
+1 + n/B + somme i de 1 a k(2+ni/B) = O(k + n/B)
+8/ 
+Complexité en cache:
+- O(1+ n/B) si n<= M
+- 2O(n/2)+O(1 + n/B)
+soit O(n/B log n/M)
+
+9/ il faut faire une version de merge sort qui soit cache-Aware
+en prenant k = M/B -1 au lieu de k =2

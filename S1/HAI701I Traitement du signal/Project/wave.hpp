@@ -38,7 +38,7 @@ private :
 public:
        
   //Méthode permettant de récupérer les données (cad le signal sur 8 bits)     
-  void getData8(unsigned char** data, // pointeur sur le tableau de donées lorsque l'on est sur des données 8 bits
+  unsigned char* getData8( // pointeur sur le tableau de donées lorsque l'on est sur des données 8 bits
                 int* size);           // pointeur sur la taille du tableau 
   //Méthode permettant de modifier les données
   void modifData8(unsigned char* data); // Tableau de donées lorsque l'on est sur des données 8 bits

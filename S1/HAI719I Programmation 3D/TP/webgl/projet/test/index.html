@@ -1,0 +1,269 @@
+
+<!-- Licensed under a BSD license. See license.html for license -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>WebGL - 2D Image</title>
+
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+</body>
+<link type="text/css" href="webgl-tutorials.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
+
+<!-- vertex shader -->
+<script id="vertex-shader-2d" type="x-shader/x-vertex">
+precision mediump float;
+
+attribute float a_index;
+
+uniform sampler2D u_particles;
+uniform float u_particles_res;
+
+varying vec2 v_particle_pos;
+
+void main() {
+    vec4 color = texture2D(u_particles, vec2(
+        fract(a_index / u_particles_res),
+        floor(a_index / u_particles_res) / u_particles_res));
+
+    // decode current particle position from the pixel's RGBA value
+    v_particle_pos = vec2(
+        color.r / 255.0 + color.b,
+        color.g / 255.0 + color.a);
+
+    gl_PointSize = 1.0;
+    gl_Position = vec4(2.0 * v_particle_pos.x - 1.0, 1.0 - 2.0 * v_particle_pos.y, 0, 1);
+}
+</script>
+<!-- fragment shader -->
+<script id="fragment-shader-2d" type="x-shader/x-fragment">
+precision mediump float;
+
+uniform sampler2D u_wind;
+uniform vec2 u_wind_min;
+uniform vec2 u_wind_max;
+uniform sampler2D u_color_ramp;
+
+varying vec2 v_particle_pos;
+
+void main() {
+    vec2 velocity = mix(u_wind_min, u_wind_max, texture2D(u_wind, v_particle_pos).rg);
+    float speed_t = length(velocity) / length(u_wind_max);
+
+    // color ramp is encoded in a 16x16 texture
+    vec2 ramp_pos = vec2(
+        fract(16.0 * speed_t),
+        floor(16.0 * speed_t) / 16.0);
+
+    gl_FragColor = texture2D(u_color_ramp, ramp_pos);
+}
+</script>
+<script src="webgl-utils.js"></script>
+<script>
+"use strict";
+
+function main() {
+
+  let image = "zz";  // MUST BE SAME DOMAIN!!!
+
+    render(image);
+  
+}
+
+function render(image) {
+  // Get A WebGL context
+  /** @type {HTMLCanvasElement} */
+  var canvas = document.querySelector("#canvas");
+  var gl = canvas.getContext("webgl");
+  //var ctx = canvas.getContext("2d");
+/*
+getJSON('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_coastline.geojson', function (data) {
+    const canvas = document.getElementById('canvas');
+    canvas.width = 1280;
+    canvas.height = 500;
+
+    const ctx = canvas.getContext('2d');
+      if (!ctx) {
+    return;
+  }
+    ctx.lineWidth = pxRatio;
+    ctx.lineJoin = ctx.lineCap = 'round';
+    ctx.strokeStyle = 'white';
+    ctx.beginPath();
+
+    for (let i = 0; i < data.features.length; i++) {
+        const line = data.features[i].geometry.coordinates;
+        for (let j = 0; j < line.length; j++) {
+            ctx[j ? 'lineTo' : 'moveTo'](
+                (line[j][0] + 180) * canvas.width / 360,
+                (-line[j][1] + 90) * canvas.height / 180);
+        }
+    }
+    ctx.stroke();
+});
+*/
+  if (!gl) {
+    return;
+  }
+
+  const level = 0;
+  const internalFormat = gl.RGBA;
+  const width = 1000;
+  const height = 500;
+  const border = 0;
+  const format = gl.RGBA;
+  let type = gl.UNSIGNED_BYTE;
+  let vert = [];
+
+  for(let i = 0 ; i < width*height*4;i+=4)
+  {
+    let cx = Math.floor(Math.random() * 255);
+    let cy = Math.floor(Math.random() * 255);
+    let cu = Math.floor(Math.random() * 255);
+    let cv = Math.floor(255);
+
+    vert[i]=cx;
+    vert[i+1]=cy;
+
+    vert[i+2]=cu;
+    vert[i+3]=cv;
+
+  }
+  //console.log(vert);
+  const data = new Uint8Array(vert);
+  const alignment = 1;
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT, alignment);
+    // setup GLSL program
+  var program = webglUtils.createProgramFromScripts(gl, ["vertex-shader-2d", "fragment-shader-2d"]);
+
+  // look up where the vertex data needs to go.
+  var positionLocation = gl.getAttribLocation(program, "a_position");
+  var texcoordLocation = gl.getAttribLocation(program, "a_texCoord");
+
+  // Create a buffer to put three 2d clip space points in
+  var positionBuffer = gl.createBuffer();
+
+  // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  // Set a rectangle the same size as the image.
+  setRectangle(gl, 0, 0, width, height);
+
+  // provide texture coordinates for the rectangle.
+  var texcoordBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      0.0,  0.0,
+      1.0,  0.0,
+      0.0,  1.0,
+      0.0,  1.0,
+      1.0,  0.0,
+      1.0,  1.0,
+  ]), gl.STATIC_DRAW);
+
+  // Create a texture.
+  var texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // Set the parameters so we can render any size image.
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+  // Upload the image into the texture.
+  gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border,
+              format, type, data);
+
+  // lookup uniforms
+  var resolutionLocation = gl.getUniformLocation(program, "u_resolution");
+
+  webglUtils.resizeCanvasToDisplaySize(gl.canvas);
+
+  // Tell WebGL how to convert from clip space to pixels
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+  // Clear the canvas
+  gl.clearColor(0, 0, 0, 0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  // Tell it to use our program (pair of shaders)
+  gl.useProgram(program);
+
+  // Turn on the position attribute
+  gl.enableVertexAttribArray(positionLocation);
+
+  // Bind the position buffer.
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+  // Tell the position attribute how to get data out of positionBuffer (ARRAY_BUFFER)
+  var size = 2;          // 2 components per iteration
+  type = gl.FLOAT;   // the data is 32bit floats
+  var normalize = false; // don't normalize the data
+  var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+  var offset = 0;        // start at the beginning of the buffer
+  gl.vertexAttribPointer(
+      positionLocation, size, type, normalize, stride, offset);
+
+  // Turn on the texcoord attribute
+  gl.enableVertexAttribArray(texcoordLocation);
+
+  // bind the texcoord buffer.
+  gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+
+  // Tell the texcoord attribute how to get data out of texcoordBuffer (ARRAY_BUFFER)
+  var size = 2;          // 2 components per iteration
+   type = gl.FLOAT;   // the data is 32bit floats
+  var normalize = false; // don't normalize the data
+  var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+  var offset = 0;        // start at the beginning of the buffer
+  gl.vertexAttribPointer(
+      texcoordLocation, size, type, normalize, stride, offset);
+
+  // set the resolution
+  gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
+
+  // Draw the rectangle.
+  var primitiveType = gl.TRIANGLES;
+  var offset = 0;
+  var count = 6;
+  gl.drawArrays(primitiveType, offset, count);
+}
+
+function setRectangle(gl, x, y, width, height) {
+  var x1 = x;
+  var x2 = x + width;
+  var y1 = y;
+  var y2 = y + height;
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+     x1, y1,
+     x2, y1,
+     x1, y2,
+     x1, y2,
+     x2, y1,
+     x2, y2,
+  ]), gl.STATIC_DRAW);
+}
+function getJSON(url, callback) {
+    const xhr = new XMLHttpRequest();
+    xhr.responseType = 'json';
+    xhr.open('get', url, true);
+    xhr.onload = function () {
+        if (xhr.status >= 200 && xhr.status < 300) {
+            callback(xhr.response);
+        } else {
+            throw new Error(xhr.statusText);
+        }
+    };
+    xhr.send();
+}
+
+main();
+</script>
+</html>
+
+

@@ -87,6 +87,7 @@ class Maillage
 
         vector<vector<vector<Vec3>>> repPos;
         vector<vector<vector<Vec3>>> repNorm;
+        vector<vector<vector<int>>> nbSommet;
 
     public:
         Maillage(Mesh const& mesh)
@@ -157,13 +158,13 @@ class Maillage
             Vec3 d = this->cube.vertices[1] -this->cube.vertices[0];
             float dist = d.length()*factor;
             Vec3 origin = this->cube.vertices[0];
-            for(int i = 0 ; i <resolution;i++)
+            for(int i = 0 ; i <(int)resolution;i++)
             {   
                 grid[i].resize(resolution);
-                for(int j = 0 ; j < resolution ; j++)
+                for(int j = 0 ; j < (int)resolution ; j++)
                 {
                     grid[i][j].resize(resolution);
-                    for(int k = 0 ; k < resolution ; k++)
+                    for(int k = 0 ; k < (int)resolution ; k++)
                     {
                         Vec3 p = Vec3(i*dist+origin[0],j*dist+origin[1],k*dist+origin[2]);
                         grid[i][j][k]=p;
@@ -184,41 +185,87 @@ class Maillage
             int i = (point[0]-origin[0])/dist;
             int j = (point[1]-origin[1])/dist;
             int k = (point[2]-origin[2])/dist;
+            if(i>((int)resolution-1) || j >((int)resolution-1) || k>((int)resolution-1))
+                    j=(resolution-1);
             return Vec3( (float)i,(float)j,(float)k);
         }
         void calculate_repr(unsigned int resolution)
         {
             vector<vector<vector<Vec3>>> repPos;
+            vector<vector<vector<Vec3>>> repNorm;
+            vector<vector<vector<int>>> nbSommet;
 
             repPos.resize(resolution);
-            //this->repNorm.resize(resolution);
-             for(int i = 0 ; i <resolution;i++)
+            repNorm.resize(resolution);
+            nbSommet.resize(resolution);
+             for(int i = 0 ; i <(int)resolution;i++)
             {   
                 repPos[i].resize(resolution);
-                //this->repNorm[i].resize(resolution);
-                for(int j = 0 ; j < resolution ; j++)
+                repNorm[i].resize(resolution);
+                nbSommet[i].resize(resolution);
+                for(int j = 0 ; j < (int)resolution ; j++)
                 {
                     repPos[i][j].resize(resolution);
-
+                    repNorm[i][j].resize(resolution);
+                    nbSommet[i][j].resize(resolution);
+                    for(int k = 0 ; k < (int)resolution ; k++)
+                    {
+                        repPos[i][j][k]=Vec3(0.,0.,0.);
+                        repNorm[i][j][k]=Vec3(0.,0.,0.);
+                        nbSommet[i][j][k]=0;
+                    }
 
                 }
             }
             
-            for(int i = 0 ; i< this->mesh.vertices.size();i++)
+            for(int i = 0 ; i< (int)this->mesh.vertices.size();i++)
             {
                int ii=0,jj=0,kk=0;
                 Vec3 point = this->cubeIndice(this->mesh.vertices[i], resolution);
                 ii = (int)point[0];
                 jj = (int)point[1];
                 kk = (int)point[2];
-                if(ii>19 || jj >19 || kk>19)
-                    jj=19;
-                //cout<<ii<<" "<<jj<<" "<<kk<<endl;
-                //cout<<repPos[ii][jj][kk][0]<<endl;
-                repPos[ii][jj][kk]=this->mesh.vertices[i];
-                //this->repNorm[ii][jj][kk]+=this->mesh.normals[i];
-            }
+                if(ii>((int)resolution-1) || jj >((int)resolution-1) || kk>((int)resolution-1))
+                    jj=(resolution-1);
+    
 
+                repPos[ii][jj][kk]+=this->mesh.vertices[i];
+                repNorm[ii][jj][kk]+=this->mesh.normals[i];
+
+                nbSommet[ii][jj][kk]++;
+               
+            }
+            int count = 0;
+             for(int i = 0 ; i <(int)resolution;i++)
+            {   
+
+                for(int j = 0 ; j < (int)resolution ; j++)
+                {
+
+                    for(int k = 0 ; k < (int)resolution ; k++)
+                    {
+                        if(nbSommet[i][j][k]!=0)
+                        {   
+                           count++;
+
+                            repPos[i][j][k]=(1./nbSommet[i][j][k])*repPos[i][j][k];
+                            repNorm[i][j][k].normalize();
+                        }
+                        else
+                            repPos[i][j][k]=Vec3(0.,0.,0.);
+
+                    }
+
+                }
+            }
+           
+            this->repPos=repPos;
+            this->repNorm=repNorm;
+            this->nbSommet=nbSommet;
+        }
+         Mesh get_mesh()
+        {
+            return this->mesh;
         }
         Mesh get_cube()
         {
@@ -228,8 +275,55 @@ class Maillage
         {
             return this->grid;
         }
+          vector<vector<vector<Vec3>>> get_rep()
+        {
+            return this->repPos;
+        }
+        bool diff(Vec3 i0,Vec3 i1, Vec3 i2)
+        {
+            bool r = true;
+            for(int i = 0 ; i < 3 ; i++)
+            {
+                if(i0[i]!=i1[i]&&i1[i]!=i2[i]&&i2[i]!=i0[i])
+                    r = false;
+            }
+            return r;
+        }
+        void printVec(Vec3 point)
+        {
+            cout<<"[0]:"<<point[0]<<" [1]:"<<point[1]<<" [2]:"<<point[2]<<endl;
+        }
         void simplify (unsigned  int  resolution)
         {
+           
+            Mesh copy;
+            copy = this->mesh;
+
+            for( int i =0; i < (int)this->mesh.triangles.size();i++)
+            {
+                Triangle t = this->mesh.triangles[i];
+                Vec3 i0 = this->cubeIndice(this->mesh.vertices[t[0]],resolution);
+                Vec3 i1 = this->cubeIndice(this->mesh.vertices[t[1]],resolution);
+                Vec3 i2 = this->cubeIndice(this->mesh.vertices[t[2]],resolution);
+
+
+
+                if(diff(i0,i1,i2))
+                {
+
+                    copy.vertices[t[0]] = this->repPos[i0[0]][i0[1]][i0[2]];
+                    copy.vertices[t[1]] = this->repPos[i1[0]][i1[1]][i1[2]];
+                    copy.vertices[t[2]] = this->repPos[i2[0]][i2[1]][i2[2]];
+                    
+
+                    copy.normals[t[0]] = this->repNorm[i0[0]][i0[1]][i0[2]];
+                    copy.normals[t[1]] = this->repNorm[i1[0]][i1[1]][i1[2]];
+                    copy.normals[t[2]] = this->repNorm[i2[0]][i2[1]][i2[2]];
+                }
+
+            }
+            this->mesh = copy;
+
 
         }
 
@@ -337,8 +431,10 @@ void compute_vertex_valences (const std::vector<Vec3> & i_vertices,
 
 //Input mesh loaded at the launch of the application
 Mesh mesh;
+Mesh smesh;
 Mesh cubeMesh;
 vector<vector<vector<Vec3>>> gridMesh;
+vector<vector<vector<Vec3>>> repMesh;
 
 std::vector< float > mesh_valence_field; //normalized valence of each vertex
 
@@ -347,6 +443,7 @@ Basis basis;
 bool display_normals;
 bool display_smooth_normals;
 bool display_mesh;
+bool display_smesh;
 bool display_basis;
 DisplayMode displayMode;
 int weight_type;
@@ -520,7 +617,8 @@ void init () {
 
     display_normals = false;
     display_mesh = true;
-    display_smooth_normals = true;
+    display_smesh = false;
+    display_smooth_normals = false;
     displayMode = LIGHTED;
     display_basis = false;
 }
@@ -695,6 +793,19 @@ void drawGrid(vector<vector<vector<Vec3>>> grid)
 
 
 }
+void drawRep(vector<vector<vector<Vec3>>> grid)
+{
+    glColor3f(0.,1.,0.);
+    glPointSize(2.);
+    glBegin(GL_POINTS);
+    for(int i = 0 ; i < (int)grid.size();i++)
+        for(int j = 0 ; j < (int)grid[i].size();j++)
+            for(int k = 0 ; k < (int)grid[i][j].size();k++)
+                glVertex3f( grid[i][j][k][0] , grid[i][j][k][1] , grid[i][j][k][2] );
+    glEnd();
+
+
+}
 //Draw fonction
 void draw () {
 
@@ -715,9 +826,17 @@ void draw () {
         glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 
     }
+    if(display_mesh)
+    {
+     glColor3f(0.8,1,0.8);
+    drawMesh(mesh, true);       
+    }
+    if(display_smesh)
+    {
+     glColor3f(0.8,1,0.8);
+    drawMesh(smesh, true);       
+    }
 
-    glColor3f(0.8,1,0.8);
-    drawMesh(mesh, true);
 
     if(displayMode == SOLID || displayMode == LIGHTED_WIRE){
         glEnable (GL_POLYGON_OFFSET_LINE);
@@ -745,6 +864,7 @@ void draw () {
         drawReferenceFrame(basis);
     }
     drawCube(cubeMesh);
+    //drawRep(repMesh);
     drawGrid(gridMesh);
     glEnable(GL_LIGHTING);
 
@@ -808,8 +928,11 @@ void key (unsigned char keyPressed, int x, int y) {
     case '1': //Toggle loaded mesh display
         display_mesh = !display_mesh;
         break;
-
-    case 's': //Switches between face normals and vertices normals
+    case 's': //Switches decimate and not decimate
+        display_mesh = !display_mesh;
+        display_smesh = !display_smesh;
+        break;
+    case 'v': //Switches between face normals and vertices normals
         display_smooth_normals = !display_smooth_normals;
         break;
 
@@ -903,13 +1026,17 @@ int main (int argc, char ** argv) {
     openOFF("data/elephant_n.off", mesh.vertices, mesh.normals, mesh.triangles, mesh.triangle_normals);
     Maillage* elephant = new Maillage(mesh);
     elephant->calculate_cube();
-    elephant->calculate_grid(20);
-    elephant->calculate_repr(20);
+    unsigned int resolution = 16;
+    elephant->calculate_grid(resolution);
+    elephant->calculate_repr(resolution);
     cubeMesh = elephant->get_cube();
     gridMesh = elephant->get_grid();
-
+    repMesh = elephant->get_rep();
+    elephant->simplify(resolution);
+    smesh = elephant->get_mesh();
     //Completer les fonction de calcul de normals
     mesh.computeNormals();
+    smesh.computeNormals();
 
     basis = Basis();
 

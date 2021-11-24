@@ -102,7 +102,7 @@ Wave::~Wave() {
     delete[] data16;
 }
 
-void Wave::getData8(unsigned char** data, // Tableau de donées lorsque l'on est sur des données 8 bits
+unsigned char* Wave::getData8(// Tableau de donées lorsque l'on est sur des données 8 bits
                     int* size) {          // Taille du tableau
    
   int i;            
@@ -115,10 +115,12 @@ void Wave::getData8(unsigned char** data, // Tableau de donées lorsque l'on est
   (*size) = data_nb;
   
   // Allocation du tableau de données 
-  (*data) = new unsigned char[data_nb];
+  //(*data) = new unsigned char[data_nb];
+  unsigned char* data = new unsigned char[data_nb];
   for (i=0; i<data_nb; i++) { 
-    (*data)[i] = data8[i]; //Recopie en profondeur
+    data[i] = data8[i]; //Recopie en profondeur
   }
+  return data;
 }
 
 void Wave::modifData8(unsigned char* data) { // Tableau de donées lorsque l'on est sur des données 8 bits
