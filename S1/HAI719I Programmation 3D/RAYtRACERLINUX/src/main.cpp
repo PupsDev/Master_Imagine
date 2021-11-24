@@ -27,27 +27,33 @@ using namespace std;
 std::vector<std::vector <Vec3>> image;
     Vec3 origin(0.,0.,0.);
     Vec3 dir(0.,0.,-1.);
-    //Vec3 originSphere(0.0,0.0,-2.5);
+
     Vec3 originLight(-1.,3.0,2.0);
     Vec3 originSphere(3.0,0.0,-12.0);
     Vec3 originSphere2(0.0,1.0,-12.0);
-    //Vec3 originLight(0.,8.0,-10.0);
-    //Vec3 originLight(-6.0,1.0,.0);
+
+    Vec3 originLight2(0.,8.0,-10.0);
+    Vec3 originLight3(-6.0,1.0,.0);
+
     Vec3 dirCamera=dir;
     
-
     Configuration *myconfig= new Configuration();
     Ray *raycam = new Ray(origin,dir);
-     Ray* newRayCam;
+    Ray* newRayCam;
+
     Scene * scene = new Scene();
+    Scene * scene2 = new Scene();
+    Scene * scene3 = new Scene();
+    size_t indiceScene =0;
+
+
     Camera * camera = new Camera(raycam);
     Render* render = new Render(myconfig->GetOption(), camera, scene);
-
-    //bool realtime = true;
     bool realtime;
+
 void drawImageRealTime(std::vector<std::vector <Vec3>> image)
 {
-    glPointSize(8.);
+    glPointSize(2.);
     glBegin(GL_POINTS);
     
 
@@ -69,23 +75,16 @@ void drawImageRealTime(std::vector<std::vector <Vec3>> image)
         
         for(size_t j = 0 ; j < w;j++)
         {
-                //i = (h-1-i);
+                
                 float x = ((float)(2*j+1) / w)-1.;
                 float x2 =(((float)(2*j+2)/w)-1);
                 
-                Vec3 color = image[(h-1-i)][j];
+                Vec3 color = image[(h-1-i)][j]*1.5;
 
                 glColor3f(color[0],color[1],color[2]);
-
-                if( j%2==1)
-                    glColor3f(image[(h-1-i)][j-1][0],image[(h-1-i)][j-1][1],image[(h-1-i)][j-1][2]);
-                if((h-1-i)%2==1)
-                    glColor3f(image[(h-i)-1][j-1][0],image[(h-i)-1][j-1][1],image[(h-i)-1][j-1][2]);
-
+                
                 glVertex3f(x, y, 0.5);
-                glVertex3f(x2, y2, 0.5);
 
-                //glVertex3f(x+x, y, 0.5);
 
         }
 
@@ -95,7 +94,7 @@ void drawImageRealTime(std::vector<std::vector <Vec3>> image)
 }
 void drawImage(std::vector<std::vector <Vec3>> image)
 {
-    glPointSize(1.);
+    glPointSize(2.);
     glBegin(GL_POINTS);
     
     size_t h = image.size();
@@ -108,13 +107,12 @@ void drawImage(std::vector<std::vector <Vec3>> image)
     for(size_t i = 0 ; i < h;i++)
     {
         float y = ((float)i/ h2)-1.;
-        //y*=-1;
 
         for(size_t j = 0 ; j < w;j++)
         {
                 float x = ((float)j / w2)-1.;
 
-                Vec3 color = image[(h-1-i)][j];
+                Vec3 color = image[(h-1-i)][j]*1.5;
 
                 glColor3f(color[0],color[1],color[2]);
 
@@ -129,25 +127,22 @@ void drawImage(std::vector<std::vector <Vec3>> image)
 }
 void display() {
 
-  // Set every pixel in the frame buffer to the current clear color.
+
   glClear(GL_COLOR_BUFFER_BIT);
 
         render->draw(origin);
         image = render->getRender();
         drawImage(image);        
     
-
-  // Flush drawing command buffer to make drawing happen as soon as possible.
   glFlush();
   glutSwapBuffers ();
 }
 void displayRealtime() {
-      // Set every pixel in the frame buffer to the current clear color.
+
   glClear(GL_COLOR_BUFFER_BIT);
         render->drawRealtime(origin);
         image = render->getRender();
         drawImageRealTime(image);
-          // Flush drawing command buffer to make drawing happen as soon as possible.
   glFlush();
   glutSwapBuffers ();
 }
@@ -158,10 +153,6 @@ void key (unsigned char keyPressed, int x, int y) {
     case 'q':
     case 27:
         exit (0);
-        break;
-    case 'r':
-        //rays.clear();
-        //ray_trace_from_camera();
         break;
     case '8':
         origin += Vec3(0.,0.,.5);
@@ -191,6 +182,34 @@ void key (unsigned char keyPressed, int x, int y) {
         else
             display();
         break;
+    case 'r':
+        realtime=!realtime;
+        if(realtime)
+            displayRealtime();
+        else
+            display();
+        break;
+    case 's':
+        indiceScene++;
+        if(indiceScene>2)indiceScene=0;
+        switch(indiceScene)
+        {
+            case 0:
+                render->setScene(scene);
+            break;
+            case 1:
+                render->setScene(scene2);
+            break;
+            case 2:
+                render->setScene(scene3);
+            break;
+        }
+        
+        if(realtime)
+            displayRealtime();
+        else
+            display();
+        break;
 
     default:
     displayRealtime();
@@ -204,72 +223,108 @@ Mesh makeCube(Vec3 pos, float size);
 int main(int argc , char *argv[]) {
     
   
-    //Light light(originLight, 1.,LightType_Point);
-    Light light(originLight, 2.0,LightType_Regular_Area);
-    light.SetIntensitySpec(2.);
     Vec3 v1=Vec3(6.0,0.0,0.0);
     Vec3 v2=Vec3(0.0,0.0,6.0);
-    light.setV1(v1);
-    light.setV2(v2);
+
+    Light light(originLight2, 2.,LightType_Point);
+    light.SetIntensitySpec(2.);
+
+    Light light2(originLight, 2.0,LightType_Regular_Area);
+    light2.SetIntensitySpec(2.);
+    light2.setV1(v1);
+    light2.setV2(v2);
+
+    Light light3(originLight, 2.0,LightType_Random_Area);
+    light3.SetIntensitySpec(2.);
+    light3.setV1(v1);
+    light3.setV2(v2);
 
     Sphere *sphere= new Sphere(originSphere, 4.0);
     Sphere *sphere2= new Sphere(originSphere2, 2.0);
     Sphere *sphere3= new Sphere(originSphere2+Vec3(-1.,1.,-1.), 2.0);
     Sphere *sphere4= new Sphere(originSphere2+Vec3(-3.,2.,2.), 3.0);
+    Sphere *sphere5= new Sphere(originSphere2+Vec3(-0.5,-0.5,1.), 4.0);
  
 
     Material* basic_mat= new Material();
     Material* basic_mat_Red_Spec= new Material();
+    Material* basic_red= new Material();
+    Material* basic_green= new Material();
+    Material* basic_blue= new Material();
+    Material* basic_white= new Material();
+
+    Material* basic_mirror= new Material();
+    Material* basic_glass= new Material();
+
+
     basic_mat_Red_Spec->SetSpecular_material(Vec3(1.,0.,0.));
 
-    Material* basic_red= new Material();
-    basic_red->SetDiffuse_material(Vec3(1.,1.,0.));
-    
-    Material* basic_green= new Material();
-    basic_green->SetDiffuse_material(Vec3(0.,1.,0.));
-    basic_green->SetType(Material_Mirror);
-    basic_green->SetIndex_medium(1.5);
-
-    Material* basic_blue= new Material();
-    basic_blue->SetDiffuse_material(Vec3(0.,0.,1.));
-    basic_blue->SetType(Material_Glass);
-    basic_blue->SetIndex_medium(1.5);
-
-    Material* basic_white= new Material();
-    basic_white->SetDiffuse_material(Vec3(1.,0.,1.));
-    
-
-    Mesh mesh = makeCornell();
-    /*Mesh mesh2 = makeCube(Vec3(-.5,-1.,-2.),0.5);
-    mesh.setMaterial(basic_mat);
-    mesh2.setMaterial(basic_red);
-    
-    mesh2.setMaterialFace(0,basic_red);
-    mesh2.setMaterialFace(1,basic_red);
-
-    mesh2.setMaterialFace(2,basic_green);
-    mesh2.setMaterialFace(3,basic_green);
-
-    mesh2.setMaterialFace(4,basic_blue);
-    mesh2.setMaterialFace(5,basic_blue);*/
-
-
     basic_red->SetDiffuse_material(Vec3(1.,0.,0.));
+    
+    basic_green->SetDiffuse_material(Vec3(0.,1.,0.));
+
+    basic_mirror->SetType(Material_Mirror);
+    basic_mirror->SetIndex_medium(1.5);
+
+
+    basic_blue->SetDiffuse_material(Vec3(0.,0.,1.));
+
+    basic_glass->SetType(Material_Glass);
+    basic_glass->SetIndex_medium(1.5);
+
+    basic_white->SetDiffuse_material(Vec3(1.,1.,1.));
+    
+    Mesh mesh = makeCornell();
+
+    mesh.setMaterialFace(0,basic_red);
+    mesh.setMaterialFace(1,basic_red);
+    mesh.setMaterialFace(6,basic_green);
+    mesh.setMaterialFace(7,basic_green);
 
     sphere->setMaterial(basic_green);
     sphere2->setMaterial(basic_blue);
-    sphere3->setMaterial(basic_white);
-    sphere4->setMaterial(basic_red);
+    sphere3->setMaterial(basic_red);
+    sphere4->setMaterial(basic_glass);
+    sphere5->setMaterial(basic_mirror);
 
-    scene->addLight(light);
+    /*
+    Scene 1
+    boule r,g,b, miror, glass
+    Lumiere regular area
 
+    */
+    scene->addLight(light2);
     scene->addObject(sphere);  
     scene->addObject(sphere2); 
     scene->addObject(sphere3); 
     scene->addObject(sphere4); 
+    scene->addObject(sphere5); 
     
     scene->addMesh(mesh);
-    //scene->addMesh(mesh2); 
+
+    /*
+    Scene 2
+    boule r,g,b, miror, glass
+    Lumiere random area
+
+    */
+    scene2->addLight(light3);
+    scene2->addObject(sphere);  
+    scene2->addObject(sphere2); 
+    scene2->addObject(sphere3); 
+    scene2->addObject(sphere4); 
+    scene2->addObject(sphere5);
+    scene2->addMesh(mesh);
+
+    /*
+    Scene 3
+    boule b
+    Lumiere point
+
+    */
+    scene3->addLight(light);
+    scene3->addObject(sphere2);
+    scene3->addMesh(mesh);
 
     Configuration *myconfig2=myconfig;
 
@@ -281,7 +336,6 @@ int main(int argc , char *argv[]) {
         realtime = myconfig2->GetOption()->realtime;
 
     }
-    //render->drawRealtime(origin);
 
     if(realtime)
     {
@@ -290,7 +344,7 @@ int main(int argc , char *argv[]) {
     else
         render->draw(origin);
     image = render->getRender();
-    render->saveImage("outputN.ppm");
+    render->saveImage("output.ppm");
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
@@ -345,21 +399,7 @@ Mesh makeCube(Vec3 pos, float size)
     vertOrder.push_back(3);
     vertOrder.push_back(2);
     vertOrder.push_back(1);
-    
-    /*
-    vertOrder.push_back(3);
-    vertOrder.push_back(2);
-    vertOrder.push_back(0);
-   
-    vertOrder.push_back(2);
-    vertOrder.push_back(1);
-    vertOrder.push_back(0);
-    */
 
-    //LEFT
-    /*vertOrder.push_back(0);
-    vertOrder.push_back(3);
-    vertOrder.push_back(4);*/
 
     vertOrder.push_back(4);
     vertOrder.push_back(3);
@@ -473,8 +513,6 @@ Mesh makeCornell()
     vertOrder.push_back(7);
     vertOrder.push_back(5);
     
-    //Mesh* mesh = new Mesh(vertOrder,vertices);
-    //mesh->constructTriangles();
 
     Mesh mesh(vertOrder,vertices);
     mesh.constructTriangles();
@@ -482,12 +520,6 @@ Mesh makeCornell()
     basic_red->SetDiffuse_material(Vec3(1.,0.,0.));
     Material* basic_green= new Material();
     basic_green->SetDiffuse_material(Vec3(0.,1.,0.));
-
-    mesh.setMaterialFace(0,basic_red);
-    mesh.setMaterialFace(1,basic_red);
-    mesh.setMaterialFace(6,basic_green);
-    mesh.setMaterialFace(7,basic_green);
-
 
 
     return mesh;

@@ -293,12 +293,7 @@ class Raytracer
                             float RR = fmax(R.dot(ray2),0.);
                             NL = fmax(NL,0.);
                             
-                            
-                            if (N.dot(ray.GetDirection()) < 0)
-                            {
-
-                                color = computeColor(light, mat, NL, RR);
-                            }
+                            color = computeColor(light, mat, NL, RR);
                             int  nblight;
                             int t1=0;
                             float vis = 1.;
@@ -402,6 +397,14 @@ class Raytracer
             }
            
             return color;
+        }
+        void setScene(Scene * scene)
+        {
+            this->scene = scene;
+        }
+        void setDepth(int depth)
+        {
+            this->depth =depth ;
         }
         Vec3 Raytrace(Ray ray)
         {

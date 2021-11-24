@@ -1,1 +1,0 @@
-cd SUMMER2021/PROJECTS/cpp/Raytracing/

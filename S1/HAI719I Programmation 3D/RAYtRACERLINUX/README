@@ -1,0 +1,31 @@
+Compiler:
+
+make
+
+Executer:
+./bin/main
+
+OU
+./bin/main config.txt
+
+Il y a 4 fichiers de configurations différents. On peut naviguer dans la scene
+ avec 4,8,6,2 du pavé numérique. 's' pour changer de scene et 'r' pour faire du realtime ou non
+La performance est un peu augmentée en realtime pour pouvoir se déplacer à défaut de la qualité.  
+
+
+Scene 1
+boules r,g,b, miror, glass
+Lumiere regular area
+
+
+Scene 2
+boules r,g,b, miror, glass
+Lumiere random area
+
+
+Scene 3
+boule b
+Lumiere point
+
+
+

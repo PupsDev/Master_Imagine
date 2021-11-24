@@ -28,8 +28,13 @@ class Render
     
             this->scene = scene;
             
-            this->setConfig(optionImage);
-            cout<<option->depth<<endl;
+            this->option = optionImage;
+
+            this->image = std::vector<std::vector <Vec3>>(option->height);
+            for (int i = 0 ; i < option->height ; i++) {
+                image[i].resize(option->width);
+            }
+                    
             this->raytracer = new Raytracer(scene, option->depth);
 
         }
@@ -65,6 +70,10 @@ class Render
                     
                     Vec3 color = raytracer->Raytrace(ray);
                     this->image[i][j]=color;
+
+                    this->image[i+1][j]=color;
+                    this->image[i][j+1]=color;
+                    this->image[i+1][j+1]=color;
                            
                 }
                 
@@ -92,23 +101,7 @@ class Render
 
                     Ray ray = this->computePixelRay(pixelClip, origin);
                     
-                    //Vec3 color = raytracer->Raytrace(ray);
-                    //this->image[i][j]=color;
-
-                    //Ray ray = this->computePixelRay(pixelClip, this->origin);
-                    //Vec3 pixelClip(pixelX,pixelY,pixelZ);
-                    Vec3 color=Vec3(0.,0.,0.);
-                    int n =10;
-                    for(int s =0;s<n;s++)
-                    {
-
-                        float spx = pixelX + (float)(rand()/ (float)(RAND_MAX + 1.0))/(float)option->width;
-                        float spy= pixelY+ (float)(rand() / (float)(RAND_MAX + 1.0))/(float)option->height;
-                        pixelClip=Vec3(spx,spy,pixelZ);
-                        Ray ray = this->computePixelRay(pixelClip, origin);
-                        color +=  raytracer->Raytrace(ray)/(float)n;
-                    }
-                    //Vec3 color = raytracer->Raytrace(ray);
+                    Vec3 color = raytracer->Raytrace(ray);
                     this->image[i][j]=color;
                            
                 }
@@ -136,9 +129,8 @@ class Render
                     
                     Vec3 pixelClip(pixelX,pixelY,pixelZ);
 
-                    //Ray ray = this->computePixelRay(pixelClip, this->origin);
                     Vec3 color=Vec3(0.,0.,0.);
-                    int n =25;
+                    int n =1;
                     for(int s =0;s<n;s++)
                     {
 
@@ -148,7 +140,7 @@ class Render
                         Ray ray = this->computePixelRay(pixelClip, this->origin);
                         color +=  raytracer->Raytrace(ray)/(float)n;
                     }
-                    //Vec3 color = raytracer->Raytrace(ray);
+
                     this->image[i][j]=color;
                             
                 }
@@ -223,13 +215,20 @@ class Render
         {
             this->camera->SetRay(ray);
         }
+        void setScene(Scene * scene)
+        {
+            this->scene = scene;
+            this->raytracer->setScene(scene);
+        }
         void setConfig(Option *optionImage)
         {          
             this->option = optionImage;
+
             this->image = std::vector<std::vector <Vec3>>(option->height);
             for (int i = 0 ; i < option->height ; i++) {
                 image[i].resize(option->width);
             }
+            this->raytracer->setDepth(option->depth);
             
         }
 };

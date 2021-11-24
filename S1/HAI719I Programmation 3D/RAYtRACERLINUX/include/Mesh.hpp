@@ -55,14 +55,13 @@ class Mesh: public Object
                 if(tri.intersect(orig, dir, t))
                 {
                     inter=true;
-                    //this->hit=i;
+                    
                 }
             }
 
             return inter;
         }
         Vec3 getPosition(){return position;}
-        //Vec3 getColor(){return color;}
          Vec3 getColor(){return colors[hit];}
         void setColor(Vec3 _color) {
         color = _color;
