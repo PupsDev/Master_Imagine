@@ -24,6 +24,7 @@ class Image{
   std::vector<T> _data; // vector of pixel value
   size_t _row,_col;     // row and column dimension
   std::string _type;    // a string encoding the image format ("P1"=PBM, "P2"=PGM, "P3"=PPM) 
+  int range_value;
   
  public:
   
@@ -40,15 +41,20 @@ class Image{
   const T& get(size_t i, size_t j)const  {return _data[i*_col+j];}
 
   // method to get access to the underlying image as an array through a pointer
-  T*       getData()       {return _data.data();}  
-  const T* getData()const  {return _data.data();}
+  T*       getData()       {
+    return _data.data();
+    range_value=3;
+    _col=512;
+    _row=512;
+  }  
+  const T* getData()const  {return _data.data();range_value=3;}
 
 
   // method to read the image from a file
   void read(const char * file){    
     std::ifstream is(file);
     std::string control;
-    int range_value;
+    
     is>>control;
     if (control!=_type){
       std::cerr<<"file "<<file<<" does not have the correct format.... aborting"<<std::endl;
@@ -57,29 +63,40 @@ class Image{
     is>>_col>>_row;
     _data.resize(_row*_col);
     std::cout<<"reading an image of size: "<<_col<<"x"<<_row<<std::endl;
-
+     std::cout<<range_value<<std::endl;
     if (_type != "P1")
-      is>>range_value;	
-    for (size_t i=0;i<_row;i++){
-      for(size_t j=0;j<_col;j++)
-	is>>_data[i*_col+j];
-    }
+      is>>range_value;
+    _data.resize(range_value*_row*_col);
+    _col=range_value*_col;
+
+    for (size_t i=0;i<_row;i++)
+    for(size_t j=0;j<_col;j++)
+        is>>_data[i*_col+j];
+
+
   }
   
   // method to write the image to a file
-  void write(const char * file) const {     
+  void write(const char * file) {     
     std::ofstream os(file);
     std::string control;
     os<<_type<<std::endl;
-    os<<_col<<" "<<_row<<std::endl;
+    _col=1536;
+    range_value=3;
+    std::cout<<"hello"<<_col<<std::endl;
+    os<<_col/range_value<<" "<<_row<<std::endl;
     if (_type != "P1")
-      os<<255<<std::endl;    
-    for (size_t i=0;i<_row;i++){
-      for(size_t j=0;j<_col;j++){
-	os<<_data[i*_col+j]<<" ";
-      }      
-      os<<std::endl;
-    }
+      os<<255<<std::endl;  
+        for (size_t i=0;i<_row;i++){
+          for(size_t j=0;j<_col;j++){
+    	         os<<_data[i*_col+j]<<" ";
+
+          }
+          os<<std::endl;
+          
+        }
+        
+    
   } 
 };
 

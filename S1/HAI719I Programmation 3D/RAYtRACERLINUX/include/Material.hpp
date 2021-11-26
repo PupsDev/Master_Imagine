@@ -30,8 +30,8 @@ class Material
             this->kDiffuse=0.5;
 
             this->specular_material=Vec3(1.,1.,1.);
-            this->kSpecular=0.8;
-            this->indiceSpecular=100;
+            this->kSpecular=0.1;
+            this->indiceSpecular=2.;
 
         }
                 float GetIndex_medium() const {

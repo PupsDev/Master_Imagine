@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "Wave.hpp"
+#include "wave.hpp"
 #include <math.h>
 using namespace std;
 
@@ -93,123 +93,264 @@ unsigned char doubleToUchar(double s)
   	else
    		return (unsigned char)floor((s+1.0) *127);
 }
+int FFT(int dir,int m,double *x,double *y)
+{
+  int n,i,i1,j,k,i2,l,l1,l2;
+  double c1,c2,tx,ty,t1,t2,u1,u2,z;
+  
+  /* Calculate the number of points */
+  n = 1;
+  for (i=0;i<m;i++) 
+    n *= 2;
+  
+  /* Do the bit reversal */
+  i2 = n >> 1;
+  j = 0;
+  for (i=0;i<n-1;i++) {
+    if (i < j) {
+      tx = x[i];
+      ty = y[i];
+      x[i] = x[j];
+      y[i] = y[j];
+      x[j] = tx;
+      y[j] = ty;
+    }
+    k = i2;
+    while (k <= j) {
+      j -= k;
+      k >>= 1;
+    }
+    j += k;
+  }
+  
+  /* Compute the FFT */
+  c1 = -1.0; 
+  c2 = 0.0;
+  l2 = 1;
+  for (l=0;l<m;l++) {
+    l1 = l2;
+    l2 <<= 1;
+    u1 = 1.0; 
+    u2 = 0.0;
+    for (j=0;j<l1;j++) {
+      for (i=j;i<n;i+=l2) {
+        i1 = i + l1;
+        t1 = u1 * x[i1] - u2 * y[i1];
+        t2 = u1 * y[i1] + u2 * x[i1];
+        x[i1] = x[i] - t1; 
+        y[i1] = y[i] - t2;
+        x[i] += t1;
+        y[i] += t2;
+      }
+      z =  u1 * c1 - u2 * c2;
+      u2 = u1 * c2 + u2 * c1;
+      u1 = z;
+    }
+    c2 = sqrt((1.0 - c1) / 2.0);
+    if (dir == 1) 
+      c2 = -c2;
+    c1 = sqrt((1.0 + c1) / 2.0);
+  }
+  
+  /* Scaling for forward transform */
+  if (dir == 1) {
+    for (i=0;i<n;i++) {
+      x[i] /= n;
+      y[i] /= n;
+    }
+  }
+  
+  return(1);
+}
+
+int computeM(int N )
+{
+  int result =0;
+  for(int i = 0 ; i < N ; i++)
+  {
+    if( (2<<i) > N)
+      return i;
+  }
+  return result;
+}
+void printSignal(double * signal, int data_nb)
+{
+  for(int i=0 ; i< data_nb;i++)
+  {
+
+    printf("%f\n",signal[i]);
+  }
+}
+  double notes[13] = 
+  { 
+  880,      //  LA  0
+  830.609,  //  LAB 1
+  783.991,  //  SOL 2  
+  739.989,  //  SOLB 3
+  698.456,  //  FA 4
+  659.255,  //  MI 5
+  622.254,  //  MIB 6
+  587.33,   //  RE 7
+  554.365,  //  REB 8
+  523.251,  //  Do 9 
+  493.883,  //  SI 10
+  466.164,  //  SIB 11
+  440};     //  LA 12
+
+int sheetmusic[10]={0,5,7,5,4,5,7,5,9,9};
+
+void sawsignal2(short * data16, int data_nb)
+{
+  double temps=10.;
+  double sampling_freq = 882; 
+  double freq = notes[12];
+  short amplitude = 30000;
+  int a =0;
+  float pp =(float)2./(float)M_PI;
+  int N = 25;
+  for(int i = 0 ; i < data_nb ; i ++)
+  {
+    data16[i]=0;
+    
+    for(int k = 0 ; k< N; k++)
+    {
+      data16[i]=+ pow(-1,k+1)*amplitude*sin(2*M_PI*k*freq*i/sampling_freq)/k;
+
+        freq=notes[12];
+    }
+    data16[i]= data16[i]*pp;
+  }
+
+}
+short  computeSignalSquare(short amplitude, double freq ,double t)
+{
+    short data16;
+
+    data16=amplitude*sin(2*M_PI*freq*t);
+
+    if(data16>=0) data16=amplitude;
+    else data16=-amplitude;
+
+    return data16;
+}
+short  computeSignalTriangle(short amplitude, double freq ,double t)
+{
+
+    short data16=0;
+    int N = 50;
+    float pp =(float)2./(float)M_PI;
+    for(int k = 0 ; k< N; k++)
+    {
+      data16=+ pow(-1,k+1)*amplitude*sin(2*M_PI*k*freq*t)/k;
+      printf("%d\n",data16);
+    }
+    return data16*pp;
+}
+
+void squaresignal(short * data16, int data_nb)
+{
+  double temps=10.;
+  double sampling_freq = 882; 
+  double freq = notes[12];
+  double t;
+  short amplitude = 30000;
+  int a =0;
+  float pp =(float)2./(float)M_PI;
+  freq=notes[0];
+
+  for(int i = 0 ; i < data_nb ; i ++)
+  {
+    t = i/sampling_freq;
+    data16[i] = computeSignalTriangle(amplitude,freq,t);
+
+
+    if(i%(int)sampling_freq==0 && i!=0)
+    {
+      freq=notes[12-sheetmusic[a]];
+      a++;
+      if(a>9)a=0;
+
+    }
+
+  }
+
+}
 int main() {
-  // Create and open a text file
+
   Wave *waouwave = new Wave;
   unsigned char** data;
   int size=32670;
   char filename[20] = "GammePiano.wav";
   char filename2[20] = "NotesPiano.wav";
   char filename3[20] = "NotesPiano2.wav";
-  //waouwave->read(filename);
-  //waouwave->getData8(data, &size);
-  /*for(int i = 0 ; i < size ; i++)
-    cout<<data[i]<<endl;*/
-  // Y = (unsigned char)floor(127.5(x+1.0));
-  // X = ((double y-127.5))127.5 = ((double )y/127.5)-1.0
-
-  double notes[13] = { 880,
-830.609,
-783.991,
-739.989,
-698.456,
-659.255,
-622.254,
-587.33,
-554.365,
-523.251,
-493.883,
-466.164,
-440};
 
 
-  int temps=11;
-  //int sampling_freq = 44100;  
-  int sampling_freq = 882;    
-  long int data_nb=temps*sampling_freq;
-  short data16[temps*sampling_freq]; // -> int
+
+  double temps=10.;
+  double sampling_freq = 882;    
+  long int data_nb=(long int)(temps*sampling_freq);
+  short data16[(int)(temps*(int)sampling_freq)]; // -> int
   double freq = notes[12];
   short amplitude = 30000;
-  int a =11;
+  //int a =0;
+  /*
   for(int i = 0 ; i < data_nb ; i ++)
   {
     data16[i]=amplitude*sin(2*M_PI*freq*i/sampling_freq);
-    if(i%sampling_freq==0)
+    if(i%(int)sampling_freq==0)
     {
-      cout<<"Changement de ton"<<a<<endl;
       freq=notes[a];
       a--;
       if(a<0)a=0;
 
     }
-  }
-
-  Wave *La = new Wave(data16,data_nb,1,sampling_freq);
-  unsigned char *data2 = new unsigned char[32670];
-  int data_nb2;
-  Wave *gamme = new Wave();
-  gamme->read(filename);
-  data2 = gamme->getData8(&data_nb2);
-  //printf("data_nb:%d", data_nb2);
-
-  /*for(int i=0 ; i< data_nb2;i++)
-  {
-  	printf("%d\n ", data2[i]-127);
   }*/
-/*
-  double *signal = (double*)malloc(data_nb*sizeof(double));
-  double *signal2 = (double*)malloc(data_nb*sizeof(double));
-  double *partieR= (double*)malloc(data_nb*sizeof(double));
-  double *partieI= (double*)malloc(data_nb*sizeof(double));
-*/
-  sampling_freq = 5012;
-  data_nb = data_nb2;
-  double *signal = (double*)malloc(data_nb*sizeof(double));
-  double *signal2 = (double*)malloc(data_nb*sizeof(double));
-  double *partieR= (double*)malloc(data_nb*sizeof(double));
-  double *partieI= (double*)malloc(data_nb*sizeof(double));
-
-  short *data162=(short*)malloc(data_nb*sizeof(short));
-
-  /*for(int i=0 ; i< data_nb;i++)
+  /*
+  int a =0;
+  for(int i = 0 ; i < data_nb ; i ++)
   {
-  	//printf("%d ", data16[i]);
-    signal[i]= shortToDouble(data16[i]);
-    //printf("%f\n", signal[i]);
-    //printf("%d\n", doubleToShort(signal[i]));
-  }*/
-   for(int i=0 ; i< data_nb;i++)
-  {
+    data16[i]=amplitude*sin(2*M_PI*freq*i/sampling_freq);
+    if(i%(int)sampling_freq==0 && i!=0)
+    {
+      freq=notes[12-sheetmusic[a]];
+      a++;
+      if(a>9)a=0;
 
-    signal[i]= ucharToDouble(data2[i]);
-  }
-  
-  DFT(signal, partieR, partieI,data_nb);
-  TFD(signal2, partieR, partieI,data_nb);
-
-   /*for(int i=0 ; i< data_nb;i++)
-  {
-    data16[i]= doubleToShort(signal2[i]);
+    }
   }
   */
+  squaresignal(data16, data_nb);
+  Wave *La = new Wave(data16,data_nb,1,sampling_freq);
+  int m = computeM(data_nb); 
+  int dir = 1;
+  short data162[(int)(temps*(int)sampling_freq)];
+
+  char filenameSoundBefore[20] = "SoundBefore.wav";
+  char filenameSoundAfter[20] = "SoundAfter.wav";
+
+
+  double *partieR= (double*)malloc(data_nb*sizeof(double));
+  double *partieI= (double*)malloc(data_nb*sizeof(double));
+
+  La->write(filenameSoundBefore);
   for(int i=0 ; i< data_nb;i++)
   {
-  	//printf("%f->", signal2[i]);
-    data162[i]= doubleToShort(signal2[i])/2;
-    //printf("%d\n",data162[i]);
+
+    partieR[i]= shortToDouble(data16[i]);
   }
-  
-   Wave *La2 = new Wave(data162,data_nb,1,sampling_freq);
-   /*
+
+  FFT(dir, m,partieR,partieI);
+
+  FFT(-dir, m,partieR,partieI);
+
   for(int i=0 ; i< data_nb;i++)
   {
-    printf("%f ->",signal[i]);
-    printf("%f\n",signal2[i]);
-  }*/
+    data162[i]= doubleToShort(partieR[i]);
+  }
 
-  La->write(filename2);
-  La2->write(filename3);
+  Wave *La2 = new Wave(data162,data_nb,1,sampling_freq);
 
+  La2->write(filenameSoundAfter);
 
 
 } 
