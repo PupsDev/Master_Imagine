@@ -228,8 +228,8 @@ short  computeSignalSquare(short amplitude, double freq ,double t)
 
     data16=amplitude*sin(2*M_PI*freq*t);
 
-    if(data16>=0) data16=amplitude;
-    else data16=-amplitude;
+    //if(data16>=0) data16=amplitude;
+    //else data16=-amplitude;
 
     return data16;
 }
@@ -249,31 +249,85 @@ short  computeSignalTriangle(short amplitude, double freq ,double t)
 
 void squaresignal(short * data16, int data_nb)
 {
-  double temps=10.;
-  double sampling_freq = 882; 
+  double temps=1.;
+  double sampling_freq = 44100; 
   double freq = notes[12];
   double t;
   short amplitude = 30000;
   int a =0;
   float pp =(float)2./(float)M_PI;
-  freq=notes[0];
+  freq=notes[12];
 
   for(int i = 0 ; i < data_nb ; i ++)
   {
     t = i/sampling_freq;
-    data16[i] = computeSignalTriangle(amplitude,freq,t);
+    data16[i] = computeSignalSquare(amplitude,freq,t);
 
-
-    if(i%(int)sampling_freq==0 && i!=0)
+  
+    if(i%(int)(sampling_freq/10)==0 && i!=0)
     {
       freq=notes[12-sheetmusic[a]];
       a++;
       if(a>9)a=0;
 
     }
+    
 
   }
 
+}
+void makeANote(short * data16, size_t note, int data_nb)
+{
+  double temps=1.;
+  double sampling_freq = 44100; 
+  double freq=notes[note];
+  double t;
+  short amplitude = 30000;
+  int a =0;
+  float pp =(float)2./(float)M_PI;
+  
+  for(int i = 0 ; i < data_nb ; i ++)
+  {
+    t = i/sampling_freq;
+    data16[i] = computeSignalSquare(amplitude,freq,t);   
+
+  }
+
+}
+void filter(int windowSize,double sampling_freq, double *real,double *imaginary)
+{
+
+  int halfFFTsize = windowSize / 2;
+  float lowpassFreq1 = 700.0;
+  float lowpassFreq2 = 880.0;
+  for (int i = 0; i < halfFFTsize; i++)
+  {
+      int ineg = windowSize - 1 - i;
+      float freq = (float)i * (sampling_freq / (float)halfFFTsize);
+      if (freq >= lowpassFreq1 )
+      {
+
+          real[i] = 0;
+          imaginary[i] = 0;
+          real[ineg] = 0;
+          imaginary[ineg] = 0;
+      }
+      else if (freq >= lowpassFreq2)
+      {
+
+          float mult = 1.0 - ((freq - lowpassFreq1) / (lowpassFreq2 - lowpassFreq1));
+          real[i] *= mult;
+          imaginary[i] *= mult;
+          real[ineg] *= mult;
+          imaginary[ineg] *= mult;
+      }
+
+  }
+}
+
+void discFilter()
+{
+  //float omega = 2*M_PI*freq;
 }
 int main() {
 
@@ -286,8 +340,8 @@ int main() {
 
 
 
-  double temps=10.;
-  double sampling_freq = 882;    
+  double temps=1.;
+  double sampling_freq = 44100.;    
   long int data_nb=(long int)(temps*sampling_freq);
   short data16[(int)(temps*(int)sampling_freq)]; // -> int
   double freq = notes[12];
@@ -319,11 +373,18 @@ int main() {
     }
   }
   */
-  squaresignal(data16, data_nb);
+  //squaresignal(data16, data_nb);
+  short data162[(int)(temps*(int)sampling_freq)];
+  short data163[(int)(temps*(int)sampling_freq)];
+
+  makeANote(data16, 12, data_nb);
+  makeANote(data162, 9, data_nb);
+  makeANote(data163, 5, data_nb);
+
   Wave *La = new Wave(data16,data_nb,1,sampling_freq);
   int m = computeM(data_nb); 
   int dir = 1;
-  short data162[(int)(temps*(int)sampling_freq)];
+  //short data162[(int)(temps*(int)sampling_freq)];
 
   char filenameSoundBefore[20] = "SoundBefore.wav";
   char filenameSoundAfter[20] = "SoundAfter.wav";
@@ -332,14 +393,45 @@ int main() {
   double *partieR= (double*)malloc(data_nb*sizeof(double));
   double *partieI= (double*)malloc(data_nb*sizeof(double));
 
+  double *partieR2= (double*)malloc(data_nb*sizeof(double));
+  double *partieI2= (double*)malloc(data_nb*sizeof(double));
+
+  double *partieR3= (double*)malloc(data_nb*sizeof(double));
+  double *partieI3= (double*)malloc(data_nb*sizeof(double));
+
   La->write(filenameSoundBefore);
   for(int i=0 ; i< data_nb;i++)
   {
 
     partieR[i]= shortToDouble(data16[i]);
   }
+    for(int i=0 ; i< data_nb;i++)
+  {
+
+    partieR2[i]= shortToDouble(data162[i]);
+  }
+    for(int i=0 ; i< data_nb;i++)
+  {
+
+    partieR3[i]= shortToDouble(data163[i]);
+  }
 
   FFT(dir, m,partieR,partieI);
+  FFT(dir, m,partieR2,partieI2);
+  FFT(dir, m,partieR3,partieI3);
+
+  //filter(44100, sampling_freq, partieR,partieI);
+  /*for(int i=0 ; i< data_nb;i++)
+  {
+    printf("%f\n",partieR[i]);
+  }*/
+  for(int i=0 ; i< data_nb;i++)
+  {
+
+    partieR[i]+= partieR2[i] + partieR3[i] ;
+    partieR[i]/=3.;
+  }
+
 
   FFT(-dir, m,partieR,partieI);
 

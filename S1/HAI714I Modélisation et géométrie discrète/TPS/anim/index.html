@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="css/webgl.css">
+	<script type="text/javascript" src="js/Dataset.js"></script>
+	<script type="text/javascript" src="js/Displayer.js"></script>
+</head>
+<body>
+	<canvas id="canvas" width="800" height="800"></canvas>
+	
+	<script type="text/javascript">
+		let displayer;
+
+		function initComputeAndRender(){
+ 			canvas = document.getElementById("canvas");
+			displayer = new Displayer(canvas);
+			colors = ["#FEE","#FFF","#41566E"];
+			let squelette = new Squelette();
+			squelette.draw(displayer, colors);
+
+			let o = new Vector(120,362.5);
+
+			let v1= new Vector(10., 0);
+			let v2= new Vector(0., 10.);
+
+			let basis = new Basis(o,v1,v2);
+			basis.drawBasis(displayer);
+
+			let o2 = new Vector( 85,677.5);
+			let basis2 = new Basis(o2,v1,v2);
+			basis2.drawBasis(displayer);
+
+		}
+
+		window.onload = initComputeAndRender;
+
+	</script>
+</body>
+</html>

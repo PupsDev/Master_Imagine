@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/e20150011037/Documents/Master_Imagine-main/S1/HAI719I Programmation 3D/BaseGL/build/External/glad/src/glad.c
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+glad/glad.h
+-
+windows.h
+-
+winapifamily.h
+-
+dlfcn.h
+-
+
+External/glad/include/KHR/khrplatform.h
+stdint.h
+-
+inttypes.h
+-
+stdint.h
+-
+
+External/glad/include/glad/glad.h
+windows.h
+-
+KHR/khrplatform.h
+-
+
