@@ -35,7 +35,7 @@ class Mesh: public Object
                
                 Triangle triangle = Triangle( vertices[vertOrder[i]],
                                               vertices[vertOrder[i+1]],
-                                              vertices[vertOrder[i+2]]);
+                                              vertices[vertOrder[i+2]])  ;
                 faces.push_back(triangle);
             }
         }

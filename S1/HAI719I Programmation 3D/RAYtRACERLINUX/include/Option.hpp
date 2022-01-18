@@ -16,7 +16,7 @@ class Option
             this->width = 1080.;
             this->height = 640.;
             this->imageAspectRatio = this->width / this->height;
-            this->depth=5;
+            this->depth=1;
             this->realtime=false;
             this->saveImage=true;
         }

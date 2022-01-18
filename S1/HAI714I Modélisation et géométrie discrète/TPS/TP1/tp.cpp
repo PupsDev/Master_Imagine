@@ -90,7 +90,7 @@ void setUnitSphere( Mesh & o_mesh, int nX=20, int nY=20 )
 {
     float pi=3.14159265358979;
     // theta 0 2pi ::() phi -pi/2 pi/2
-    float theta, phi=(-pi/2);
+    float theta, phi=(-pi/2.);
     float x,y,z;
 
 
@@ -105,9 +105,9 @@ void setUnitSphere( Mesh & o_mesh, int nX=20, int nY=20 )
             z = sin(phi);
             o_mesh.vertices.push_back( Vec3( x , y , z ) );
 
-            theta += 2*pi / nX;
+            theta += 2*pi / (float)nX;
         }
-        phi+=pi/nY;
+        phi+=pi/(float)nY;
     }
     for(int i=0 ; i <nY-1 ; i++)
     {
@@ -125,12 +125,12 @@ void setUnitSphere( Mesh & o_mesh, int nX=20, int nY=20 )
             
     }
 
-    for(int i=0 ; i <2*(nY-1) ; i++)
+    /*for(int i=0 ; i <2*(nY-1) ; i++)
     {
 
         std::cout<<o_mesh.triangles[i][0]<< " "<<o_mesh.triangles[i][1]<<" "<<o_mesh.triangles[i][2]<<std::endl;
         
-    }
+    }*/
 
 
 }
@@ -339,7 +339,7 @@ void draw () {
 
     if( display_unit_sphere ){
         glColor3f(0.8,1,0.8);
-        //drawTriangleMesh(unit_sphere);
+        drawTriangleMesh(unit_sphere);
         drawVertices(unit_sphere);
 
     }
@@ -424,19 +424,30 @@ void mouse (int button, int state, int x, int y) {
             mouseMovePressed = true;
             mouseRotatePressed = false;
             mouseZoomPressed = false;
-        } else if (button == GLUT_MIDDLE_BUTTON) {
-            if (mouseZoomPressed == false) {
-                lastZoom = y;
+        }
+        else if ((button == 4)) {
+                
                 mouseMovePressed = false;
                 mouseRotatePressed = false;
                 mouseZoomPressed = true;
-            }
+                camera.zoom (float (y-lastZoom)/SCREENHEIGHT);
+                std::cout<<"mouse up"<<std::endl;
+        }
+        else if ((button == 3)) {
+                
+                mouseMovePressed = false;
+                mouseRotatePressed = false;
+                mouseZoomPressed = true;
+                camera.zoom (float (lastZoom-y)/SCREENHEIGHT);
+                std::cout<<"mouse down"<<std::endl;
+
         }
     }
     idle ();
 }
 
 void motion (int x, int y) {
+    std::cout<<"hello"<<std::endl;
     if (mouseRotatePressed == true) {
         camera.rotate (x, y);
     }
@@ -446,6 +457,7 @@ void motion (int x, int y) {
         lastY = y;
     }
     else if (mouseZoomPressed == true) {
+        
         camera.zoom (float (y-lastZoom)/SCREENHEIGHT);
         lastZoom = y;
     }

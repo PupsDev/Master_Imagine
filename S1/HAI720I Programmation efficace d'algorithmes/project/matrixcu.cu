@@ -104,6 +104,7 @@ int main(int argc, char *argv[]) {
   
   if(b)
     printf("Tout ok !");
+  printf("Tout ok !");
 
 
   cudaFree(d_A); cudaFree(d_B); cudaFree (d_C);

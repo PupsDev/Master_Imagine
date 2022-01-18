@@ -19,7 +19,7 @@ class Raytracer
         }
         float deg2rad(const float &deg) 
         { return deg * M_PI / 180; } 
-        Vec3 computeColor(Light light, Material* mat, float NL, float RR)
+        Vec3 computeColor(Light light,float distance, Material* mat, float NL, float RR)
         {
             Vec3 colorM(0.0,0.0,0.0);
 
@@ -28,7 +28,7 @@ class Raytracer
             colorM+=mat->GetDiffuse_material()*ambiant;
             
             //Diffuse
-            colorM+=mat->GetDiffuse_material()*mat->GetKDiffuse()*NL;
+            colorM+=mat->GetDiffuse_material()*mat->GetKDiffuse()*NL * light.getIntensity()/ distance;
 
             //Spec
             colorM+= mat->GetSpecular_material()*(float)(light.GetIntensitySpec()*mat->GetKSpecular()*pow(RR,mat->GetIndiceSpecular()));
@@ -97,6 +97,11 @@ class Raytracer
             for(size_t j =0 ; j< scene->getObjectsCount();j++)
             {
                 Object *sphere2 =  scene->getObject(j);
+                if(sphere2->intersect(computeHitPoint(ray, last_t), L2, t))
+                    {
+                        t1++;
+                    }
+                    /*
                 if(i!=j)
                 {
                 
@@ -104,7 +109,7 @@ class Raytracer
                     {
                         t1++;
                     }
-                }
+                }*/
 
             }
             return t1;
@@ -122,6 +127,7 @@ class Raytracer
             Vec3 color(0.,0.,0.);
             
             Vec3 L = (light.getPosition() - hitPoint);
+            float distance = L.length();
             L.normalize();
 
             float NL = N.dot(L);
@@ -132,7 +138,7 @@ class Raytracer
             float visiblity=1.;
             int nblight = 8;
             visiblity = computeShadows(nblight,originLight, hitPoint, ray, N, t,last_t,i);
-            color = computeColor(light,mat,NL,RR);
+            color = computeColor(light,distance,mat,NL,RR);
 
             color*=visiblity;
             return color;
@@ -172,6 +178,7 @@ class Raytracer
             // As a consequence of the conservation of energy, transmittance is given by:
             // kt = 1 - kr;
         } 
+
         Vec3 trace(Ray ray, int depth)
         {
 
@@ -197,12 +204,9 @@ class Raytracer
                         if(t<last_t)
                         {    
                             last_t=t;
-
                             Vec3 hitPoint = computeHitPoint(ray, last_t);
                             Vec3 N = hitPoint-sphere->getPosition();
                             N.normalize();
-
-                            int reflecti =1;
 
                             Material *mat = sphere->getMaterial();
                             float ior = mat->GetIndex_medium();
@@ -224,7 +228,7 @@ class Raytracer
                                 Vec3 refractionColor = this->trace(refractRay, depth-1);
                                 float kr; 
                                 fresnel(ray.GetDirection(), N, ior, kr); 
-                                color = reflectionColor * kr + refractionColor * (1-kr); 
+                                color = reflectionColor * kr + refractionColor * (1-kr);
                 
                             }
                             else if(mat->GetType()==MaterialType::Material_Mirror)
@@ -256,143 +260,142 @@ class Raytracer
 
             for(int iMesh =0 ; iMesh < scene->getMeshesCount() ; iMesh++)
             {
-  
                 Mesh mesh =  scene->getMesh(iMesh);
-                
-            Vec3 colorM(0.0,0.0,0.0);
-            Vec3 colorS(1.0,1.0,1.0);
-            for(size_t i = 0 ; i < mesh.getFacesCount();i++)
-            {
-                Triangle tri = mesh.getFace(i);
-                if(tri.intersect(ray.GetOrigin(), ray.GetDirection(), t))
+                Vec3 colorM(0.0,0.0,0.0);
+                Vec3 colorS(1.0,1.0,1.0);
+                for(size_t i = 0 ; i < mesh.getFacesCount();i++)
                 {
-
-                    if(t<last_t)
+                    Triangle tri = mesh.getFace(i);
+                    if(tri.intersect(ray.GetOrigin(), ray.GetDirection(), t))
                     {
-                        
-                            last_t=t;
-                            Material *mat  = tri.getMaterial();
+
+                        if(t<last_t)
+                        {
+                            
+                                last_t=t;
+                                Material *mat  = tri.getMaterial();
+            
+                                Vec3 ray2 = computeHitPoint(ray,last_t);
+                                Vec3 pointSphere = ray2;
+                                ray2.normalize();
+
+                                Vec3 L = (light.getPosition() - pointSphere);
+                                float distance = L.length();
+                                L.normalize();
         
-                            Vec3 ray2 = ray.GetOrigin() + ray.GetDirection()*last_t;
-                            Vec3 pointSphere = ray2;
-                            ray2.normalize();
-
-                            Vec3 L = (light.getPosition() - pointSphere);
-                            L.normalize();
-    
-                            Vec3 N = tri.getNormal();
+                                Vec3 N = tri.getNormal();
 
 
-                            float NL = N.dot(L);
-                            float agg = 2*(NL);
-                            N*=agg;
+                                float NL = N.dot(L);
+                                float agg = 2*(NL);
+                                N*=agg;
 
-                            Vec3 R = L-N;
-                            R.normalize();
+                                Vec3 R = L-N;
+                                R.normalize();
 
-                            float RR = fmax(R.dot(ray2),0.);
-                            NL = fmax(NL,0.);
-                            
-                            color = computeColor(light, mat, NL, RR);
-                            int  nblight;
-                            int t1=0;
-                            float vis = 1.;
-                            
-                            if(light.getType()==LightType_Point)
-                            {
-                                nblight=1;
-                                Vec3 L2= originLight-pointSphere;
-                                L2.normalize();
-                                for(size_t j =0 ; j< scene->getObjectsCount();j++)
+                                float RR = fmax(R.dot(ray2),0.);
+                                NL = fmax(NL,0.);
+                                
+                                color = computeColor(light,distance, mat, NL, RR);
+                                int  nblight;
+                                int t1=0;
+                                float vis = 1.;
+                                
+                                if(light.getType()==LightType_Point)
                                 {
-                                    Object *sphere =  scene->getObject(j);
-                                    if(sphere->intersect(pointSphere+N*(float)0.01, L2, t))
+                                    nblight=1;
+                                    Vec3 L2= originLight-pointSphere;
+                                    L2.normalize();
+                                    for(size_t j =0 ; j< scene->getObjectsCount();j++)
                                     {
-                                        t1++;
-                                    }
-                                }
-
-                            }
-                            else
-                            {
-
-                                if(light.getType()==LightType_Random_Area)
-                                {
-                                nblight = 8;
-                                for(int lighti=0;lighti<nblight;lighti++)
-                                {
-                                    for(int lightj=0;lightj<nblight;lightj++)
-                                    {
-
-                                        float x = (float)(rand() % 100)/100.* light.getV1()[0] ;
-                                        float y = (float)(rand() % 100)/100.*light.getV2()[2];
-                                        float z = 0.;
-                                        Vec3 ilight= Vec3(x,y,z)+ originLight;
-                                        Vec3 L2= ilight-pointSphere;
-                                        L2.normalize();
-                                        
-                                        for(size_t j =0 ; j< scene->getObjectsCount();j++)
+                                        Object *sphere =  scene->getObject(j);
+                                        if(sphere->intersect(pointSphere+N*(float)0.01, L2, t))
                                         {
-                                            
-                                            Object *sphere =  scene->getObject(j);
-                                            if(sphere->intersect(pointSphere+N*(float)0.01, L2, t))
-                                            {
-                                                    t1++;
-                                            }
+                                            t1++;
                                         }
                                     }
-                                }
 
                                 }
                                 else
                                 {
 
-                                nblight = 8;
-                                for(int lighti=0;lighti<nblight;lighti++)
-                                {
-                                    for(int lightj=0;lightj<nblight;lightj++)
+                                    if(light.getType()==LightType_Random_Area)
                                     {
-                                        float x = (float)(lighti/(float)nblight) *light.getV1()[0] ;
-                                        float y = (float)(lightj/(float)nblight)*light.getV2()[2];
-                                        float z = 0.;
-                                        Vec3 ilight= Vec3(x,y,z)+ originLight;
-                                        Vec3 L2= ilight-pointSphere;
-                                        L2.normalize();
-                                        
-                                        for(size_t j =0 ; j< scene->getObjectsCount();j++)
+                                    nblight = 8;
+                                    for(int lighti=0;lighti<nblight;lighti++)
+                                    {
+                                        for(int lightj=0;lightj<nblight;lightj++)
                                         {
+
+                                            float x = (float)(rand() % 100)/100.* light.getV1()[0] ;
+                                            float y = (float)(rand() % 100)/100.*light.getV2()[2];
+                                            float z = 0.;
+                                            Vec3 ilight= Vec3(x,y,z)+ originLight;
+                                            Vec3 L2= ilight-pointSphere;
+                                            L2.normalize();
                                             
-                                            Object *sphere =  scene->getObject(j);
-                                            if(sphere->intersect(pointSphere+N*(float)0.01, L2, t))
+                                            for(size_t j =0 ; j< scene->getObjectsCount();j++)
                                             {
-                                                    t1++;
+                                                
+                                                Object *sphere =  scene->getObject(j);
+                                                if(sphere->intersect(pointSphere+N*(float)0.01, L2, t))
+                                                {
+                                                        t1++;
+                                                }
                                             }
                                         }
                                     }
-                                }
-                                }
-                                
-                            }
-      
-                            float p = (float)t1 / (float)(nblight*nblight);
-                            if(p)
-                                vis=(1.- (p*0.5));
-                            
-                            color*=vis;
-                            Vec3 dir2 = pointSphere-ray.GetOrigin();
-                            dir2.normalize();
-                        
-                        
-                        //color = computeColorTotal(light,ray,mesh.getMaterial(),pointSphere,N,originLight, t,last_t, i);
-                        //Ray rebound = computeRebound(pointSphere,N,ray.GetOrigin());
-                        //return color+trace(rebound, depth-1)*(float)0.1 ;
 
-                        Ray r(pointSphere+N*(float)0.1,dir2);
-                        return color+trace(r, depth-1)*(float)0.01 ;
-                    
+                                    }
+                                    else
+                                    {
+
+                                    nblight = 8;
+                                    for(int lighti=0;lighti<nblight;lighti++)
+                                    {
+                                        for(int lightj=0;lightj<nblight;lightj++)
+                                        {
+                                            float x = (float)(lighti/(float)nblight) *light.getV1()[0] ;
+                                            float y = (float)(lightj/(float)nblight)*light.getV2()[2];
+                                            float z = 0.;
+                                            Vec3 ilight= Vec3(x,y,z)+ originLight;
+                                            Vec3 L2= ilight-pointSphere;
+                                            L2.normalize();
+                                            
+                                            for(size_t j =0 ; j< scene->getObjectsCount();j++)
+                                            {
+                                                
+                                                Object *sphere =  scene->getObject(j);
+                                                if(sphere->intersect(pointSphere+N*(float)0.01, L2, t))
+                                                {
+                                                        t1++;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    }
+                                    
+                                }
+        
+                                float p = (float)t1 / (float)(nblight*nblight);
+                                if(p)
+                                    vis=(1.- (p*0.5));
+                                
+                                color*=vis;
+                                Vec3 dir2 = pointSphere-ray.GetOrigin();
+                                dir2.normalize();
+                            
+                            
+                            //color = computeColorTotal(light,ray,mesh.getMaterial(),pointSphere,N,originLight, t,last_t, i);
+                            //Ray rebound = computeRebound(pointSphere,N,ray.GetOrigin());
+                            //return color+trace(rebound, depth-1)*(float)0.1 ;
+
+                            Ray r(pointSphere+N*(float)0.1,dir2);
+                            return color+trace(r, depth-1)*(float)0.01 ;
+                        
+                        }
                     }
                 }
-            }
 
             }
            

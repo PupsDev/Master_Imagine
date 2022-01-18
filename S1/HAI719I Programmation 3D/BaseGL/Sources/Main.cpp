@@ -224,8 +224,9 @@ struct Light {
 
     void setupCameraForShadowMapping(glm::vec3 scene_center , float scene_radius) {
         // Compute depthMVP : the MVP matrix from the light's point of view
-        glm::mat4 projection = glm::perspective(45.0f, 16.f/9.0f, -0.1f, scene_radius);
-        //glm::mat4 projection = glm::ortho<float>(-10,10,-10,10,-10,20);
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1.f, 0.1f, 10.f);
+        //glm::mat4 projection = glm::ortho<float>(-2.,2.,-2.,2.,-0.1,20.);
+        //glm::mat4 projection = glm::ortho<float>(-10.,10.,-10.,10.,1,10.);
         glm::mat4 view = glm::lookAt(m_position,scene_center,glm::vec3(0.,1.,0.));
         depthMVP = projection*view;
 
@@ -276,6 +277,7 @@ struct Scene{
             light.setupCameraForShadowMapping( scene_center , scene_radius );
 
             // Send our transformation to the currently bound shader, in the "MVP" uniform:
+
             shadomMapShaderProgramPtr->set("depthMVP",light.depthMVP);
 
             light.bindShadowMap();
@@ -311,29 +313,32 @@ struct Scene{
         glm::mat4 viewMatrix = cameraPtr->computeViewMatrix ();
         glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
         glm::mat4 normalMatrix = glm::transpose (glm::inverse (modelViewMatrix));
+        shaderProgramPtr->set("model",modelMatrix);
         shaderProgramPtr->set ("modelViewMat", modelViewMatrix);
         shaderProgramPtr->set ("normalMat", normalMatrix);
-        
+        //TODO 
+        //shaderProgramPtr->set("depthMVP",scene_lights[0].depthMVP);
+        /*
         glm::mat4 biasMatrix(
         0.5, 0.0, 0.0, 0.0,
         0.0, 0.5, 0.0, 0.0,
         0.0, 0.0, 0.5, 0.0,
         0.5, 0.5, 0.5, 1.0
-        );
-
-
+        );*/
 
         // Set the lights in the shader :
         for(int i = 0 ; i < scene_lights.size() ; i++)
         {
 
             Light & light = scene_lights[i];
-            glm::mat4 depthBiasMVP = biasMatrix*light.depthMVP;
-            shaderProgramPtr->set("depthBiasMVP", depthBiasMVP);
+            glm::mat4 depthBiasMVP = light.depthMVP;
+            shaderProgramPtr->set("lightSources["+std::to_string(i)+"].depthMap", depthBiasMVP);
             shaderProgramPtr->set (std::string("lightSources["+std::to_string(i)+"].position"), light.m_position);
             shaderProgramPtr->set (std::string("lightSources["+std::to_string(i)+"].color"), light.m_color);
             shaderProgramPtr->set (std::string("lightSources["+std::to_string(i)+"].intensity"), light.m_intensity);
             shaderProgramPtr->set (std::string("lightSources["+std::to_string(i)+"].isActive"), 1);
+
+            shaderProgramPtr->set(std::string("shadowMap["+std::to_string(i)+"]"), (int)light.shadowMapTexOnGPU);
 
         }
 
@@ -549,45 +554,30 @@ void initScene (const std::string & meshFilename) {
         scene.planeMeshPtr->init ();
     }
 
-
-
     // Load textures:
     {
         // for example:
         // albedoTex = Texture::loadTextureFromFileToGPU("Resources/Materials/Wood/Base_Color.png");
     }
-
-
     // Setup lights :
     {
         unsigned int shadow_map_width = 2000 , shadow_map_height = 2000; // play with these parameters
+        for(int i = 0 ; i < 1;i++)
         {
             scene.scene_lights.resize( scene.scene_lights.size() + 1 );
             Light & newLight = scene.scene_lights[ scene.scene_lights.size() - 1 ];
-            newLight.m_position = glm::vec3 (-2*cos(app_timer), 2*sin(app_timer), 3.5);
+            newLight.m_position = glm::vec3 (-2*cos(app_timer)+5*i, 2*sin(app_timer), 3.5);
             newLight.m_color = glm::vec3(1.0, 1.0, 1.0);
-            newLight.m_intensity = 0.5f;
+            newLight.m_intensity = 0.3f;
             newLight.allocateShadowMapFBO(shadow_map_width , shadow_map_height);
             newLight.shadowMapTexOnGPU = texture_slot_available;   ++texture_slot_available;
         }
-        {
-            scene.scene_lights.resize( scene.scene_lights.size() + 1 );
-            Light & newLight = scene.scene_lights[ scene.scene_lights.size() - 1 ];
-            newLight.m_position = glm::vec3 (2*sin(app_timer),-2*cos(app_timer) , 3.5);
-            newLight.m_color = glm::vec3(1.0, 1.0, 1.0);
-            newLight.m_intensity = 0.5f;
-            newLight.allocateShadowMapFBO(shadow_map_width , shadow_map_height);
-            newLight.shadowMapTexOnGPU = texture_slot_available;   ++texture_slot_available;
-        }
-
         for( int i = 0 ; i < scene.scene_lights.size() ; ++i ) {
             Light & light = scene.scene_lights[i];
             glActiveTexture (GL_TEXTURE0 + light.shadowMapTexOnGPU);
             glBindTexture (GL_TEXTURE_2D, light.shadowMap->depthMapTexture);
         }
     }
-
-
 
     // Setup textures on the GPU:
     {
@@ -655,9 +645,14 @@ void update (float currentTime) {
         app_timer_last_colckTime = currentTime;
         app_timer += dt;
         // <---- Update here what needs to be animated over time ---->
+        for(int i = 0 ; i < scene.scene_lights.size();i++)
+        {
+            Light & light0 = scene.scene_lights[ i ];
+            light0.m_position = glm::vec3 (-2*cos(app_timer)+5*i, 2*sin(app_timer), 3.5);
 
-        Light & light0 = scene.scene_lights[ 0 ];
-        light0.m_position = glm::vec3 (-2*cos(app_timer), 2*sin(app_timer), 3.5);
+
+        }
+
     }
 }
 

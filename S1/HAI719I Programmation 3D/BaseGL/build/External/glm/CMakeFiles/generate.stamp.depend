@@ -1,0 +1,9 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-3.22/Modules/BasicConfigVersion-AnyNewerVersion.cmake.in
+C:/Program Files/CMake/share/cmake-3.22/Modules/CMakePackageConfigHelpers.cmake
+C:/Program Files/CMake/share/cmake-3.22/Modules/GNUInstallDirs.cmake
+C:/Program Files/CMake/share/cmake-3.22/Modules/WriteBasicConfigVersionFile.cmake
+E:/Users/pups/Documents/Univ/Master_Imagine/S1/HAI719I Programmation 3D/BaseGL/External/glm/CMakeLists.txt
+E:/Users/pups/Documents/Univ/Master_Imagine/S1/HAI719I Programmation 3D/BaseGL/External/glm/cmake/glm.pc.in
+E:/Users/pups/Documents/Univ/Master_Imagine/S1/HAI719I Programmation 3D/BaseGL/External/glm/cmake/glmBuildConfig.cmake.in
+E:/Users/pups/Documents/Univ/Master_Imagine/S1/HAI719I Programmation 3D/BaseGL/External/glm/cmake/glmConfig.cmake.in

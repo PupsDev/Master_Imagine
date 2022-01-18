@@ -137,6 +137,16 @@ void initLight () {
     glEnable (GL_LIGHT1);
     glEnable (GL_LIGHTING);
 }
+glm::mat4 cam(Vec3 Translate, glm::vec2 const& Rotate)
+{
+	glm::mat4 Projection = glm::perspective(90.0f, 1.0f, 0.1f, 100.0f);
+
+    View = glm::translate(glm::mat4(1.0f), glm::vec3( Translate[0], Translate[1], Translate[2]));
+	View = glm::rotate(View, Rotate.y, glm::vec3(-1.0f, 0.0f, 0.0f));
+	View = glm::rotate(View, Rotate.x, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 Model = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
+	return  Projection * View * Model;
+}
 
 void init () {
     camera.resize (SCREENWIDTH, SCREENHEIGHT);
@@ -151,8 +161,16 @@ void init () {
     display_normals = false;
     display_loaded_mesh = true;
 
-    scale = 1.;
-    translate = Vec3(0.,0.,0.);
+
+
+    Scale  =1.;
+    Translate = Vec3(0.,0.,0.);
+    View = glm::translate(glm::mat4(1.0f), glm::vec3( Translate[0], Translate[1], Translate[2]));
+    rotor = glm::vec2(0.,0.);
+    MVP = cam(Translate,rotor);
+
+    
+
     // Initialize GLEW
     glewExperimental = true; // Needed for core profile
     if (glewInit() != GLEW_OK) {
@@ -161,7 +179,6 @@ void init () {
     }
 
 }
-
 
 
 
@@ -196,11 +213,17 @@ void draw () {
     GLuint idScale = glGetUniformLocation(programID, "scale");
     GLuint idTranslate = glGetUniformLocation(programID, "translate");
 
-    glUniform1f(idScale,scale);
-    glUniform3f(idTranslate,translate[0],translate[1],translate[2]);
+    glUniform1f(idScale,Scale);
 
-    //triangle_mesh.draw();
-    drawTriangleMesh( mesh ,  false  );
+    //View = glm::translate(glm::mat4(1.0f), glm::vec3(Translate,  -Translate,0.0f));
+    //View = glm::translate(glm::mat4(1.0f), glm::vec3( Translate[0], Translate[1], Translate[2]));
+    //glUniformMatrix4fv(idTranslate,1, GL_FALSE, glm::value_ptr(View));
+
+    MVP = cam(Translate,rotor);
+    glUniformMatrix4fv(idTranslate, 1, GL_FALSE, glm::value_ptr(MVP));
+
+    triangle_mesh.draw();
+    //drawTriangleMesh( mesh ,  false  );
 
 
 
@@ -225,16 +248,6 @@ void idle () {
 
 void key (unsigned char keyPressed, int x, int y) {
     switch (keyPressed) {
-    case 'f':
-        if (fullScreen == true) {
-            glutReshapeWindow (SCREENWIDTH, SCREENHEIGHT);
-            fullScreen = false;
-        } else {
-            glutFullScreen ();
-            fullScreen = true;
-        }
-        break;
-
 
     case 'w':
         GLint polygonMode[2];
@@ -253,43 +266,63 @@ void key (unsigned char keyPressed, int x, int y) {
 
     case '+': //Press + key to increase scale
         //Completer augmenter la valeur de la variable scale e.g. +0.005
-    scale+=0.05;
+    Scale+=0.05;
         break;
 
     case '-': //Press - key to decrease scale
-    scale-=0.05;
+    Scale-=0.05;
         //Completer
         break;
 
     case 'd': //Press d key to translate on x positive
         //Completer : mettre à jour le x du Vec3 translate
-    translate[0]+=0.05;
+    Translate[0]+=0.05;
         break;
 
     case 'q': //Press q key to translate on x negative
         //Completer : mettre à jour le y du Vec3 translate
-    translate[0]-=0.05;
+    Translate[0]-=0.05;
         break;
 
     case 'z': //Press z key to translate on y positive
         //Completer : mettre à jour le y du Vec3 translate
-    translate[1]+=0.05;
+    Translate[1]+=0.05;
         break;
 
     case 's': //Press s key to translate on y negative
         //Completer : mettre à jour le y du Vec3 translate
-    translate[1]-=0.05;
+    Translate[1]-=0.05;
         break;
 
     case 'p': //Press z key to translate on y positive
         //Completer : mettre à jour le y du Vec3 translate
-    translate[2]+=0.05;
+    Translate[2]+=0.05;
         break;
 
     case 'o': //Press s key to translate on y negative
         //Completer : mettre à jour le y du Vec3 translate
-    translate[2]-=0.05;
+    Translate[2]-=0.05;
         break;
+
+    case 'r': //Press z key to translate on y positive
+        //Completer : mettre à jour le y du Vec3 translate
+    rotor[0]+=0.05;
+        break;
+
+    case 't': //Press s key to translate on y negative
+        //Completer : mettre à jour le y du Vec3 translate
+    rotor[0]-=0.05;
+        break;
+    case 'f': //Press z key to translate on y positive
+        //Completer : mettre à jour le y du Vec3 translate
+    rotor[1]+=0.05;
+        break;
+
+    case 'g': //Press s key to translate on y negative
+        //Completer : mettre à jour le y du Vec3 translate
+    rotor[1]-=0.05;
+        break;
+
 
     case '1': //Toggle loaded mesh display
         display_loaded_mesh = !display_loaded_mesh;

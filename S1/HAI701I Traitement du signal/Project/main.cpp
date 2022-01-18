@@ -197,7 +197,6 @@ void printSignal(double * signal, int data_nb)
   466.164,  //  SIB 11
   440};     //  LA 12
 
-int sheetmusic[10]={0,5,7,5,4,5,7,5,9,9};
 
 void sawsignal2(short * data16, int data_nb)
 {
@@ -266,7 +265,7 @@ void squaresignal(short * data16, int data_nb)
   
     if(i%(int)(sampling_freq/10)==0 && i!=0)
     {
-      freq=notes[12-sheetmusic[a]];
+      freq=notes[12-a];
       a++;
       if(a>9)a=0;
 

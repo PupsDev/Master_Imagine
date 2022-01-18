@@ -4,7 +4,7 @@
 // ajouter une variable uniform pour tous les sommets de type vec3 permettant d'appliquer une translation au modèle
 
 uniform float scale;
-uniform vec3 translate;
+uniform mat4 translate;
 // i.e. a appliquer sur tous les sommets
 //---------
 
@@ -26,11 +26,10 @@ void main(){
     //Mettre à jour ce code pour appliquer la translation et la mise à l'échelle
     //vertexPosition_modelspace = scale * vertexPosition_modelspace;
     //vertexPosition_modelspace + = translate;
-    gl_Position =  vec4((scale*vertexPosition_modelspace)+translate,1);
+    gl_Position =  translate*vec4(vertexPosition_modelspace, 1.0);;
 
     //Assigner la normale à la variable interpolée color
     //ajouter ici
     o_color =  vertexColor_modelspace;
     TexCoord = vec2(vertexTex_modelspace.x, vertexTex_modelspace.y);
 }
-

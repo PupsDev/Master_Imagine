@@ -5,10 +5,11 @@ struct LightSource {
     vec3 color;
     float intensity;
     int isActive;
+    mat4 depthMap;
 };
 
-int nb_light = 2;
-uniform LightSource lightSources[2];
+const int nb_light = 1;
+uniform LightSource lightSources[nb_light];
 
 
 struct Material {
@@ -23,26 +24,21 @@ in vec3 fPositionWorldSpace;
 in vec3 fNormal;
 in vec2 fTexCoord;
 
-in vec4 ShadowCoord;
-
 out vec4 colorResponse; // Shader output: the color response attached to this fragment
-
 
 uniform mat4 projectionMat, modelViewMat, normalMat;
 
-uniform sampler2D gShadowMap;
-
-
+uniform sampler2D shadowMap[nb_light];
 
 float pi = 3.1415927;
 
-float ShadowCalculation(vec4 fragPosLight)
+float ShadowCalculation(vec4 fragPosLight, int i)
 {
     vec3 projCoords = fragPosLight.xyz / fragPosLight.w;
     projCoords = projCoords * 0.5 +0.5;
-    float closestDepth = texture2D( gShadowMap, fTexCoord).x
+    float closestDepth = texture( shadowMap[i], fTexCoord.xy).r;
     float currentDepth = projCoords.z;
-    float shadow = currentDepth > closestDepth ? 1.0:0.0;
+    float shadow = currentDepth > (closestDepth) ? 1.0:0.0;
     return shadow;
 }
 void main() {
@@ -54,23 +50,22 @@ void main() {
 
     float bias = 0.005;
 
-
-
     if( dot( n , wo ) >= 0.0 ) {
         {
             for(int i = 0 ; i < nb_light ;i ++)
             {
                 if( lightSources[i].isActive == 1 ) { // WE ONLY CONSIDER LIGHTS THAT ARE SWITCHED ON
                  {
-                    float visibility = ShadowCalculation(vec4(lightSources[i].position,1));
+
                     vec3 wi = normalize ( vec3((modelViewMat * vec4(lightSources[i].position,1)).xyz) - fPosition ); // unit vector pointing to the light source (change if you use several light sources!!!)
                     if( dot( wi , n ) >= 0.0 ) { // WE ONLY CONSIDER LIGHTS THAT ARE ON THE RIGHT HEMISPHERE (side of the tangent plane)
                         vec3 wh = normalize( wi + wo ); // half vector (if wi changes, wo should change as well)
                         vec3 Li = lightSources[i].color * lightSources[i].intensity;
-
+                        vec4 ShadowCoord = 0.1*lightSources[i].depthMap*vec4(fPositionWorldSpace,1.);
+                        float visibility = ShadowCalculation(ShadowCoord,i);
                         radiance = radiance +
-                                Li // light color
-                                *visibility*material.albedo
+                                (1.-visibility)*Li // light color
+                                *material.albedo
                                 * ( max(dot(n,wi),0.0) + pow(max(dot(n,wh),0.0),material.shininess) )
                                 ;
                     }
@@ -81,10 +76,7 @@ void main() {
             }
         }
     }
-
     colorResponse = vec4 (radiance, 1.0); // Building an RGBA value from an RGB one.
-    //colorResponse = vec4(texture2D( gShadowMap, fTexCoord).x,texture2D( gShadowMap, fTexCoord).x,texture2D( gShadowMap, fTexCoord).x,texture2D( gShadowMap, fTexCoord).x);
-    
 }
 
 

@@ -1,8 +1,8 @@
-# Install script for directory: /home/e20150011037/Documents/Master_Imagine-main/S1/HAI719I Programmation 3D/BaseGL/External
+# Install script for directory: E:/Users/pups/Documents/Univ/Master_Imagine/S1/HAI719I Programmation 3D/BaseGL/External
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/usr/local")
+  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/BaseGL")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -12,7 +12,7 @@ if(NOT DEFINED CMAKE_INSTALL_CONFIG_NAME)
     string(REGEX REPLACE "^[^A-Za-z0-9_]+" ""
            CMAKE_INSTALL_CONFIG_NAME "${BUILD_TYPE}")
   else()
-    set(CMAKE_INSTALL_CONFIG_NAME "")
+    set(CMAKE_INSTALL_CONFIG_NAME "Release")
   endif()
   message(STATUS "Install configuration: \"${CMAKE_INSTALL_CONFIG_NAME}\"")
 endif()
@@ -27,11 +27,6 @@ if(NOT CMAKE_INSTALL_COMPONENT)
   endif()
 endif()
 
-# Install shared libraries without execute permission?
-if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
-  set(CMAKE_INSTALL_SO_NO_EXE "1")
-endif()
-
 # Is this installation the result of a crosscompile?
 if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
@@ -39,9 +34,9 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/e20150011037/Documents/Master_Imagine-main/S1/HAI719I Programmation 3D/BaseGL/build/External/glad/cmake_install.cmake")
-  include("/home/e20150011037/Documents/Master_Imagine-main/S1/HAI719I Programmation 3D/BaseGL/build/External/glfw/cmake_install.cmake")
-  include("/home/e20150011037/Documents/Master_Imagine-main/S1/HAI719I Programmation 3D/BaseGL/build/External/glm/cmake_install.cmake")
+  include("E:/Users/pups/Documents/Univ/Master_Imagine/S1/HAI719I Programmation 3D/BaseGL/build/External/glad/cmake_install.cmake")
+  include("E:/Users/pups/Documents/Univ/Master_Imagine/S1/HAI719I Programmation 3D/BaseGL/build/External/glfw/cmake_install.cmake")
+  include("E:/Users/pups/Documents/Univ/Master_Imagine/S1/HAI719I Programmation 3D/BaseGL/build/External/glm/cmake_install.cmake")
 
 endif()
 

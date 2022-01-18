@@ -8,6 +8,10 @@ class Ray
     public:
         Ray(Vec3 _origin, Vec3 _direction):origin(_origin), direction(_direction){}
 
+        Vec3 at(float t)
+        {
+            return origin + direction * t; 
+        }
         Vec3 GetOrigin() const {
             return origin;
         }

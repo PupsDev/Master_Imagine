@@ -5,21 +5,20 @@ layout(location=1) in vec3 vNormal;
 layout(location=2) in vec2 vTexCoord;
 
 uniform mat4 projectionMat, modelViewMat, normalMat;
+uniform mat4 model;
 uniform mat4 depthBiasMVP;
+
 out vec3 fPosition;
 out vec3 fPositionWorldSpace;
 out vec3 fNormal;
 out vec2 fTexCoord;
 
-out vec4 ShadowCoord;
 
 
 void main() {
     fPositionWorldSpace = vPosition;
     vec4 p = modelViewMat * vec4 (vPosition, 1.0);
     gl_Position =  projectionMat * p; // mandatory to fire rasterization properly
-
-    ShadowCoord = depthBiasMVP *p;
 
     vec4 n = normalMat * vec4 (vNormal, 1.0);
 

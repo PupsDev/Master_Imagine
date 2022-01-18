@@ -1,8 +1,12 @@
 GLuint programID;
  #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-float scale;
-Vec3 translate;
+float Scale;
+Vec3 Translate ;
+glm::mat4 View;
+glm::mat4 Rotation;
+glm::mat4 MVP;
+glm::vec2 rotor;
 
 struct Triangle {
     inline Triangle () {

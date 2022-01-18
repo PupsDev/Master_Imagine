@@ -1,0 +1,32 @@
+^E:\USERS\PUPS\DOCUMENTS\UNIV\MASTER_IMAGINE\S1\HAI719I PROGRAMMATION 3D\BASEGL\BUILD\CMAKEFILES\CE0A35EF78086B5AE02143BD3C3FB5AD\GLAD.C.RULE
+setlocal
+cd "E:\Users\pups\Documents\Univ\Master_Imagine\S1\HAI719I Programmation 3D\BaseGL\External\glad"
+if %errorlevel% neq 0 goto :cmEnd
+E:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.8_3.8.2800.0_x64__qbz5n2kfra8p0\python3.8.exe" -m glad --profile=core "--out-path=E:/Users/pups/Documents/Univ/Master_Imagine/S1/HAI719I Programmation 3D/BaseGL/build/External/glad" --api=gl=4.5,gles2= --generator=c --extensions= --spec=gl
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^E:\USERS\PUPS\DOCUMENTS\UNIV\MASTER_IMAGINE\S1\HAI719I PROGRAMMATION 3D\BASEGL\BUILD\CMAKEFILES\C5A9AD6FA57A8809268F2C94511432B1\GLAD-GENERATE-FILES.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^E:\USERS\PUPS\DOCUMENTS\UNIV\MASTER_IMAGINE\S1\HAI719I PROGRAMMATION 3D\BASEGL\EXTERNAL\GLAD\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SE:/Users/pups/Documents/Univ/Master_Imagine/S1/HAI719I Programmation 3D/BaseGL" "-BE:/Users/pups/Documents/Univ/Master_Imagine/S1/HAI719I Programmation 3D/BaseGL/build" --check-stamp-file "E:/Users/pups/Documents/Univ/Master_Imagine/S1/HAI719I Programmation 3D/BaseGL/build/External/glad/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
