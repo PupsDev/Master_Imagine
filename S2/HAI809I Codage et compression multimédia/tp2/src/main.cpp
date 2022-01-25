@@ -374,9 +374,20 @@ int main(int argc, char* argv[]) {
         {
             for (int j=0, p=0; j < nW , p<tnW; j++,p+=3)
             {
-                ImgGB[i *tnW +p  ]=image3[i][j].r;
+                
+                ImgGB[i *tnW +p  ]=image3[i][j].b;
                 ImgGB[i *tnW +p+1]=image3[i][j].g;
-                ImgGB[i *tnW +p+2]=image3[i][j].b;
+                ImgGB[i *tnW +p+2]=image3[i][j].r;
+                
+               /*
+                float r =  std::min(255.,std::max(0.,image3[i][j].r*1.402 ));
+                float b =  std::min(255.,std::max(0.,image3[i][j].b*1.772 ));
+                float g =  std::min(255.,std::max(0.,(0 -r*0.299 -b*0.114)/0.587));
+
+                ImgGB[i *tnW +p  ]=(int)r;
+                ImgGB[i *tnW +p+1]=(int)g;
+                ImgGB[i *tnW +p+2]=(int)b;
+                */
             }
         }
          ecrire_image_ppm(pathChromi, ImgGB,  nH, nW);

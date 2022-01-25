@@ -29,6 +29,81 @@ float psnr(OCTET* ImgIn,OCTET* ImgOut, int nH, int nW)
   float EQM = 1./(nH*nW) * diff;
   return 10*log10(3*d*d / EQM);
 }
+void seuillage(std::vector<std::vector<int>> &image,int seuil)
+{
+    for(auto & line : image)
+        for(auto& pixel :line)
+        {
+            if(pixel< seuil)
+            {
+                pixel =0;
+            }
+            else pixel =255;
+        }
+
+}
+void processImage(std::vector<std::vector<int>> &image, int nH, int nW)
+{
+    std::vector<std::vector<int>> erosionMatrix {
+                { 0, 1, 0 },
+                { 1, 1, 1 },
+                { 0, 1, 0 }
+            };
+            /*
+                std::vector<std::vector<int>> erosionMatrix {
+                { 1, 1, 1, 1,  1,1, 1 },
+                { 1, 1, 1, 1,  1,1, 1 },
+                { 1, 1, 1, 1,  1,1, 1 },
+
+                { 1, 1, 1, 1,  1,1, 1 },
+
+                { 1, 1, 1,  1,  1,1, 1 },
+                { 1, 1, 1,  1,  1,1, 1 },
+                { 1, 1, 1,  1,  1,1, 1 }
+            };*/
+    int boundary = erosionMatrix.size()/2;
+    
+    for(int i = boundary ; i < image.size()-(boundary+1); i++)
+    {
+        int s = image[i].size();
+        for(int j = boundary ; j < s-(boundary+1); j++)
+        {
+            if(image[i][j]!=0)
+            {
+                for(int u = -boundary ; u < (boundary+1); u++)
+                {
+                    for(int v = -boundary ; v < (boundary+1); v++)
+                    {
+                        int p = i+u;
+                        int k = j+v;
+
+                        if(image[p][k]<erosionMatrix[boundary+u][boundary+v])
+                        {
+                            image[i][j]=128;
+                        }
+
+                    }
+                }
+
+            }
+
+        }
+    }
+        for(int i = 1 ; i < image.size()-1; i++)
+    {
+        int s = image[i].size();
+        for(int j = 1 ; j < s-1; j++)
+        {
+            if(image[i][j]==128)
+            {
+                image[i][j]=0;
+            }
+        }
+    }
+
+
+
+}
 int main(int argc, char* argv[]) {
     char inputName[250], outputName[250];
     int nH, nW, nTaille;
@@ -54,51 +129,49 @@ int main(int argc, char* argv[]) {
     printf("input : %s \n", pathIn);
     printf("output : %s \n", pathOut);
 
-
     OCTET *ImgIn, *ImgTrans, *ImgOut;
 
-    lire_nb_lignes_colonnes_image_ppm(ptr, &nH, &nW);
+    lire_nb_lignes_colonnes_image_pgm(ptr, &nH, &nW);
     nTaille = nH * nW;
 
     int nTaille3 = nTaille * 3;
-    allocation_tableau(ImgIn, OCTET, nTaille3);
-    lire_image_ppm(ptr, ImgIn, nH * nW);
-    allocation_tableau(ImgOut, OCTET, nTaille3);
-    allocation_tableau(ImgTrans, OCTET, nTaille3);
+    allocation_tableau(ImgIn, OCTET, nTaille);
+    lire_image_pgm(ptr, ImgIn, nH * nW);
+    allocation_tableau(ImgOut, OCTET, nTaille);
 
-    //char * pathRGB = makePath((char*)"rgb.ppm",folderOut);
-    
-    //ecrire_image_ppm(pathRGB, ImgOut,  nH, nW);
 
-    std::vector<std::vector<couleur>> image;
+    std::vector<std::vector<int>> image;
     image.resize(nH);
     for(auto & line: image)
         line.resize(nW);
-    int tnW = 3* nW;
-        for (int i=0; i < nH; i++)
-        {
-            for (int j=0, p=0; j < nW , p<tnW; j++,p+=3)
-            {
-                image[i][j].r=ImgIn[i *tnW +p  ];
-                image[i][j].g=ImgIn[i *tnW +p+1];
-                image[i][j].b=ImgIn[i *tnW +p+2];
-
-            }
-        }
 
         for (int i=0; i < nH; i++)
         {
-            for (int j=0, p=0; j < nW , p<tnW; j++,p+=3)
+            for (int j=0; j < nW ; j++)
             {
-                ImgTrans[i *tnW +p  ]=image[i][j].r;
-                ImgTrans[i *tnW +p+1]=image[i][j].g;
-                ImgTrans[i *tnW +p+2]=image[i][j].b;
+                image[i][j]=ImgIn[i *nW +j  ];
+
             }
         }
-         ecrire_image_ppm(pathOut, ImgTrans,  nH, nW);
-         printf("PSNR : %f\n",psnr(ImgIn,ImgTrans, nH,  nW));
+        int seuil=140;
+        seuillage(image,seuil);
 
-    
+        processImage(image,nH,nW);
+        
+        /*processImage(image,nH,nW);
+         processImage(image,nH,nW);
+         processImage(image,nH,nW);
+         processImage(image,nH,nW);
+         processImage(image,nH,nW);*/
+        for (int i=0; i < nH; i++)
+        {
+            for (int j=0; j < nW; j++)
+            {
+                ImgOut[i *nW +j]=image[i][j];
+
+            }
+        }
+         ecrire_image_pgm(pathOut, ImgOut,  nH, nW);    
 
 
     free(ImgIn);
