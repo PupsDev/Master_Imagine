@@ -69,43 +69,50 @@ void BFS_iterative(Node<T>* root)
      }
 }
 int main() {
-    Node<int>* root = new Node<int>(7,0);
-
-    Node<int>* child = new Node<int>(7,1);
-    Node<int>* child1 = new Node<int>(7,2);
-    Node<int>* child2 = new Node<int>(7,3);
-
-    
-    Node<int>* child01 = new Node<int>(7,4);
-    Node<int>* child02 = new Node<int>(7,5);
-    Node<int>* child12 = new Node<int>(7,6);
-
     /*
-    child->children.push_back(child01);
-    child->children.push_back(child02);
+    Node<char>* A = new Node<char>('A',0);
 
-    child1->children.push_back(child12);
+    Node<char>* B = new Node<char>('B',1);
+    Node<char>* C = new Node<char>('C',2);
 
-    root->children.push_back(child);
-    root->children.push_back(child1);
-    root->children.push_back(child2);
+    Node<char>* D = new Node<char>('D',3);
+    Node<char>* E = new Node<char>('E',4);
+
+
+    A->children.push_back(B);
+    A->children.push_back(E);
+
+    B->children.push_back(D);
+
+    C->children.push_back(D);
+    C->children.push_back(E);
+
+    D->children.push_back(A);
+    D->children.push_back(C);
+
+    E->children.push_back(C);
     */
+    Node<char>* A = new Node<char>('A',0);
 
-    root->children.push_back(child);
-    root->children.push_back(child2);
+    Node<char>* B = new Node<char>('B',1);
+    Node<char>* C = new Node<char>('C',2);
 
-    child->children.push_back(root);
-    child->children.push_back(child1);
+    Node<char>* D = new Node<char>('D',3);
+    Node<char>* E = new Node<char>('E',4);
+   
 
-    child1->children.push_back(child);
-    child1->children.push_back(child2);
+    A->children.push_back(B);
 
-    child2->children.push_back(root);
-    child2->children.push_back(child1);
+    B->children.push_back(C);
+    
+    C->children.push_back(D);
+
+    D->children.push_back(B);
+    D->children.push_back(E);
 
     std::cout << "DFS" << std::endl;
-    DFS_recursive(root);
-    root->resetDiscovered();
+    DFS_recursive(A);
+    A->resetDiscovered();
     std::cout << "BFS" << std::endl;
-    BFS_iterative(root);
+    BFS_iterative(A);
 }

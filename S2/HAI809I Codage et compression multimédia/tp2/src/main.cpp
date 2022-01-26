@@ -280,13 +280,34 @@ int main(int argc, char* argv[]) {
         break;
     }
 
+    OCTET *comp1, comp2;
+    allocation_tableau(comp1, OCTET, nTaille);
+    allocation_tableau(comp2, OCTET, nTaille);
+
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW; j++)
+        { 
+            comp1[i *nW +j]=image3[i][j].r;
+            comp2[i *nW +j]=image3[i][j].b;
+
+            
+
+        }
+
+    }
 
 
     char * pathRGB = makePath((char*)"rgb.ppm",folderOut);
     
     ecrire_image_ppm(pathRGB, ImgOut,  nH, nW);
-    char * pathGB = makePath((char*)"2composantes.ppm",folderOut);
-    ecrire_image_ppm(pathGB, ImgGB,  nH, nW);
+
+    char * pathc1 = makePath((char*)"1composante.pgm",folderOut);
+    ecrire_image_pgm(pathc1, comp1,  nH, nW);
+
+    char * pathc2 = makePath((char*)"2composante.pgm",folderOut);
+    ecrire_image_pgm(pathc2, comp2,  nH, nW);
+
     printf("PSNR : %f\n",psnr(ImgIn,ImgOut, nH,  nW));
 
 

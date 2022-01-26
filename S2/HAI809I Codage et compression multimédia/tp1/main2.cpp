@@ -119,7 +119,9 @@ for(int it =0; it<10;it++)
     moyenArr[k].b+=c.b;
     sum[k]++;
     classe[i]=k;
+
     }
+    
 }
    /*
     for (int i=0; i < nTaille3; i+=3)
