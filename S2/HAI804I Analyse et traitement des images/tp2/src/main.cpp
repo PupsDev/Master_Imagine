@@ -93,7 +93,126 @@ void erosion(std::vector<std::vector<int>> &image, int nH, int nW)
     }
 
 }
+void dilatation2(std::vector<std::vector<int>> &image, int nH, int nW)
+{
+    std::vector<std::vector<int>> erosionMatrix {
+                { 0, 1, 0 },
+                { 1, 1, 1 },
+                { 0, 1, 0 }
+            };
+
+    int boundary = erosionMatrix.size()/2;
+
+    for(int i = boundary ; i < image.size()-(boundary+1); i++)
+    {
+        int s = image[i].size();
+        for(int j = boundary ; j < s-(boundary+1); j++)
+        {
+
+                
+            for(int u = -boundary ; u < (boundary+1); u++)
+            {
+                for(int v = -boundary ; v < (boundary+1); v++)
+                {
+                    int p = i+u;
+                    int k = j+v;
+                    if( (p>=0 && p<nH) && (k>=0 && k<nW))
+                    {
+                        if((image[p][k] && erosionMatrix[boundary+u][boundary+v])&&image[p][k]>0)
+                        {
+                            image[i][j]=-1;
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+    for(int i = boundary ; i < image.size()-(boundary+1); i++)
+    {
+        int s = image[i].size();
+        for(int j = boundary ; j < s-(boundary+1); j++)
+        {
+            if(image[i][j]==-1)
+            {
+                image[i][j]=255;
+            }
+        }
+    }    
+
+}
+void invert(std::vector<std::vector<int>> &image, int nH, int nW)
+{
+    for(int i = 0 ; i < image.size();i++)
+    {
+         int s = image[i].size();
+        for(int j = 0 ; j < s;j++)
+        {
+            image[i][j]=255-image[i][j];
+        }
+    }
+
+}
+
 void dilatation(std::vector<std::vector<int>> &image, int nH, int nW)
+{
+
+    invert(image,nH,nW);
+    erosion(image,nH,nW);
+    invert(image,nH,nW);
+
+}
+void erosionGreyscale(std::vector<std::vector<int>> &image, int nH, int nW)
+{
+    std::vector<std::vector<int>> erosionMatrix {
+                { 0, 1, 0 },
+                { 1, 1, 1 },
+                { 0, 1, 0 }
+            };
+
+    int boundary = erosionMatrix.size()/2;
+    
+    for(int i = boundary ; i < image.size()-(boundary+1); i++)
+    {
+        int s = image[i].size();
+        for(int j = boundary ; j < s-(boundary+1); j++)
+        {
+
+            for(int u = -boundary ; u < (boundary+1); u++)
+            {
+                for(int v = -boundary ; v < (boundary+1); v++)
+                {
+                    int p = i+u;
+                    int k = j+v;
+                    if( (p>=0 && p<nH) && (k>=0 && k<nW))
+                    {
+                        if(image[p][k]<erosionMatrix[boundary+u][boundary+v])
+                        {
+                            image[i][j]=128;
+                        }
+                    }
+
+                }
+            }
+
+            
+
+        }
+    }
+    for(int i = boundary ; i < image.size()-(boundary+1); i++)
+    {
+        int s = image[i].size();
+        for(int j = boundary ; j < s-(boundary+1); j++)
+        {
+            if(image[i][j]==128)
+            {
+                image[i][j]=0;
+            }
+        }
+    }
+
+}
+void dilatationGreyscale(std::vector<std::vector<int>> &image, int nH, int nW)
 {
     std::vector<std::vector<int>> erosionMatrix {
                 { 0, 1, 0 },
