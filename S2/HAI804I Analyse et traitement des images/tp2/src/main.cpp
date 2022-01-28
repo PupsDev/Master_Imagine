@@ -162,22 +162,60 @@ void dilatation(std::vector<std::vector<int>> &image, int nH, int nW)
     invert(image,nH,nW);
 
 }
+
+
 void erosionGreyscale(std::vector<std::vector<int>> &image, int nH, int nW)
 {
-    std::vector<std::vector<int>> erosionMatrix {
+    /*std::vector<std::vector<int>> erosionMatrix {
                 { 0, 1, 0 },
                 { 1, 1, 1 },
                 { 0, 1, 0 }
-            };
+            };*/
+
+     /*std::vector<std::vector<int>> erosionMatrix {
+      {0, 0, 0, 1, 0, 0, 0}, 
+      {0, 0, 0, 1, 0, 0, 0}, 
+      {0, 0, 0, 1, 0, 0, 0}, 
+      {1, 1, 1, 1, 1, 1, 1}, 
+      {0, 0, 0, 1, 0, 0, 0}, 
+      {0, 0, 0, 1, 0, 0, 0}, 
+      {0, 0, 0, 1, 0, 0, 0}
+    };*/
+    std::vector<std::vector<int>> erosionMatrix {
+      {0, 0, 0, 0, 1, 0, 0, 0, 0}, 
+      {0, 0, 1, 1, 1, 1, 1, 0, 0}, 
+      {0, 1, 1, 1, 1, 1, 1, 1, 0}, 
+      {0, 1, 1, 1, 1, 1, 1, 1, 0}, 
+      {1, 1, 1, 1, 1, 1, 1, 1, 1}, 
+      {0, 1, 1, 1, 1, 1, 1, 1, 0}, 
+      {0, 1, 1, 1, 1, 1, 1, 1, 0}, 
+      {0, 0, 1, 1, 1, 1, 1, 0, 0},
+      {0, 0, 0, 0, 1, 0, 0, 0, 0}
+    };
 
     int boundary = erosionMatrix.size()/2;
-    
+    std::vector<std::vector<int>> image2;
+    image2.resize(nH);
+    for(auto & line: image2)
+        line.resize(nW);
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+          
+           image2[i][j] =image[i][j];
+
+        }
+    }
+
     for(int i = boundary ; i < image.size()-(boundary+1); i++)
     {
         int s = image[i].size();
         for(int j = boundary ; j < s-(boundary+1); j++)
         {
 
+            //compute min
+            int minv = 256;
             for(int u = -boundary ; u < (boundary+1); u++)
             {
                 for(int v = -boundary ; v < (boundary+1); v++)
@@ -186,33 +224,43 @@ void erosionGreyscale(std::vector<std::vector<int>> &image, int nH, int nW)
                     int k = j+v;
                     if( (p>=0 && p<nH) && (k>=0 && k<nW))
                     {
-                        if(image[p][k]<erosionMatrix[boundary+u][boundary+v])
+                        if(image[p][k] < minv)minv = image[p][k];
+                    }
+                }
+            }
+
+            // compute erosion
+            for(int u = -boundary ; u < (boundary+1); u++)
+            {
+                for(int v = -boundary ; v < (boundary+1); v++)
+                {
+                    int p = i+u;
+                    int k = j+v;
+                    if( (p>=0 && p<nH) && (k>=0 && k<nW))
+                    {
+                        if( erosionMatrix[boundary+u][boundary+v] && image[p][k]!=255 )
                         {
-                            image[i][j]=128;
+                            image2[i][j]=minv;
                         }
                     }
 
                 }
             }
-
-            
-
         }
     }
-    for(int i = boundary ; i < image.size()-(boundary+1); i++)
+
+    for (int i=0; i < nH; i++)
     {
-        int s = image[i].size();
-        for(int j = boundary ; j < s-(boundary+1); j++)
+        for (int j=0; j < nW ; j++)
         {
-            if(image[i][j]==128)
-            {
-                image[i][j]=0;
-            }
+          
+           image[i][j] =image2[i][j];
+
         }
     }
 
 }
-void dilatationGreyscale(std::vector<std::vector<int>> &image, int nH, int nW)
+void erosionColor(std::vector<std::vector<int>> &image, int nH, int nW)
 {
     std::vector<std::vector<int>> erosionMatrix {
                 { 0, 1, 0 },
@@ -220,7 +268,106 @@ void dilatationGreyscale(std::vector<std::vector<int>> &image, int nH, int nW)
                 { 0, 1, 0 }
             };
 
+
     int boundary = erosionMatrix.size()/2;
+    std::vector<std::vector<int>> image2;
+    image2.resize(nH);
+    for(auto & line: image2)
+        line.resize(nW);
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+          
+           image2[i][j] =image[i][j];
+
+        }
+    }
+
+    for(int i = boundary ; i < image.size()-(boundary+1); i++)
+    {
+        int s = image[i].size();
+        for(int j = boundary ; j < s-(boundary+1); j++)
+        {
+
+            //compute min
+            int minv = 256;
+            for(int u = -boundary ; u < (boundary+1); u++)
+            {
+                for(int v = -boundary ; v < (boundary+1); v++)
+                {
+                    int p = i+u;
+                    int k = j+v;
+                    if( (p>=0 && p<nH) && (k>=0 && k<nW))
+                    {
+                        if(image[p][k] < minv)minv = image[p][k];
+                    }
+                }
+            }
+
+            // compute erosion
+            for(int u = -boundary ; u < (boundary+1); u++)
+            {
+                for(int v = -boundary ; v < (boundary+1); v++)
+                {
+                    int p = i+u;
+                    int k = j+v;
+                    if( (p>=0 && p<nH) && (k>=0 && k<nW))
+                    {
+                        if( erosionMatrix[boundary+u][boundary+v] && image[p][k]>minv )
+                        {
+                            image2[i][j]=minv;
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+          
+           image[i][j] =image2[i][j];
+
+        }
+    }
+
+}
+void erosion2(std::vector<std::vector<int>> &image, int nH, int nW)
+{
+    /*std::vector<std::vector<int>> erosionMatrix {
+                { 0, 1, 0 },
+                { 1, 1, 1 },
+                { 0, 1, 0 }
+            };*/
+
+     std::vector<std::vector<int>> erosionMatrix {
+      {0, 0, 0, 1, 0, 0, 0}, 
+      {0, 0, 0, 1, 0, 0, 0}, 
+      {0, 0, 0, 1, 0, 0, 0}, 
+      {1, 1, 1, 1, 1, 1, 1}, 
+      {0, 0, 0, 1, 0, 0, 0}, 
+      {0, 0, 0, 1, 0, 0, 0}, 
+      {0, 0, 0, 1, 0, 0, 0}
+    };
+
+    int boundary = erosionMatrix.size()/2;
+    std::vector<std::vector<int>> image2;
+    image2.resize(nH);
+    for(auto & line: image2)
+        line.resize(nW);
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+          
+           image2[i][j] =image[i][j];
+
+        }
+    }
 
     for(int i = boundary ; i < image.size()-(boundary+1); i++)
     {
@@ -237,9 +384,9 @@ void dilatationGreyscale(std::vector<std::vector<int>> &image, int nH, int nW)
                     int k = j+v;
                     if( (p>=0 && p<nH) && (k>=0 && k<nW))
                     {
-                        if((image[p][k] && erosionMatrix[boundary+u][boundary+v])&&image[p][k]>0)
+                        if( erosionMatrix[boundary+u][boundary+v] && image[p][k]!=255 )
                         {
-                            image[i][j]=-1;
+                            image2[i][j]=0;
                         }
                     }
 
@@ -247,18 +394,28 @@ void dilatationGreyscale(std::vector<std::vector<int>> &image, int nH, int nW)
             }
         }
     }
-    for(int i = boundary ; i < image.size()-(boundary+1); i++)
-    {
-        int s = image[i].size();
-        for(int j = boundary ; j < s-(boundary+1); j++)
-        {
-            if(image[i][j]==-1)
-            {
-                image[i][j]=255;
-            }
-        }
-    }    
 
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+          
+           image[i][j] =image2[i][j];
+
+        }
+    }
+}
+void dilatationGreyscale(std::vector<std::vector<int>> &image, int nH, int nW)
+{
+    invert(image,nH,nW);
+    erosionGreyscale(image,nH,nW);
+    invert(image,nH,nW);
+}
+void dilatationColor(std::vector<std::vector<int>> &image, int nH, int nW)
+{
+    invert(image,nH,nW);
+    erosionColor(image,nH,nW);
+    invert(image,nH,nW);
 }
 void ouverture(std::vector<std::vector<int>> &image, int nH, int nW)
 {
@@ -284,12 +441,7 @@ void ouverture363(std::vector<std::vector<int>> &image, int nH, int nW)
 
     erosion(image,nH,nW);
     erosion(image,nH,nW);
-    erosion(image,nH,nW);
-    
-    dilatation(image,nH,nW);
-    dilatation(image,nH,nW);
-    dilatation(image,nH,nW);
-
+    erosion(image,nH,nW);invert(image,nH,nW);
 }
 void difference(std::vector<std::vector<int>> &image,std::vector<std::vector<int>> &imageDilate, int nH, int nW)
 {
@@ -298,11 +450,115 @@ void difference(std::vector<std::vector<int>> &image,std::vector<std::vector<int
     {
         for (int j=0; j < nW ; j++)
         {
-           if(image[i][j] == imageDilate[i][j])image[i][j] =255;
-           if(image[i][j] == 255 && imageDilate[i][j]==0)image[i][j] =128;
+          
+           image[i][j] =imageDilate[i][j]-image[i][j];
 
         }
     }
+}
+void saveImage(char * pathOut, int nH,int nW,std::vector<std::vector<int>> image )
+{
+    OCTET *ImgOut;
+    allocation_tableau(ImgOut, OCTET, nH*nW);
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW; j++)
+        {
+            ImgOut[i *nW +j]=image[i][j];
+
+        }
+    }
+    ecrire_image_pgm(pathOut, ImgOut,  nH, nW);
+}
+float distance(int r, int r1)
+{
+    return sqrt( (r-r1)*(r-r1));
+}
+int nearestClust(int *couleurArr, int c)
+{
+  int min=-1;
+  float dmin = 10000000.;
+  for(int i =0 ; i<2;i++)
+  {
+    if(distance(couleurArr[i],c)<dmin)
+    {
+      min = i;
+      dmin = distance(couleurArr[i],c);
+    }
+  }
+  return min;
+}
+void seuilAuto(std::vector<std::vector<int>> &image,int nW,int nH)
+{
+    int classNumber=2;
+
+    int* classColors= (int*)malloc(classNumber * sizeof(int));
+
+    int* classe= (int*)malloc(nH*nW * sizeof(int));
+
+
+    int* moyenne= (int*)malloc((classNumber+1) * sizeof(int));
+    int* somme= (int*)malloc( (classNumber+1) * sizeof(int));
+
+    for(int it =0 ;it <1 ;it++)
+    {
+        for(int i=0 ; i <classNumber; i++)
+        {
+            int p = rand()%nH;
+            int q = rand()%nW;
+
+            classColors[i] = image[p][q];
+            moyenne[i]=0;
+            somme[i]=0;
+        }
+        for (int i=0; i < nH; i++)
+        {
+            for (int j=0; j < nW ; j++)
+            {
+                int c = image[i][j];
+                int k = nearestClust(classColors, c); // pres de ck
+                
+                image[i][j]=classColors[k];
+                moyenne[k]+=c;
+                somme[k]++;
+               
+            }
+        }
+        for(int j=0 ; j <classNumber; j++)
+      {
+        if(somme[j]!=0)
+        {
+          moyenne[j]/=somme[j];
+        }
+
+      }
+      
+      for(int j=0 ; j <classNumber; j++)
+      {
+        classe[j]=classColors[j];
+        classColors[j]=moyenne[j];
+        moyenne[j]=0;
+        somme[j]=0;
+      }
+    }
+    int c = classColors[0];
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+
+            if(image[i][j]==classe[0])
+                image[i][j]=0;
+            else if(image[i][j]==classe[1])
+                image[i][j]=255;
+            
+        }
+    }
+     std::cout<<classe[0]<<std::endl;
+      std::cout<<classe[1]<<std::endl;
+
+
+      
 }
 int main(int argc, char* argv[]) {
     char inputName[250], outputName[250];
@@ -369,12 +625,23 @@ int main(int argc, char* argv[]) {
             }
         }
         int seuil=140;
-        seuillage(image,seuil);
+        //seuillage(image,seuil);
+        //seuillage(imageDilate,seuil);
+
+        seuilAuto(image,nH,nW);
+        invert(image,nH,nW);
+        seuilAuto(imageDilate,nH,nW);
+        invert(imageDilate,nH,nW);
+
+        char * pathOriginal = makePath((char*)"original.pgm",folderOut);
+
         char * pathSeuillage = makePath((char*)"seuil.pgm",folderOut);
         char * pathErosion = makePath((char*)"erosion.pgm",folderOut);
-        char * pathErosionbefore = makePath((char*)"erosionBefore.pgm",folderOut);
-        char * pathDilatation = makePath((char*)"dilatation.pgm",folderOut);
 
+        char * pathErosionbefore = makePath((char*)"erosionBefore.pgm",folderOut);
+
+        char * pathDilatation = makePath((char*)"dilatation.pgm",folderOut);
+        char * pathDilatation2 = makePath((char*)"dilatation2.pgm",folderOut);
 
         char * pathFermeture = makePath((char*)"fermeture.pgm",folderOut);
         char * pathOuverture = makePath((char*)"ouverture.pgm",folderOut);
@@ -382,17 +649,30 @@ int main(int argc, char* argv[]) {
 
         char * pathOuverture66 = makePath((char*)"ouverture66.pgm",folderOut);
         char * pathD = makePath((char*)"difference.pgm",folderOut);
-        dilatation(imageDilate,nH,nW);
-        difference(image,imageDilate, nH,  nW);
-        for (int i=0; i < nH; i++)
-        {
-            for (int j=0; j < nW; j++)
-            {
-                ImgOut[i *nW +j]=image[i][j];
 
-            }
-        }
-        ecrire_image_pgm(pathD, ImgOut,  nH, nW);
+        saveImage(pathSeuillage, nH,nW,image );
+
+        dilatation2(imageDilate,nH,nW);
+        saveImage(pathDilatation, nH,nW,imageDilate );
+
+        erosion(image,nH,nW);
+        saveImage(pathErosion, nH,nW,image );
+
+        //dilatation(image,nH,nW);
+        //saveImage(pathDilatation, nH,nW,image );
+
+
+        /*
+        dilatationColor(imageDilate,nH,nW);
+        saveImage(pathDilatation2, nH,nW,imageDilate );
+
+        erosionColor(image,nH,nW);
+        saveImage(pathErosion, nH,nW,image );
+
+        difference(image,imageDilate, nH,  nW);
+        saveImage(pathD, nH,nW,image );*/
+
+
 /*
         for(int i =0;i<6;i++)
         {
