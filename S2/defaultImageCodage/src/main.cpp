@@ -116,54 +116,7 @@ void histo(std::vector<std::vector<int>> image,int nW, int nH)
      	printf("%d %f\n",i, (float)occurence[i]/(float)(nW*nH)*100. );
     
 }
-void difference(std::vector<std::vector<int>> &image,int nW, int nH)
-{
 
-    std::vector<std::vector<int>> image2;
-    image2.resize(nH);
-        for(auto & line: image2)
-            line.resize(nW);
-    unsigned int average =0;
-
-    /*for (int i=1; i < nH-1; i++)
-    {
-        for (int j=1; j < nW-1 ; j++)
-        {
-            int average;
-            for (int u=-1; u < 2; u++)
-                for (int v=-1; v < 2 ; v++)
-                    average+=image[i+u][j+v];
-            average/=9;
-
-        }
-    }*/
-    for (int i=0; i < nH; i++)
-    {
-        for (int j=0; j < nW ; j++)
-        {
-           average+=image[i][j];
-
-        }
-    }
-    average/=(nW*nH);
-    for (int i=0; i < nH; i++)
-    {
-        for (int j=0; j < nW ; j++)
-        {
-           image2[i][j]=(image[i][j]-average)+128;
-
-        }
-    }
-    for (int i=0; i < nH; i++)
-    {
-        for (int j=0; j < nW ; j++)
-        {
-           image[i][j]=image2[i][j];
-
-        }
-    }
-    //printf("avergae : %d\n",average);
-}
 int main(int argc, char* argv[]) {
     char inputName[250];
     int nH, nW;
@@ -205,8 +158,6 @@ int main(int argc, char* argv[]) {
         
         loadImage(pathIn,imageG,nW, nH);
         saveImage(makeFinalPath( folderOut, (char*)"_originale_",inputName), nH,nW,imageG);
-        //histo(imageG,nW,  nH);
-        difference(imageG,nW,nH);
         histo(imageG,nW,  nH);
         saveImage(makeFinalPath( folderOut, (char*)"_diff_",inputName), nH,nW,imageG);
     }

@@ -1,0 +1,2 @@
+gnuplot -p -e 'file1="histoR.dat"; file2="histoG.dat"; file3="histoB.dat";fileout="histo.png"' SettingsFile;
+gnuplot -p -e 'file1="histo2R.dat"; file2="histo2G.dat"; file3="histo2B.dat";fileout="histo2.png"' SettingsFile 

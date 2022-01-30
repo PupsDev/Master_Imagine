@@ -1,0 +1,9 @@
+set terminal png
+set output fileout
+
+
+set title "Histogramme"
+set xlabel "levels"
+set ylabel "occurence"
+
+plot file1 with lines,file2 with lines,file3 with lines
