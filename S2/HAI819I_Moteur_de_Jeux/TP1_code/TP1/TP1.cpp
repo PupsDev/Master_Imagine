@@ -123,60 +123,27 @@ int main( void )
 
     int sommets = 16;
 
-for(int i = 0 ; i < sommets ; i++)
+    for(int i = 0 ; i < sommets ; i++)
         for(int j = 0 ; j < sommets ; j++)
         {
-            indexed_vertices.push_back( glm::vec3((float)i,(float)j,0.) );
-             indices.push_back(i*sommets +j);
+            indexed_vertices.push_back( glm::vec3((float)i*0.1,(float)j*0.1,0.) );
+             
         }
         
-    /*
-    for(int i = 0 ; i < sommets-1 ; i++)
-        for(int j = 0 ; j < sommets-1 ; j++)
-        {
-            triangles[k].push_back(i);
-            triangles[k].push_back(i+1);
-            triangles[k].push_back(i*sommets+j);
-           
 
-            triangles[k].push_back(i+1);
-            triangles[k].push_back(i*sommets+j);
-            triangles[k].push_back(i*sommets+j+1);
-
-        }*/
-        /*
-        unsigned short k =0;
-     for(int i = 0 ; i < indexed_vertices.size()/sommets ; i++)
-     {
-            triangles.push_back( std::vector<unsigned short>{ i, i+1, i*sommets });
-            triangles.push_back( std::vector<unsigned short>{ i+1, i*sommets, i*sommets+1 });          
-     }*/
      for(int i = 0 ; i < sommets -1; i++)
         for(int j = 0 ; j < sommets-1 ; j++)
         {
-             triangles.push_back( std::vector<unsigned short>{ i*sommets +j, i*sommets +j+1, (i+1)*sommets +j });
-            triangles.push_back( std::vector<unsigned short>{ i*sommets +j+1, (i+1)*sommets +j, (i+1)*sommets +j+1});      
+            indices.push_back(i*sommets +j);
+            indices.push_back(i*sommets +j+1); 
+            indices.push_back((i+1)*sommets +j); 
+
+            indices.push_back(i*sommets +j+1); 
+            indices.push_back((i+1)*sommets +j); 
+            indices.push_back((i+1)*sommets +j+1); 
+
         }
-     /*
-    indexed_vertices.push_back( glm::vec3(0.,0.,0.) );
-    indexed_vertices.push_back( glm::vec3(1.,0.,0.) );
-    indexed_vertices.push_back( glm::vec3(0.,1.,0.) );
-    indices.push_back(0);
-    indices.push_back(1);
-    indices.push_back(2);
-
-    indexed_vertices.push_back( glm::vec3(1.,1.,0.) );
-
-    triangles.resize(1);
-    triangles[0].push_back(0);
-    triangles[0].push_back(1);
-    triangles[0].push_back(2);
-    
-/*
-    triangles[1].push_back(1);
-    triangles[1].push_back(2);
-    triangles[1].push_back(3);
-    indices.push_back(1);*/
+        
 
     // Load it into a VBO
 
@@ -200,6 +167,22 @@ for(int i = 0 ; i < sommets ; i++)
     // For speed computation
     double lastTime = glfwGetTime();
     int nbFrames = 0;
+    
+    float transflateFactor = 1.5;
+    float scaleFactor =1.;
+    glm::mat4 modelmatrix  = glm::mat4( 1.0f );
+    glm::mat4 idmatrix  = glm::mat4( 1.0f );
+    
+    glm::mat4 projectionMatrix  = glm::perspective(45.,4./3.,0.1,100.);
+
+    glm::mat4 scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(scaleFactor));
+    glm::mat4 rotationMatrix  = glm::rotate(glm::mat4(1.0f), 0.f, glm::vec3(1.0));
+    glm::mat4 translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(-1.5f, -transflateFactor,0.0f));
+
+    GLuint modelID = glGetUniformLocation(programID, "model");
+    GLuint viewID = glGetUniformLocation(programID, "view");
+    GLuint projectionID  = glGetUniformLocation(programID, "projection");
+
 
     do{
 
@@ -217,32 +200,8 @@ for(int i = 0 ; i < sommets ; i++)
 
         // Use our shader
         glUseProgram(programID);
-
-
-        /*****************TODO***********************/
-        // Model matrix : an identity matrix (model will be at the origin) then change
-
-        // View matrix : camera/view transformation lookat() utiliser camera_position camera_target camera_up
-
-        // Projection matrix : 45 Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-
-        // Send our transformation to the currently bound shader,
-        // in the "Model View Projection" to the shader uniforms
-
-        float transflateFactor = 1.5;
-        float scaleFactor =1.;
-        glm::mat4 modelmatrix  = glm::mat4( 1.0f );
-         glm::mat4 idmatrix  = glm::mat4( 1.0f );
         glm::mat4 viewMatrix  = glm::lookAt(camera_position,camera_position+camera_target,camera_up);
-        glm::mat4 projectionMatrix  = glm::perspective(45.,4./3.,0.1,100.);
 
-        glm::mat4 scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(scaleFactor));
-        glm::mat4 rotationMatrix  = glm::rotate(glm::mat4(1.0f), 0.f, glm::vec3(1.0));
-        glm::mat4 translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(-1.5f, -transflateFactor,0.0f));
-
-        GLuint modelID = glGetUniformLocation(programID, "model");
-        GLuint viewID = glGetUniformLocation(programID, "view");
-        GLuint projectionID  = glGetUniformLocation(programID, "projection");
 
         modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*modelmatrix;
 
@@ -269,9 +228,8 @@ for(int i = 0 ; i < sommets ; i++)
                     GL_UNSIGNED_SHORT,   // type
                     (void*)0           // element array buffer offset
                     );
-        /*
-        transflateFactor = 1.;
-        scaleFactor =1.;
+        
+
         float flip = M_PI;
         scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(scaleFactor));
         rotationMatrix  = glm::rotate(glm::mat4(1.0f), flip, glm::vec3(0.,1.,0.0));
@@ -288,10 +246,7 @@ for(int i = 0 ; i < sommets ; i++)
                     (void*)0           // element array buffer offset
                     );
         
-
-
-        
-        
+/*
         scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(1.5*scaleFactor));
         rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation), glm::vec3(0.,0.,1.0));
         translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(0.f, 0.,0.0f));
@@ -306,8 +261,8 @@ for(int i = 0 ; i < sommets ; i++)
                     GL_UNSIGNED_SHORT,   // typecamera_position
                         (void*)0           // element array buffer offset
                     );
-
-    */
+*/
+    
     
 
         // Swap buffers
