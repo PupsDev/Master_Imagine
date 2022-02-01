@@ -3,6 +3,8 @@
 #include "image_ppm.h"
 #include <stdlib.h>
 #include <vector>
+#include <cassert>
+#include <math.h>
 #define PALETTE 256
 struct couleur
 {
@@ -101,68 +103,125 @@ void loadImage(char* pathIn, std::vector<std::vector<int>> &image,int nW, int nH
 }
 void histo(std::vector<std::vector<int>> image,int nW, int nH)
 {
-    unsigned int occurence [256]={0};
+    int occurence [256]={0};
+    float sum =0.;
+    double entropie=0.;
+
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+            occurence[image[i][j]]++;
+           
+
+        }
+    }
+    for (int i=0; i < 256; i++)
+    {
+        double fi = (double)occurence[i]/(double)(nW*nH);
+        if(fi!=0.)
+            entropie+=  fi* log2(fi);
+    }
+       
+    printf("entropie : %f\n" , entropie);
+
+    FILE *fp;
+    fp = fopen("histo.dat", "wb+");
+    if (fp) {
+        for (int i=0; i < 256; i++)
+     	    fprintf(fp,"%d %d\n",i, occurence[i] );
+     	    
+    }
+
+    fclose(fp);   
+    
+}
+void distribution(std::vector<std::vector<int>> image,int nW, int nH)
+{
+    int occurence [256]={0};
     float sum =0.;
     for (int i=0; i < nH; i++)
     {
         for (int j=0; j < nW ; j++)
         {
             occurence[image[i][j]]++;
+            
 
         }
     }
     
-    for (int i=0; i < 256; i++)
-     	printf("%d %f\n",i, (float)occurence[i]/(float)(nW*nH)*100. );
+    FILE *fp;
+    fp = fopen("distribution.dat", "wb+");
+    if (fp) {
+        for (int i=0; i < 256; i++)
+            fprintf(fp,"%d %f\n",i, (float)occurence[i]);///(float)(nW*nH) );
+    }
+    fclose(fp);
+
     
 }
-void difference(std::vector<std::vector<int>> &image,int nW, int nH)
+void difference(std::vector<std::vector<int>> image,std::vector<std::vector<int>> &imageOut,int nW, int nH)
 {
 
-    std::vector<std::vector<int>> image2;
-    image2.resize(nH);
-        for(auto & line: image2)
-            line.resize(nW);
-    unsigned int average =0;
-
-    /*for (int i=1; i < nH-1; i++)
-    {
-        for (int j=1; j < nW-1 ; j++)
-        {
-            int average;
-            for (int u=-1; u < 2; u++)
-                for (int v=-1; v < 2 ; v++)
-                    average+=image[i+u][j+v];
-            average/=9;
-
-        }
-    }*/
     for (int i=0; i < nH; i++)
     {
         for (int j=0; j < nW ; j++)
         {
-           average+=image[i][j];
+            if(j==0)
+                imageOut[i][0] = image[i][0];
+            else
+                imageOut[i][j]= image[i][j]-image[i][j-1] +128;
 
         }
     }
-    average/=(nW*nH);
+
+}
+void difference2(std::vector<std::vector<int>> image,std::vector<std::vector<int>> &imageOut,int nW, int nH)
+{
+
     for (int i=0; i < nH; i++)
     {
         for (int j=0; j < nW ; j++)
         {
-           image2[i][j]=(image[i][j]-average)+128;
+            if(i==0)
+                imageOut[0][j] = image[0][j];
+            else
+                imageOut[i][j]= image[i][j]-image[i-1][j] +128;
 
         }
     }
+
+}
+void differenceDPCM(std::vector<std::vector<int>> image,std::vector<std::vector<int>> &imageOut,int nW, int nH)
+{
+
     for (int i=0; i < nH; i++)
     {
         for (int j=0; j < nW ; j++)
         {
-           image[i][j]=image2[i][j];
-
+            if(i==0)
+                imageOut[0][j] = image[0][j];
+            if(j==0)
+                imageOut[i][0] = image[i][0];
+            if(i!=0 && j!=0)
+            {
+                assert((i-1)>-1);
+                assert((j-1)>-1);
+                if( abs(image[i][j-1] - image[i-1][j-1]) < abs(image[i-1][j-1]-image[i-1][j]) )
+                {
+                    // C
+                    imageOut[i][j]=  image[i][j]-image[i-1][j] +128;
+                }
+                else
+                {
+                    //A
+                    imageOut[i][j]=  image[i][j]-image[i][j-1] +128;
+                }
+            }
+                
         }
     }
-    //printf("avergae : %d\n",average);
+
 }
 int main(int argc, char* argv[]) {
     char inputName[250];
@@ -203,12 +262,18 @@ int main(int argc, char* argv[]) {
         for(auto & line: imageG)
             line.resize(nW);
         
+        std::vector<std::vector<int>> imageOut;
+        imageOut.resize(nH);
+        for(auto & line: imageOut)
+            line.resize(nW);
+
         loadImage(pathIn,imageG,nW, nH);
         saveImage(makeFinalPath( folderOut, (char*)"_originale_",inputName), nH,nW,imageG);
-        //histo(imageG,nW,  nH);
-        difference(imageG,nW,nH);
         histo(imageG,nW,  nH);
-        saveImage(makeFinalPath( folderOut, (char*)"_diff_",inputName), nH,nW,imageG);
+        difference2(imageG,imageOut,nW,nH);
+        histo(imageOut,nW,  nH);
+        //distribution(imageOut,nW,  nH);
+        saveImage(makeFinalPath( folderOut, (char*)"_diff_",inputName), nH,nW,imageOut);
     }
     
 
