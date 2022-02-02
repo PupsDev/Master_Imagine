@@ -1,0 +1,273 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{234E93B2-FDDC-321F-9916-2EF6D70D5786}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>ALL_BUILD</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\external\glfw-3.1.2\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule E:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code/external/glfw-3.1.2/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code -BE:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code/build --check-stamp-file E:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code/build/external/glfw-3.1.2/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.22\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.22\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\Internal\CheckSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\WriteBasicConfigVersionFile.cmake;E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\external\glfw-3.1.2\cmake_uninstall.cmake.in;E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\external\glfw-3.1.2\src\glfw3.pc.in;E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\external\glfw-3.1.2\src\glfw3Config.cmake.in;E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\external\glfw-3.1.2\src\glfw_config.h.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule E:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code/external/glfw-3.1.2/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code -BE:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code/build --check-stamp-file E:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code/build/external/glfw-3.1.2/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.22\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.22\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\Internal\CheckSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\WriteBasicConfigVersionFile.cmake;E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\external\glfw-3.1.2\cmake_uninstall.cmake.in;E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\external\glfw-3.1.2\src\glfw3.pc.in;E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\external\glfw-3.1.2\src\glfw3Config.cmake.in;E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\external\glfw-3.1.2\src\glfw_config.h.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule E:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code/external/glfw-3.1.2/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code -BE:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code/build --check-stamp-file E:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code/build/external/glfw-3.1.2/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.22\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.22\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\Internal\CheckSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\WriteBasicConfigVersionFile.cmake;E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\external\glfw-3.1.2\cmake_uninstall.cmake.in;E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\external\glfw-3.1.2\src\glfw3.pc.in;E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\external\glfw-3.1.2\src\glfw3Config.cmake.in;E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\external\glfw-3.1.2\src\glfw_config.h.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule E:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code/external/glfw-3.1.2/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code -BE:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code/build --check-stamp-file E:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code/build/external/glfw-3.1.2/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.22\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.22\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\Internal\CheckSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.22\Modules\WriteBasicConfigVersionFile.cmake;E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\external\glfw-3.1.2\cmake_uninstall.cmake.in;E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\external\glfw-3.1.2\src\glfw3.pc.in;E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\external\glfw-3.1.2\src\glfw3Config.cmake.in;E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\external\glfw-3.1.2\src\glfw_config.h.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\ZERO_CHECK.vcxproj">
+      <Project>{B0C1AA04-EBC4-314F-ABAE-E433EB9EEDE1}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\examples\boing.vcxproj">
+      <Project>{EE70BC57-6B79-3B37-ACDE-36046727A577}</Project>
+      <Name>boing</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\tests\clipboard.vcxproj">
+      <Project>{78230612-4E47-3761-9EF6-BF2582BB22D0}</Project>
+      <Name>clipboard</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\tests\cursor.vcxproj">
+      <Project>{0B8A9259-190A-36C9-A809-9B812105917D}</Project>
+      <Name>cursor</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\tests\empty.vcxproj">
+      <Project>{DCC7262D-B139-3BFB-B3E5-7D8EDAD5E716}</Project>
+      <Name>empty</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\tests\events.vcxproj">
+      <Project>{0C2FB001-1318-38EA-BCC3-0F679040176B}</Project>
+      <Name>events</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\tests\gamma.vcxproj">
+      <Project>{04954172-4D9A-397A-AC1B-543ED3308DAF}</Project>
+      <Name>gamma</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\examples\gears.vcxproj">
+      <Project>{197288F1-2294-3403-B82A-B4CD182799A1}</Project>
+      <Name>gears</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\src\glfw.vcxproj">
+      <Project>{1E1C2F1D-FA72-39CA-8DD6-C40483126005}</Project>
+      <Name>glfw</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\tests\glfwinfo.vcxproj">
+      <Project>{E4CDF94B-C2B7-3FDE-B7E3-1A73455F3053}</Project>
+      <Name>glfwinfo</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\examples\heightmap.vcxproj">
+      <Project>{877144D5-3891-3EE4-9D54-59F45FD0C683}</Project>
+      <Name>heightmap</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\tests\iconify.vcxproj">
+      <Project>{10E8FB33-7B58-371C-ABC4-45A1C7B0B40D}</Project>
+      <Name>iconify</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\tests\joysticks.vcxproj">
+      <Project>{85A38DA2-C904-3440-AD6F-8C830BA9712C}</Project>
+      <Name>joysticks</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\tests\monitors.vcxproj">
+      <Project>{D387382B-4B87-3035-B847-9E38444DE64D}</Project>
+      <Name>monitors</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\tests\msaa.vcxproj">
+      <Project>{6CD5F82A-07E1-3CF9-9C83-85984B6FDCB0}</Project>
+      <Name>msaa</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\examples\particles.vcxproj">
+      <Project>{4EC0C91F-E1FD-3D1F-88B0-DF2015ED8B1E}</Project>
+      <Name>particles</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\tests\reopen.vcxproj">
+      <Project>{C79EEFA6-8AC7-31E7-BA02-FCB76E47F8F5}</Project>
+      <Name>reopen</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\tests\sharing.vcxproj">
+      <Project>{AC281751-0352-3C1A-AC10-7AC4EF068DA4}</Project>
+      <Name>sharing</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\examples\simple.vcxproj">
+      <Project>{F2ECE5AF-0120-33ED-A39D-BAAD2A312F66}</Project>
+      <Name>simple</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\examples\splitview.vcxproj">
+      <Project>{74501903-C9E0-3944-A75D-7C8C97A2659A}</Project>
+      <Name>splitview</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\tests\tearing.vcxproj">
+      <Project>{DFA3F4A9-23D5-3A6F-BA6F-C20F51FA6C6F}</Project>
+      <Name>tearing</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\tests\threads.vcxproj">
+      <Project>{FD68C8FB-34F4-30F3-84F7-CD347A255BF4}</Project>
+      <Name>threads</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\tests\title.vcxproj">
+      <Project>{8CB91B54-591F-3D7D-9985-827617AFF449}</Project>
+      <Name>title</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\examples\wave.vcxproj">
+      <Project>{521B3438-DA15-3802-9899-3359522ECFB5}</Project>
+      <Name>wave</Name>
+    </ProjectReference>
+    <ProjectReference Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\external\glfw-3.1.2\tests\windows.vcxproj">
+      <Project>{3D910A6C-78FE-3874-8DD1-50652C17F0B4}</Project>
+      <Name>windows</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

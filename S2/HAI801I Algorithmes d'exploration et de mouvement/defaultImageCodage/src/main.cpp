@@ -54,7 +54,21 @@ void printImage(NDG image, int nW,int nH)
         {
             for (int j=0; j < nW/step ; j+=step)
             {
-                std::cout<<gscale2[image[i][j]%10]<<" ";
+                /*float pixsum =0.;
+                for (int u=0; u < step ; u++)
+                {
+                    for (int v=0; v < step ; v++)
+                    {
+                        int pix = image[i+u][j+v];
+                        pixsum+=pix;
+                    }
+                }
+                int pix =pixsum/(step*step);*/
+                int pix = image[i][j];
+                unsigned int indice =  (unsigned int)( (float)pix*9.)/(float)255.;
+                //std::cout<<" "<<indice<<" ";
+                char pixascii = gscale2[indice];
+                std::cout<<pixascii;
 
             }
             std::cout<<"\n";

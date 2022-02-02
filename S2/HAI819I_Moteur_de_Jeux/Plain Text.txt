@@ -12,3 +12,6 @@ documlentation ce qu'on a reussi ou pas
 2 semaiens
 
 GANTT
+
+sudo apt-get install -y libgl1-mesa-glx
+apt install mesa-utils

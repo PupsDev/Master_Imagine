@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\build\CMakeFiles\cc65223c0f5c97f9ee02ce4d311221a8\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{500A4948-B519-31A5-A87D-4B7F4F10A3A0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

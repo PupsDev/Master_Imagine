@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\TP1\TP1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\common\shader.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\common\controls.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\common\texture.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\common\objloader.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\common\vboindexer.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\common\shader.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\common\controls.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\common\texture.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\common\objloader.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\common\vboindexer.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\TP1\vertex_shader.glsl" />
+    <None Include="E:\Users\pups\Documents\Univ\Master_Imagine\S2\HAI819I_Moteur_de_Jeux\TP1_code\TP1\fragment_shader.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{EB9B14F5-2ACE-3DB9-BCD3-30632B645418}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{EB84EA15-83FF-3AC1-B823-1366A9ADD1E5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

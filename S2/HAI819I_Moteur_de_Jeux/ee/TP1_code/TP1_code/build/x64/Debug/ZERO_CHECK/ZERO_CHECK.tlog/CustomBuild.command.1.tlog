@@ -1,0 +1,10 @@
+^E:\USERS\PUPS\DOCUMENTS\UNIV\MASTER_IMAGINE\S2\HAI819I_MOTEUR_DE_JEUX\TP1_CODE\BUILD\CMAKEFILES\16A6626A6A82AC7686AC29ED98BCFDD0\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SE:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code -BE:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file E:/Users/pups/Documents/Univ/Master_Imagine/S2/HAI819I_Moteur_de_Jeux/TP1_code/build/Tutorials.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
