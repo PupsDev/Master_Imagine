@@ -115,4 +115,31 @@ int main() {
     A->resetDiscovered();
     std::cout << "BFS" << std::endl;
     BFS_iterative(A);
+
+    int nbNodes;
+    std::cout << "Nombre de noeuds ?" << std::endl;
+    std::cin>>nbNodes;
+
+    for(int i = 0 ; i < nbNodes;i++)
+    {
+        int nbChildren;
+        std::cout << "Nombre d'enfants ?" << std::endl;
+        std::cin>>nbChildren;
+        
+        for(int j = 0 ; j < nbChildren;j++)
+        {
+            cout<<"Node "<<i<<" enfant "<<j<<<std::endl;
+
+        }
+
+    }
+
+
+
+    }
+
+
+
+
+
 }
