@@ -36,10 +36,12 @@ class State
             if(boatSide) // M
             {
                 this->cannibal.second+=boat.second;
+                this->missionary.second-=boat.second;
             }
             else
             {
                 this->missionary.first+=boat.first;
+                this->cannibal.first-=boat.first;
 
             }
             this->boatSide=1-this->boatSide;
@@ -102,7 +104,7 @@ class Node
         }
         void haveChild()
         {
-            data->process();
+            //data->process();
             if(data->boatSide)
             {
 
@@ -113,6 +115,7 @@ class Node
                     state1->transport(1);
                     state1->process();
                     children.push_back(choice1);
+                    choice1->print();
                     choice1->haveChild();
                 }
                 if(data->missionary.second>1)
@@ -143,6 +146,7 @@ class Node
                     state1->transport(1);
                     state1->process();
                     children.push_back(choice1);
+                    choice1->print();
                     choice1->haveChild();
                 }
                 if(data->cannibal.first>1)
@@ -251,7 +255,7 @@ int main() {
     
 
         
-    BFS_iterative(init);
+    //BFS_iterative(init);
     
 
 
