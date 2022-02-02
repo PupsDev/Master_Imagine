@@ -1,3 +1,3 @@
 gnuplot -p -e 'histoR="histoR.dat"; histoG="histoG.dat"; histoB="histoB.dat";fileout="histoRGB.png"' SettingsFile;
-gnuplot -p -e 'histoR="histo2R.dat"; histoG="histo2G.dat"; histoB="histo2B.dat";fileout="histo2RGB.png"' SettingsFile;display -delay 500 histoRGB.png;histo2RGB.png;
+gnuplot -p -e 'histoR="histo2R.dat"; histoG="histo2G.dat"; histoB="histo2B.dat";fileout="histo2RGB.png"' SettingsFile;
 montage -tile 2x -geometry +0+0 histoRGB.png histo2RGB.png bigboy.jpg;display bigboy.jpg;    

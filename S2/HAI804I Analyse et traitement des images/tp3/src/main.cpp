@@ -3,6 +3,7 @@
 #include "image_ppm.h"
 #include <stdlib.h>
 #include <vector>
+#include <math.h>
 #define PALETTE 256
 struct couleur
 {
@@ -229,7 +230,7 @@ void expansion(std::vector<std::vector<int>> image,std::vector<std::vector<int>>
     histo( imageOut, nW,  nH);
 
 }
-float expand(int color, int vo , int v1)
+float expand(int color, double vo , double v1)
 {
     
     return (255*(color-vo))/(v1-vo);
@@ -311,44 +312,35 @@ void expansion(std::vector<std::vector<couleur>> image,std::vector<std::vector<c
      double dB = (double)(Bvmin * Bv1 -Bvmax*Bv0)/(double)(Bv1-Bv0);
      double gB = (double)(Bvmax-Bvmin)/(double)(Bv1-Bv0);
     
-     //printf("%d %d\n", dR,gR);
-     //printf("%d %d\n", dG,gG);
-     //printf("%d %d\n", dB,gB);
+     printf("%f %f\n", dR,gR);
+     printf("%f %f\n", dG,gG);
+     printf("%f %f\n", dB,gB);
 
-    //printf("expand %f" , expand(115,Rv0,Rv1));
+
     for (int i=0; i < nH; i++)
     {
         for (int j=0; j < nW ; j++)
         {
             couleur pix = image[i][j];
-            if(pix.r > Rv0 && pix.r <Rv1)
-            {
-                //printf("PIX R\n %d\n",pix.r);
-                //printf("GR %d\n" ,gR);
-                //printf("GR PIX %d\n" ,gR*pix.r);
-                //printf("DE %d\n" ,dR);
 
-                pix.r = gR*pix.r +dR;
-                //printf("PIX %f\n",expand(pix.r,Rv0,Rv1));
-                imageOut[i][j].r=(int)expand(pix.r,Rv0,Rv1);
-            }
-            if(pix.g > Gv0 && pix.g <Gv1)
+            if(pix.r >= Rv0 && pix.r <=Rv1)
             {
-                pix.g = gG*pix.g +dG;
-                //imageOut[i][j].g=pix.g;
-                imageOut[i][j].g=(int)expand(pix.g,Gv0,Gv1);
-            }
-            if(pix.b > Bv0 && pix.b <Bv1)
-            {
-                pix.b = gB*pix.b +dB;
-                //imageOut[i][j].b=pix.b;
-                imageOut[i][j].b=(int)expand(pix.b,Bv0,Bv1);
-            }
 
+                imageOut[i][j].r=std::max(0,std::min(255,(int)expand(pix.r,Rv0,Rv1)));
+            }
+            if(pix.g >= Gv0 && pix.g <=Gv1)
+            {
+
+                imageOut[i][j].g=std::max(0,std::min(255,(int)expand(pix.g,Gv0,Gv1)));
+            }
+            if(pix.b >= Bv0 && pix.b <=Bv1)
+            {
+
+                imageOut[i][j].b=std::max(0,std::min(255,(int)expand(pix.b,Bv0,Bv1)));
+            }
+            printf("%d %d %d \n", imageOut[i][j].r,imageOut[i][j].g,imageOut[i][j].b);
         }
     }
-    //histo( imageOut, nW,  nH);
-
 }
 void seuillageExtrema1(std::vector<std::vector<couleur>> image,std::vector<std::vector<couleur>> &imageOut,int nW, int nH)
 {
@@ -575,7 +567,7 @@ int main(int argc, char* argv[]) {
                 
                 seuillageExtrema(imageRGB,imageRGBOut,nW, nH);
                 histo(imageRGBOut, nW,  nH);
-                //saveImage(makeFinalPath( folderOut, (char*)"_RGB_Seuillage_",inputName), nH,nW,imageRGBOut);
+                saveImage(makeFinalPath( folderOut, (char*)"_RGB_Seuillage_",inputName), nH,nW,imageRGBOut);
                 expansion(imageRGBOut,imageRGBOut,nW, nH);
                 histo2(imageRGBOut, nW,  nH);
                 saveImage(makeFinalPath( folderOut, (char*)"_RGB_Expansion_",inputName), nH,nW,imageRGBOut);

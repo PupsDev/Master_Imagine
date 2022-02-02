@@ -6,4 +6,6 @@ set title "Histogramme"
 set xlabel "levels"
 set ylabel "occurence"
 
-plot file1 with lines,file2 with lines,file3 with lines
+plot histoR with lines,histoG with lines,histoB with lines
+
+
