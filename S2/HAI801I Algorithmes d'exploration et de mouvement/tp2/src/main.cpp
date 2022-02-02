@@ -10,9 +10,9 @@ typedef std::pair<int,int> SIDE;
 class State
 {
     public:
-        State()
+        State(bool boatSide)
         {
-            this->boatSide =0;
+            this->boatSide =boatSide;
             this->cannibal =make_pair(3,0);
             this->missionary =make_pair(0,3);
 
@@ -44,8 +44,6 @@ class State
                 this->cannibal.first-=boat.first;
 
             }
-            this->boatSide=1-this->boatSide;
-
             
 
 
@@ -104,6 +102,7 @@ class Node
         }
         void haveChild()
         {
+            /*
             //data->process();
             if(data->boatSide)
             {
@@ -166,7 +165,7 @@ class Node
                     choice2->haveChild();
                 }
 
-            }
+            }*/
 
 
 
@@ -247,15 +246,39 @@ int main() {
 */
     //State* init=new State();
 
-    Node< State* >* init = new Node< State* >( new State(),0);
+    Node< State* >* init = new Node< State* >( new State(false),0);
 
-    init->haveChild();
+
+    //init->haveChild();
+
+        State * state1 = new State(true);
+         std::cout<<state1->boatSide<<std::endl;
+        Node< State* >* choice1 = new Node< State* >( state1 ,1);
+        state1->transport(1);
+        state1->process();
+        init->children.push_back(choice1);
+
+        State * stateM1 = new State(false);
+        std::cout<<stateM1->boatSide<<std::endl;
+        Node< State* >* choice11 = new Node< State* >( stateM1 ,2);
+        stateM1->transport(1);
+        stateM1->process();
+        choice1->children.push_back(choice11);
+
+
+/*
+        State * state2 = new State();
+        Node< State* >* choice2 = new Node< State* >( state2 ,2);
+        state2->transport(2);
+        state2->process();
+        init->children.push_back(choice2);*/
+
 
 
     
 
         
-    //BFS_iterative(init);
+    BFS_iterative(init);
     
 
 
