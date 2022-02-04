@@ -112,9 +112,11 @@ void histo(std::vector<std::vector<int>> image,int nW, int nH)
 
         }
     }
-    
+     FILE * file;
+    file = fopen( "histoBlack.dat", "wb+" );
     for (int i=0; i < 256; i++)
-     	printf("%d %f\n",i, (float)occurence[i]/(float)(nW*nH)*100. );
+     	fprintf(file,"%d %f\n",i, (float)occurence[i]/(float)(nW*nH)*100. );
+     fclose( file );
     
 }
 void histo(std::vector<std::vector<couleur>> image,int nW, int nH)
@@ -147,6 +149,49 @@ void histo(std::vector<std::vector<couleur>> image,int nW, int nH)
     for (int i=0; i < 256; i++)
      	fprintf(file,"%d %f\n",i, (float)occurenceB[i]/(float)(nW*nH) *100. );
     fclose( file );
+    
+}
+void proba(std::vector<std::vector<int>> image,int nW, int nH)
+{
+    unsigned int occurence [256]={0};
+    float sum =0.;
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+            occurence[image[i][j]]++;
+
+        }
+    }
+     FILE * file;
+    file = fopen( "histoBlack.dat", "wb+" );
+    for (int i=0; i < 256; i++)
+     	fprintf(file,"%d %d\n",i, occurence[i]);
+     fclose( file );
+    
+}
+void repartition(std::vector<std::vector<int>> image,int nW, int nH)
+{
+    unsigned int occurence [256]={0};
+    float sum =0.;
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+            occurence[image[i][j]]++;
+
+        }
+    }
+
+     FILE * file;
+    file = fopen( "repartition.dat", "wb+" );
+    for (int i=0; i < 256; i++)
+    {
+        fprintf(file,"%d %f\n",i, sum);
+        sum+=(float)occurence[i]/(float)(nW*nH);
+    }
+     	
+     fclose( file );
     
 }
 void histo2(std::vector<std::vector<couleur>> image,int nW, int nH)
@@ -210,9 +255,10 @@ void expansion(std::vector<std::vector<int>> image,std::vector<std::vector<int>>
 
     }
     printf("%d %d\n", v0,v1);
-    float d = (vmin * v1 -vmax*v0)/(v1-v0);
-    float g = (vmax-vmin)/(v1-v0);
-    printf("%d %d\n", d,g);
+    //printf("%f" ,vmax*v0);
+    double d = (vmin * v1 -vmax*v0)/(v1-v0);
+    double g = (vmax-vmin)/(v1-v0);
+    printf("%f %f\n", d,g);
     
     for (int i=0; i < nH; i++)
     {
@@ -227,7 +273,7 @@ void expansion(std::vector<std::vector<int>> image,std::vector<std::vector<int>>
 
         }
     }
-    histo( imageOut, nW,  nH);
+    //histo( imageOut, nW,  nH);
 
 }
 float expand(int color, double vo , double v1)
@@ -338,7 +384,7 @@ void expansion(std::vector<std::vector<couleur>> image,std::vector<std::vector<c
 
                 imageOut[i][j].b=std::max(0,std::min(255,(int)expand(pix.b,Bv0,Bv1)));
             }
-            printf("%d %d %d \n", imageOut[i][j].r,imageOut[i][j].g,imageOut[i][j].b);
+            //printf("%d %d %d \n", imageOut[i][j].r,imageOut[i][j].g,imageOut[i][j].b);
         }
     }
 }
@@ -365,43 +411,43 @@ void seuillageExtrema1(std::vector<std::vector<couleur>> image,std::vector<std::
     bool GfindV0=false, GfindV1=false;
     bool BfindV0=false, BfindV1=false;
     // 5 percent
-    float threshold = 20.;
+    float threshold = 5.;
     float maxThreshold = 100.-threshold;
 
     for (int i=0; i < 256; i++)
     {
         sumR+=(float)occurenceR[i]/(float)(nW*nH)*100.;
         
-        if(!RfindV0 && (float)occurenceR[i]/(float)(nW*nH)*100. > threshold)
+        if(!RfindV0 && sumR > threshold)
         {
-            printf("%f\n", (float)occurenceR[i]/(float)(nW*nH)*100.);
-            printf("%d\n", i);
+            //printf("%f\n", sumR);
+            //printf("%d\n", i);
             v0R = i;
             RfindV0=true;
         }
-        if(RfindV0 && !RfindV1 && (float)occurenceR[i]/(float)(nW*nH)*100. > maxThreshold)
+        if(RfindV0 && !RfindV1 && sumR > maxThreshold)
         {
             v1R = i;
             RfindV1=true; 
         }
         sumG+=(float)occurenceG[i]/(float)(nW*nH)*100.;
-        if(!GfindV0 && (float)occurenceG[i]/(float)(nW*nH)*100. > threshold)
+        if(!GfindV0 && sumG > threshold)
         {
             v0G = i;
             GfindV0=true;
         }
-        if(GfindV0 && !GfindV1 && (float)occurenceG[i]/(float)(nW*nH)*100. > maxThreshold)
+        if(GfindV0 && !GfindV1 && sumG > maxThreshold)
         {
             v1G = i;
             GfindV1=true; 
         }
         sumB+=(float)occurenceB[i]/(float)(nW*nH)*100.;
-        if(!BfindV0 && (float)occurenceB[i]/(float)(nW*nH)*100. > threshold)
+        if(!BfindV0 && sumB > threshold)
         {
             v0B = i;
             BfindV0=true;
         }
-        if(BfindV0 && !BfindV1 && (float)occurenceB[i]/(float)(nW*nH)*100. > maxThreshold)
+        if(BfindV0 && !BfindV1 && sumB > maxThreshold)
         {
             v1B = i;
             BfindV1=true; 
@@ -415,28 +461,28 @@ void seuillageExtrema1(std::vector<std::vector<couleur>> image,std::vector<std::
 
             if(pix.r>v0R && pix.r<v1R)
                 imageOut[i][j].r = pix.r;
-            else if(pix.r <v0R)
+            else if(pix.r <=v0R)
                 imageOut[i][j].r=v0R;
-            else if(pix.r >v1R)
+            else if(pix.r >=v1R)
                 imageOut[i][j].r=v1R;
 
                             
             if(pix.g>v0G && pix.g<v1G)
                 imageOut[i][j].g = pix.g;
-            else if(pix.g <v0G)
+            else if(pix.g <=v0G)
                 imageOut[i][j].g=v0G;
-            else if(pix.g >v1G)
+            else if(pix.g >=v1G)
                 imageOut[i][j].g=v1G;
 
                             
             if(pix.b>v0B && pix.b<v1B)
                 imageOut[i][j].b = pix.b;
-            else if(pix.b <v0B)
+            else if(pix.b <=v0B)
                 imageOut[i][j].b=v0B;
-            else if(pix.b >v1B)
-                imageOut[i][j].b=v1R;
+            else if(pix.b >=v1B)
+                imageOut[i][j].b=v1B;
 
-
+            //printf("%d %d %d ", imageOut[i][j].r,imageOut[i][j].g,imageOut[i][j].b);
 
         }
     }
@@ -517,23 +563,221 @@ void seuillageExtrema(std::vector<std::vector<couleur>> image,std::vector<std::v
         }
     }
 }
+void egalisation(std::vector<std::vector<int>> image,std::vector<std::vector<int>> &imageOut,int nW, int nH)
+{
+    unsigned int occurence [256]={0};
+    float sum[256] = {0.};
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+            occurence[image[i][j]]++;
+
+        }
+    }
+     FILE * file;
+    file = fopen( "densite.dat", "wb+" );
+    for (int i=0; i < 256; i++)
+     	fprintf(file,"%d %f\n",i, (float)occurence[i]/(float)(nW*nH) );
+     fclose( file );
+
+    file = fopen( "histogramme.dat", "wb+" );
+    for (int i=0; i < 256; i++)
+     	fprintf(file,"%d %d\n",i, occurence[i]);
+     fclose( file );
+
+
+    file = fopen( "repartition.dat", "wb+" );
+    sum[0]=occurence[0];
+    for (int i=1; i < 256; i++)
+    {
+        sum[i]=sum[i-1]+(float)occurence[i]/(float)(nW*nH);
+        fprintf(file,"%d %f\n",i, sum[i]);
+        
+    }
+     	
+     fclose( file );
+
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+            int px =   image[i][j];
+            imageOut[i][j] = 255*sum[px];
+        }
+    }
+    
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+            occurence[imageOut[i][j]]++;
+
+        }
+    }
+
+    file = fopen( "densite2.dat", "wb+" );
+    for (int i=0; i < 256; i++)
+     	fprintf(file,"%d %f\n",i, (float)occurence[i]/(float)(nW*nH) );
+     fclose( file );
+
+    file = fopen( "histogramme2.dat", "wb+" );
+    for (int i=0; i < 256; i++)
+     	fprintf(file,"%d %d\n",i, occurence[i]);
+     fclose( file );
+
+
+    file = fopen( "repartition2.dat", "wb+" );
+    sum[0]=occurence[0];
+    for (int i=1; i < 256; i++)
+    {
+        sum[i]=sum[i-1]+(float)occurence[i]/(float)(nW*nH);
+        fprintf(file,"%d %f\n",i, sum[i]);
+        
+    }
+     	
+     fclose( file );
+
+}
+
+void egalisation2(std::vector<std::vector<int>> &image,std::vector<std::vector<int>> &imageOut,int nW, int nH)
+{
+    unsigned int occurence [256]={0};
+    unsigned int occurence2 [256]={0};
+    float sum[256] = {0.};
+    float sum2[256] = {0.};
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+            occurence[image[i][j]]++;
+
+        }
+    }
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+            occurence2[imageOut[i][j]]++;
+
+        }
+    }
+    /*
+     FILE * file;
+    file = fopen( "densite.dat", "wb+" );
+    for (int i=0; i < 256; i++)
+     	fprintf(file,"%d %f\n",i, (float)occurence[i]/(float)(nW*nH) );
+     fclose( file );
+
+    file = fopen( "histogramme.dat", "wb+" );
+    for (int i=0; i < 256; i++)
+     	fprintf(file,"%d %d\n",i, occurence[i]);
+     fclose( file );
+
+
+    file = fopen( "repartition.dat", "wb+" );
+    sum[0]=occurence[0];
+    for (int i=1; i < 256; i++)
+    {
+        sum[i]=sum[i-1]+(float)occurence[i]/(float)(nW*nH);
+        fprintf(file,"%d %f\n",i, sum[i]);
+        
+    }
+     	
+     fclose( file );
+     */
+     sum[0]=occurence[0]/(float)(nW*nH);
+     sum2[0]=occurence2[0]/(float)(nW*nH);
+     //printf("%f \n", sum2[0]);
+    for (int i=1; i < 256; i++)
+    {
+        sum[i]=sum[i-1]+(float)occurence[i]/(float)(nW*nH);
+        sum2[i]=sum2[i-1]+(float)occurence2[i]/(float)(nW*nH);
+         printf("%f ", sum[i]);
+         printf("%f \n", sum2[i]);
+        //fprintf(file,"%d %f\n",i, sum[i]);
+        
+    }
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+            int px =   image[i][j];
+           
+            image[i][j] = 255*sum[px];
+        }
+    }
+        for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+            int px =   imageOut[i][j];
+            //printf("%f \n", sum2[px]);
+            imageOut[i][j] = 255*sum2[px];
+        }
+    }
+    
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+            int px =   imageOut[i][j];
+            float p = (float)px /255.;
+            int m;
+            for(int k = 0 ; k<256;k++)
+            {
+                if(sum[k]==p)m=k;
+            }
+            imageOut[i][j] = m;
+        }
+    }
+    
+/*
+
+    file = fopen( "densite2.dat", "wb+" );
+    for (int i=0; i < 256; i++)
+     	fprintf(file,"%d %f\n",i, (float)occurence[i]/(float)(nW*nH) );
+     fclose( file );
+
+    file = fopen( "histogramme2.dat", "wb+" );
+    for (int i=0; i < 256; i++)
+     	fprintf(file,"%d %d\n",i, occurence[i]);
+     fclose( file );
+
+
+    file = fopen( "repartition2.dat", "wb+" );
+    sum[0]=occurence[0];
+    for (int i=1; i < 256; i++)
+    {
+        sum[i]=sum[i-1]+(float)occurence[i]/(float)(nW*nH);
+        fprintf(file,"%d %f\n",i, sum[i]);
+        
+    }
+     	
+     fclose( file );
+     */
+
+}
 int main(int argc, char* argv[]) {
     char inputName[250];
+     char inputName2[250];
     int nH, nW;
     char * folderIn = (char*)"res/";
     char * folderOut = (char*)"out/"; 
     int color,exo;
-    if (argc != 4) 
+    if (argc != 5) 
     {
-        printf("Usage: -ImageIn.ppm -type (0 for pgm 1 for ppm) -exo  \n"); 
+        printf("Usage: -ImageIn.ppm -type (0 for pgm 1 for ppm) -Image2.pgm -exo  \n"); 
         exit (1) ;
     }
 
     sscanf (argv[1],"%s",inputName) ;
     sscanf (argv[2],"%d",&color) ;
     sscanf (argv[3],"%d",&exo) ;
+    sscanf (argv[4],"%s",inputName2) ;
 
     char * pathIn = makePath(inputName,folderIn);
+     char * pathIn2 = makePath(inputName2,folderIn);
     
     std::vector<std::vector<couleur>> imageRGB;
     std::vector<std::vector<couleur>> imageRGBOut;
@@ -557,41 +801,70 @@ int main(int argc, char* argv[]) {
         switch(exo)
         {
             case 1:
+                histo(imageRGB, nW,  nH);
                 expansion(imageRGB,imageRGBOut,nW, nH);
-                histo(imageRGBOut, nW,  nH);
+               
                 saveImage(makeFinalPath( folderOut, (char*)"_RGB_diff_",inputName), nH,nW,imageRGBOut);
+                histo2(imageRGBOut, nW,  nH);
             break;
 
             case 2:
                 printf("exo 2\n");
                 
-                seuillageExtrema(imageRGB,imageRGBOut,nW, nH);
-                histo(imageRGBOut, nW,  nH);
-                saveImage(makeFinalPath( folderOut, (char*)"_RGB_Seuillage_",inputName), nH,nW,imageRGBOut);
+                seuillageExtrema1(imageRGB,imageRGBOut,nW, nH);
+                histo(imageRGB, nW,  nH);
+                saveImage(makeFinalPath( folderOut, (char*)"_RGB_Seuillage__",inputName), nH,nW,imageRGBOut);
                 expansion(imageRGBOut,imageRGBOut,nW, nH);
                 histo2(imageRGBOut, nW,  nH);
-                saveImage(makeFinalPath( folderOut, (char*)"_RGB_Expansion_",inputName), nH,nW,imageRGBOut);
+                saveImage(makeFinalPath( folderOut, (char*)"_RGB_Expansion__",inputName), nH,nW,imageRGBOut);
+            break;
+            case 3:
+                printf("exo 2\n");
+                
+                seuillageExtrema1(imageRGB,imageRGBOut,nW, nH);
+                histo(imageRGB, nW,  nH);
+                saveImage(makeFinalPath( folderOut, (char*)"_RGB_Seuillage__",inputName), nH,nW,imageRGBOut);
+                expansion(imageRGBOut,imageRGBOut,nW, nH);
+                histo2(imageRGBOut, nW,  nH);
+                saveImage(makeFinalPath( folderOut, (char*)"_RGB_Expansion__",inputName), nH,nW,imageRGBOut);
             break;
         }
 
     }
     else
     {
-        
+
         lire_nb_lignes_colonnes_image_pgm(pathIn, &nH, &nW);
+       
         imageG.resize(nH);
         for(auto & line: imageG)
             line.resize(nW);
-        
         imageOut.resize(nH);
         for(auto & line: imageOut)
             line.resize(nW);
         
         loadImage(pathIn,imageG,nW, nH);
+        
+        loadImage(pathIn2,imageOut,nW, nH);
         saveImage(makeFinalPath( folderOut, (char*)"_originale_",inputName), nH,nW,imageG);
-        histo(imageG,nW,  nH);
-        expansion(imageG,imageOut,nW, nH);
-        saveImage(makeFinalPath( folderOut, (char*)"_diff_",inputName), nH,nW,imageOut);
+         saveImage(makeFinalPath( folderOut, (char*)"_originale2_",inputName2), nH,nW,imageOut);
+        
+        switch(exo)
+        {
+            case 1:
+                histo(imageG,nW,  nH);
+                expansion(imageG,imageOut,nW, nH);
+                saveImage(makeFinalPath( folderOut, (char*)"expansion",inputName), nH,nW,imageOut);
+            break;
+            case 2:
+                printf("exo 3\n");
+                
+                egalisation2(imageG,imageOut,nW, nH);
+                 saveImage(makeFinalPath( folderOut, (char*)"egalisation",inputName), nH,nW,imageG);
+                saveImage(makeFinalPath( folderOut, (char*)"egalisation2",inputName2), nH,nW,imageOut);
+            break;
+        }
+
     }
     
 
