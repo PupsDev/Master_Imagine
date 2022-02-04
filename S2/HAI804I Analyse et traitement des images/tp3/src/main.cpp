@@ -662,7 +662,7 @@ void egalisation2(std::vector<std::vector<int>> &image,std::vector<std::vector<i
 
         }
     }
-    /*
+    
      FILE * file;
     file = fopen( "densite.dat", "wb+" );
     for (int i=0; i < 256; i++)
@@ -685,7 +685,7 @@ void egalisation2(std::vector<std::vector<int>> &image,std::vector<std::vector<i
     }
      	
      fclose( file );
-     */
+     
      sum[0]=occurence[0]/(float)(nW*nH);
      sum2[0]=occurence2[0]/(float)(nW*nH);
      //printf("%f \n", sum2[0]);
@@ -724,15 +724,20 @@ void egalisation2(std::vector<std::vector<int>> &image,std::vector<std::vector<i
             int px =   imageOut[i][j];
             float p = (float)px /255.;
             int m;
+            bool f = true;
             for(int k = 0 ; k<256;k++)
             {
-                if(sum[k]==p)m=k;
+                if(f && sum[k]>=p)
+                {
+                    m=k;
+                    f = false;
+                }
             }
             imageOut[i][j] = m;
         }
     }
     
-/*
+
 
     file = fopen( "densite2.dat", "wb+" );
     for (int i=0; i < 256; i++)
@@ -755,7 +760,7 @@ void egalisation2(std::vector<std::vector<int>> &image,std::vector<std::vector<i
     }
      	
      fclose( file );
-     */
+     
 
 }
 int main(int argc, char* argv[]) {
