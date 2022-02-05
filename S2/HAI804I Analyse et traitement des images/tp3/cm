@@ -1,0 +1,1 @@
+gnuplot -p -e 'histoR="histogramme.dat";fileout="histo.png"' SettingsFile2;display histo.png;

@@ -1,0 +1,4 @@
+digraph G {
+ node [shape=record fontname=Arial];
+v0 [label="[B] C C C M M M  |       []      | "]
+}

@@ -1,0 +1,4 @@
+dot -Tps graphLeft.dot -o graphLeft.pdf
+dot -Tps graphRight.dot -o graphRight.pdf
+dot -Tps graphLeftRules.dot -o graphLeftRules.pdf
+dot -Tps graphRightRules.dot -o graphRightRules.pdf

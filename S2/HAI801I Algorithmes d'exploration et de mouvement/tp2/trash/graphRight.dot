@@ -1,0 +1,20 @@
+digraph G {
+ node [shape=record fontname=Arial];
+v0 ->v2  [label=M2];
+v2 ->v21  [label=C1];
+v2 ->v22  [label=C2];
+v21 ->v211  [label=M1];
+v22 ->v221  [label=M1];
+v211 ->v2111  [label=C1];
+v211 ->v2112  [label=C2];
+v221 ->v2211  [label=C1];
+v0 [label="C C C  |       []      | [B] M M M "]
+v2 [label="[B] C C C M M  |       [M M ]      | M "]
+v21 [label="C C M M  |       [C ]      | [B] C M "]
+v22 [label="C M M  |       [C C ]      | [B] C C M "]
+v211 [label="[B] C C M M M  |       [M ]      | C "]
+v221 [label="[B] C M M M  |       [M ]      | C C "]
+v2111 [label="C M M M  |       [C ]      | [B] C C "]
+v2112 [label="M M M  |       [C C ]      | [B] C C C "]
+v2211 [label="M M M  |       [C ]      | [B] C C C "]
+}
