@@ -1,0 +1,25 @@
+set terminal png
+set output "histogrammeRGB.png"
+set title "Histogramme"
+set xlabel "i"
+set ylabel "occurence"
+set xrange[0:250]
+set style fill transparent solid 0.5 noborder
+
+plot "data/histogrammeRGB.dat" using 1:2 with boxes lc rgb"red" title "red", "data/histogrammeRGB.dat" using 1:3 with boxes lc rgb"green" title "green", "data/histogrammeRGB.dat" using 1:4 with boxes lc rgb"blue" title "blue" 
+
+set output "densiteRGB.png"
+set title "Densité de probabilité"
+set xlabel "i"
+set ylabel "percent"
+set yrange[0:1]
+plot "data/densiteRGB.dat" using 1:2 with lines lc rgb"red" title "red", "data/densiteRGB.dat" using 1:3 with lines lc rgb"green" title "green" , "data/densiteRGB.dat" using 1:4 with lines lc rgb"blue" title "blue" 
+
+
+set output "repartitionRGB.png"
+set title "Fonction de répartition"
+set yrange[0:1]
+
+plot "data/repartitionRGB.dat" using 1:2 with lines lc rgb"red" title "red","data/repartitionRGB.dat" using 1:3 with lines lc rgb"green" title "green" ,"data/repartitionRGB.dat" using 1:4 with lines lc rgb"blue" title "blue" 
+
+
