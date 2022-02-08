@@ -23,8 +23,8 @@ class State
         State(bool boatSide)
         {
             this->boatSide =boatSide;
-            this->cannibal =make_pair(3,0);
-            this->missionary =make_pair(0,3);
+            this->cannibal =make_pair(5,0);
+            this->missionary =make_pair(0,5);
             this->people=0;
             this->labelChain= string("");
 
@@ -172,7 +172,7 @@ class State
             }
         }
 
-            bool checkCannibalSide()
+        bool checkCannibalSide()
         {
             if(cannibal.second)
              return (cannibal.first-boat.first) <= (cannibal.second+boat.second);
@@ -186,7 +186,7 @@ class State
         }
         bool finish()
         {
-            return cannibal.second==3 && missionary.first==3;
+            return cannibal.second==5 && missionary.first==5;
         }
     public:
         bool boatSide;

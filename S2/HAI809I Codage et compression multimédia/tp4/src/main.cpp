@@ -6,6 +6,8 @@
 #include <cassert>
 #include <math.h>
 #include <bitset>
+#include <fstream>
+#include <string>
 
 struct couleur
 {
@@ -249,11 +251,47 @@ void write(ostream& str, const bitset& bs)
     }
 }
 */
+int stringTochar(std::string mybitset)
+{
+    int n = 0;
+
+    for (int i = 0; i < mybitset.size(); i++) {
+        n <<= 1;
+        n |= mybitset[i] - '0';
+    }
+
+    return n;
+}
+int write_bit(unsigned char * byte, int *pos, FILE* fp, unsigned char e)
+{
+    int written;
+    if(*pos==8) //si les 8bits sont remplis
+    {
+        written = fputc(*byte, fp); //on écrit l'octet dans le fichier
+        if(written==EOF)
+            return -1;
+        *byte=0; //on initialise ensuite la pos et le buffer
+        *pos=0;
+      }
+
+    if( e =='1') // si c'est un 1
+    {
+        *byte |= 0x1 <<(7-(*pos)); //on réalise un "ou" binaire qui va assigner le décalage de 7 - position bits
+                                    // pour le buffer
+    }
+    if(e=='0'); //si c'est 0 on ne change rien, on part de 0000 0000 pour travailler donc les 0 ne changent pas
+    (*pos)++;
+    if(*pos >8) // cas où on dépasserait, cela n'arrive jamais en théorie
+    {
+        printf("\n DEPASSEMENT \n");
+        *pos=0;
+    }
+}
 void codageParPlage(ImageG &image,char * out ,int nW,int nH)
 {
     int plage = 5; // 5 bits par plage 
     int i=0;
-    std::string codage;
+    std::string codage = std::string("");
     while(i< (nH*nH)-1 )
     {
         int px = image[i/nW][i%nW];
@@ -263,40 +301,24 @@ void codageParPlage(ImageG &image,char * out ,int nW,int nH)
             i++;
             counter++;
         }
-        while(px == image[i/nW][i%nW]&&counter<pow(2,plage) );
+        while(px == image[i/nW][i%nW] && counter<pow(2,5) );
+
         std::string binary = std::bitset<8>(px).to_string();
         std::string counterString = std::bitset<5>(counter).to_string();
+       
         codage+=binary+counterString;
         i++;
+    }
+    // 8 -> 13
+    FILE * fp = fopen("codage.mlc", "wb+");
 
-    }
-    std::cout<<codage;
-    for(int i =0; i < codage.size();i++)
+    for(int i =0; i < codage.size()/8;i+=8)
     {
-        std::string mybitset;
+        std::string mybitset= std::string("");
         for(int j = 0 ; j <8;j++)
-            mybitset+=codage[i];
-        std::bitset<8> octet(mybitset); 
+            mybitset+=codage[i+j];
+        fputc(stringTochar(mybitset)+'0', fp);
     }
-    //for (size_t i = 0; i < nH*nW; i++)
-	//{
-		//for (size_t j = 0; j < nW; j++)
-		//{
-            //int px = image[i/nW][i%nW];
-            //int bit =0;
-            // 5 bits 32 valeurs
-            // 0 - 255 -> 8 bits
-            //std::cout<<px<<"\n";
-            //std::string binary = std::bitset<8>(px).to_string();
-            /*
-            int count = 1;
-            while (i < n - 1 && str[i] == str[i + 1]) {
-                count++;
-                i++;
-            }
-            */
-        //}
-    //}
 
 }
 int main(int argc, char* argv[]) {
@@ -345,7 +367,7 @@ int main(int argc, char* argv[]) {
     saveImage(makeFinalPath2( folderOut, (char*)"Cb_2",inputName), nH,nW,Cb);
     */
     ImageG image;
-    double Q1 = 5.,Q2=5.;
+    double Q1 = 20.,Q2=20.;
     lire_nb_lignes_colonnes_image_pgm(pathIn, &nH, &nW);
     resize(image,nW,nH);
     loadImage(pathIn,image,nW, nH);
