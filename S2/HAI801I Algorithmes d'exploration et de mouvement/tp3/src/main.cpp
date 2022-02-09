@@ -109,8 +109,8 @@ string intToChar(int bit,int size)
     int n =log2(bit);
     int x=1<<n;
     //cout<<"val: "<<n<<endl;
-    n = n == 0 ? 1 :n; 
-    for(int i = n; i<(size*size);i++)result+='0';
+    //n = n == 0 ? 1 :n; 
+    for(int i = n; i<(size*size)-1;i++)result+='0';
 
     //cout<<result<<"\n";
     while(bit>0&&x!=0)
@@ -166,8 +166,9 @@ class State
         /*unsigned  long long *///int bitboard;
         int bitboard[2];
         int size;
+        int size2;
         // 0 for O and 1 for X
-        bool turnState;
+        int turnState;
 
     State(int size)
     {
@@ -177,6 +178,7 @@ class State
             Allocation du tableau et transformation en int
             int -> 5
             sinon choisir plus ou tableau de int
+            -> max entier 1<<(size2)-1
         */
         
         /*
@@ -198,16 +200,46 @@ class State
         free(bitboardCharO);
         free(bitboardCharX);
         */
+        
         this->size=size;
-        this->bitboard[0]=512;
-        this->bitboard[1]=4;
+        this->size2=size*size;
+        this->turnState = 0;
+        this->bitboard[0]=0;
+        this->bitboard[1]=0;
    
+    }
+    void play(int i)
+    {   
+        int x = (1<<i);
+        int ennemyPos = this->bitboard[!turnState];
+        /*
+        printf("TOUR: %d \n",turnState);
+        printf("board: %d \n",a);
+        printf("board: %d \n",(2>>1)&1);
+        printf("board: %d \n",(8>>2)&1);
+        
+        cout<<intToChar( this->bitboard[!turnState],size)<<"\n";
+        cout<<intToChar( (this->bitboard[!turnState]>>i),size)<<"\n";
+        cout<<intToChar( (this->bitboard[!turnState]>>i)&1,size)<<"\n";
+        printf("board: %d \n",(ennemyPos>>i) );
+        printf("board: %d \n",(ennemyPos>>i)&1);
+        */
+        // Ennemmy at pos i
+        if( !((ennemyPos>>i)&1) )
+        {
+             this->bitboard[turnState]+=x;
+        }
+        turnState = !turnState;
     }
     void printBoard()
     {
+        
         cout<<"Board :\n";
         string boardStringO = intToChar( this->bitboard[0],size);  
         string boardStringX = intToChar( this->bitboard[1],size); 
+        
+        char c = !turnState==0 ? 'O' : 'X';
+        printf("TOUR: %c \n",c);
         for(int i = 0 ; i < this->size;i++)
         {
             for(int j = 0 ; j < this->size;j++)
@@ -233,14 +265,14 @@ class State
 };
 int main() {
 
-   
-    /*char * bitString = (char*)"110001";
-    int bit =charToint(bitString,strlen(bitString+1)); 
-    cout<<bit;
-    cout<<"\n"+intToChar(49);*/
+    int size = 3;
+    State init = State(size);
 
-    State init = State(3);
-    init.printBoard();
+    for(int i = 0 ; i < (size*size);i++)
+    {
+        init.play(i);
+        init.printBoard();
+    }
 
 
 }
