@@ -23,8 +23,8 @@ class State
         State(bool boatSide)
         {
             this->boatSide =boatSide;
-            this->cannibal =make_pair(5,0);
-            this->missionary =make_pair(0,5);
+            this->cannibal =make_pair(3,0);
+            this->missionary =make_pair(0,3);
             this->people=0;
             this->labelChain= string("");
 
@@ -186,7 +186,7 @@ class State
         }
         bool finish()
         {
-            return cannibal.second==5 && missionary.first==5;
+            return cannibal.second==3 && missionary.first==3;
         }
     public:
         bool boatSide;
@@ -277,11 +277,18 @@ class Node
 template<typename T>
 void DFS_recursive(Node<T>* root)
 {
-
+    string test="digraph G {\n node [shape=record fontname=Arial];\n";
     root->print();
     root->discovered=true;
+    
+    string label = "v"+to_string(v->indice);
+    labelNodes.push_back(label+" [label=\""+v->data->etatPrint+"\"]\n");
+
     for(auto child : root->children)
     {
+        test+="v"+to_string(v->indice)+" ->"; 
+    
+        test+="v"+to_string(child->indice)+"  [label="+child->data->label+"];\n";
         if(!child->discovered)
         {
             DFS_recursive(child);

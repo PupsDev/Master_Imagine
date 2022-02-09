@@ -63,11 +63,11 @@ class State
             }
             else
             {
-                this->boat.second=missionary;
                 this->boat.first=cannibal;
+                this->boat.second=missionary;
 
-                this->missionary.second-=missionary;                
                 this->missionary.first-=cannibal;
+                this->missionary.second-=missionary;                
 
             }
         }
@@ -102,7 +102,7 @@ class State
         }
         void process()
         {
-
+            count++;
             if(boatSide) // M
             {
                 // Bateau va à droite on enleve les missionaire du côté cannibal 
@@ -130,7 +130,7 @@ class State
         }
         void print()
         {
-            count++;
+            
             
             //cout<<"Iteration"<<count<<"\n";
             
@@ -297,16 +297,21 @@ class Node
             choice->data->label = "C"+to_string(cannibal) + "M"+to_string(missionary);
             choice->data->labelChain +=choice->data->label +"->";
             
-            cout<<"sides\n";
-            cout<<data->leftS<<"\n";
-            cout<<data->rightS<<"\n";
+            //cout<<"sides\n"<<this->indice*100+10*cannibal+missionary;
+            //cout<<"leftAvant\n"<<data->leftS<<"\n";
+            //cout<<"rightAvant\n"<<data->rightS<<"\n";
+            state->print();
             state->transport(cannibal,missionary);
             state->process();
-            if(data->boatSide) // M side
+            state->print();
+            //cout<< "left\n"<<choice->data->leftS<<"\n";
+            //cout<< "right\n"<<choice->data->rightS<<"\n";
+            
+            /*if(data->boatSide) // M side
             {
-                cout<<"missionary\n";
-                cout<<data->missionary.first <<"k"<< data->missionary.second<<"\n";
-                cout<<cannibal <<"k"<< missionary<<"\n";
+                //cout<<"missionary\n";
+                //cout<<data->missionary.first <<"k"<< data->missionary.second<<"\n";
+                //cout<<cannibal <<"k"<< missionary<<"\n";
 
                 if(data->missionary.first==cannibal && data->missionary.second == missionary)
                     return;
@@ -314,16 +319,18 @@ class Node
             }
             else
             {
-                cout<<"cannibal\n";
-                cout<<data->cannibal.first <<"k"<< data->cannibal.second<<"\n";
-                cout<<cannibal <<"k"<< missionary<<"\n";
+                //cout<<"cannibal\n";
+                //cout<<data->cannibal.first <<"k"<< data->cannibal.second<<"\n";
+                //cout<<cannibal <<"k"<< missionary<<"\n";
                 if(data->cannibal.first==cannibal && data->cannibal.second == missionary)
                     return;
                 
                 
-            }
+            }*/
+            //cout<<choice->data->count<<endl;
             children.push_back(choice);
-            choice->haveChild();
+            if(choice->data->count<6)
+                choice->haveChild();
 
         }
         void makechilds(int& cannibalSize, int& missionarySize)
@@ -453,12 +460,13 @@ int main() {
     bool startSide = false;
     Node< State* >* init = new Node< State* >( new State(startSide),0);
     init->haveChild();
-    string test = BFS_iterative(init);
+   
+   /* string test = BFS_iterative(init);
     cout<<"Itérations: "<<init->data->count<<endl;
         FILE *fp;
     fp = fopen("graphLeft.dot", "wb+");
     fprintf(fp,test.data());
-    fclose(fp);
+    fclose(fp);*/
 
 
     

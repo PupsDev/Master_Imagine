@@ -1,4 +1,40 @@
 digraph G {
  node [shape=record fontname=Arial];
+v0 ->v1  [label=C0M1];
+v0 ->v2  [label=C0M2];
+v0 ->v10  [label=C1M0];
+v0 ->v11  [label=C1M1];
+v0 ->v20  [label=C2M0];
+v1 ->v101  [label=C0M1];
+v101 ->v10101  [label=C0M1];
+v101 ->v10102  [label=C0M2];
+v101 ->v10110  [label=C1M0];
+v101 ->v10111  [label=C1M1];
+v101 ->v10120  [label=C2M0];
+v10101 ->v1010101  [label=C0M1];
+v1010101 ->v101010101  [label=C0M1];
+v1010101 ->v101010102  [label=C0M2];
+v1010101 ->v101010110  [label=C1M0];
+v1010101 ->v101010111  [label=C1M1];
+v1010101 ->v101010120  [label=C2M0];
+v101010101 ->v10101010101  [label=C0M1];
 v0 [label="[B] C C C M M M  |       []      | "]
+v1 [label="C C C M M  |       [M ]      | [B] M "]
+v2 [label="C C C M  |       [M M ]      | [B] M M "]
+v10 [label="C C M M M  |       [C ]      | [B] C "]
+v11 [label="C C M M  |       [C M ]      | [B] C M "]
+v20 [label="C M M M  |       [C C ]      | [B] C C "]
+v101 [label="[B] C C C M M M  |       [M ]      | "]
+v10101 [label="C C C M M  |       [M ]      | [B] M "]
+v10102 [label="C C C M  |       [M M ]      | [B] M M "]
+v10110 [label="C C M M M  |       [C ]      | [B] C "]
+v10111 [label="C C M M  |       [C M ]      | [B] C M "]
+v10120 [label="C M M M  |       [C C ]      | [B] C C "]
+v1010101 [label="[B] C C C M M M  |       [M ]      | "]
+v101010101 [label="C C C M M  |       [M ]      | [B] M "]
+v101010102 [label="C C C M  |       [M M ]      | [B] M M "]
+v101010110 [label="C C M M M  |       [C ]      | [B] C "]
+v101010111 [label="C C M M  |       [C M ]      | [B] C M "]
+v101010120 [label="C M M M  |       [C C ]      | [B] C C "]
+v10101010101 [label="[B] C C C M M M  |       [M ]      | "]
 }
