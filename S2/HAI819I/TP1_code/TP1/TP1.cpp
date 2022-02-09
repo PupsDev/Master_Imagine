@@ -24,6 +24,7 @@ using namespace glm;
 #include <common/texture.hpp>
 #include <common/objloader.hpp>
 #include <common/vboindexer.hpp>
+#include "common/functions.cpp"
 
 void processInput(GLFWwindow *window);
 
@@ -44,7 +45,23 @@ float lastFrame = 0.0f;
 float angleRotation = 0.;
 float zoom = 1.;
 /*******************************************************************************/
-
+double OctavePerlin(double x, double y, double z, int octaves, double persistence) {
+    PerlinNoise pn(114);
+    double total = 0;
+    double frequency = 4;
+    double amplitude = 128;
+    double maxValue = 0;  // Used for normalizing result to 0.0 - 1.0
+    for(int i=0;i<octaves;i++) {
+        total += pn.noise(x * frequency, y * frequency, z * frequency) * amplitude;
+        
+        maxValue += amplitude;
+        
+        amplitude *= persistence;
+        frequency *= 2;
+    }
+    
+    return total/maxValue;
+}
 int main( void )
 {
     // Initialise GLFW
@@ -122,12 +139,15 @@ int main( void )
     std::vector<glm::vec3> indexed_vertices;
     std::vector<glm::vec2> indexed_uvs;
 
+    std::vector<unsigned short> indices2; 
+    std::vector<glm::vec3> indexed_vertices2;
+
     //Chargement du fichier de maillage
     //std::string filename("chair.off");
     std::string filename("suzanne.off");
-    //loadOFF(filename, indexed_vertices, indices, triangles );
+    loadOFF(filename, indexed_vertices, indices, triangles );
 
-    int sommets = 64;
+    int sommets = 128;
     float size = 0.2;
     unsigned int seed = 237;
     PerlinNoise pn(seed);
@@ -135,10 +155,28 @@ int main( void )
     mapNoise.resize(sommets);
     for(auto& mn : mapNoise)mn.resize(sommets);
 
+    std::vector<std::vector<double>> mapHeight;
+    mapHeight.resize(sommets);
+    for(auto& mn : mapHeight)mn.resize(sommets);
+
+    ImageG imageG;
+    int nH, nW;
+    lire_nb_lignes_colonnes_image_pgm("heightmap.pgm", &nH, &nW);
+    resize(imageG,nW,nH);
+    
+    loadImage("heightmap.pgm",imageG,nW, nH);
+
+    //saveImage( folderOut, (char*)"originale_",inputName,imageG);
+
+    for(int i = 0 ; i < 128 ; i++)
+        for(int j = 0 ; j < 128 ; j++)
+        {
+            mapHeight[i][j]=(5.*(double)imageG[2*i][2*j])/255.;
+        }
     for(int i = 0 ; i < sommets ; i++)
         for(int j = 0 ; j < sommets ; j++)
         {
-            mapNoise[i][j] = (double)2.* pn.noise(j, i, 0.8) ;
+            mapNoise[i][j] = (double)2.* OctavePerlin(j, i,0.8, 1,1.5) ;
             //std::cout<<mapNoise[i][j]<<std::endl;
         }
     
@@ -160,10 +198,11 @@ int main( void )
     for(int i = 0 ; i < sommets ; i++)
         for(int j = 0 ; j < sommets ; j++)
         {
-            indexed_vertices.push_back( glm::vec3((float)i*size - (sommets/2)*size ,(float)j*size- (sommets/2)*size, mapNoise[i][j]+mapNoise2[i][j]));//size*rand()/RAND_MAX) );
+            indexed_vertices2.push_back( glm::vec3((float)i*size - (sommets/2)*size ,(float)j*size- (sommets/2)*size, mapHeight[i][j]+0.2*mapNoise[i][j]+0.01*mapNoise2[i][j] ));//size*rand()/RAND_MAX) );
             
              
         }
+        
     for(int i = 0 ; i < sommets; i++)
         for(int j = 0; j < sommets ; j++)
         {
@@ -177,42 +216,34 @@ int main( void )
      for(int i = 0 ; i < sommets -1; i++)
         for(int j = 0 ; j < sommets-1 ; j++)
         {
-            indices.push_back(i*sommets +j);
-            indices.push_back(i*sommets +j+1); 
-            indices.push_back((i+1)*sommets +j); 
+            indices2.push_back(i*sommets +j);
+            indices2.push_back(i*sommets +j+1); 
+            indices2.push_back((i+1)*sommets +j); 
 
-            indices.push_back(i*sommets +j+1); 
-            indices.push_back((i+1)*sommets +j); 
-            indices.push_back((i+1)*sommets +j+1); 
+            indices2.push_back(i*sommets +j+1); 
+            indices2.push_back((i+1)*sommets +j); 
+            indices2.push_back((i+1)*sommets +j+1); 
 
         }
+        
         
         
 
     // Load it into a VBO
 
-    GLuint vertexbuffer;
-    glGenBuffers(1, &vertexbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glBufferData(GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::vec3), &indexed_vertices[0], GL_STATIC_DRAW);
 
-    // Generate a buffer for the indices as well
-    GLuint elementbuffer;
-    glGenBuffers(1, &elementbuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0] , GL_STATIC_DRAW);
 
-            GLuint uvbuffer;
-        glGenBuffers(1, &uvbuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-        glBufferData(GL_ARRAY_BUFFER, indexed_uvs.size()* sizeof(glm::vec2), &indexed_uvs[0], GL_STATIC_DRAW);
+    GLuint uvbuffer;
+    glGenBuffers(1, &uvbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+    glBufferData(GL_ARRAY_BUFFER, indexed_uvs.size()* sizeof(glm::vec2), &indexed_uvs[0], GL_STATIC_DRAW);
 
     // Get a handle for our "LightPosition" uniform
     glUseProgram(programID);
     GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
 
     //GLuint Texture = loadBMP_custom((char *)"maison.bmp");
-    GLuint Texture = loadBMP_custom((char *)"mountain.bmp");
+    GLuint Texture = loadBMP_custom((char *)"mountain2.bmp");
     GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, Texture);
@@ -223,6 +254,7 @@ int main( void )
     // For speed computation
     double lastTime = glfwGetTime();
     int nbFrames = 0;
+    float angleRotation2=0.;
     
     float transflateFactor = 1.5;
     float scaleFactor =1.;
@@ -231,9 +263,9 @@ int main( void )
     
     glm::mat4 projectionMatrix  = glm::perspective(45.,4./3.,0.1,100.);
 
-    glm::mat4 scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(scaleFactor));
+    glm::mat4 scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(1.));
     glm::mat4 rotationMatrix  = glm::rotate(glm::mat4(1.0f), 0.f, glm::vec3(1.0));
-    glm::mat4 translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(-1.5f, -transflateFactor,0.0f));
+    glm::mat4 translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(0.f, 0.,0.0f));
 
     GLuint modelID = glGetUniformLocation(programID, "model");
     GLuint viewID = glGetUniformLocation(programID, "view");
@@ -249,7 +281,7 @@ int main( void )
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         processInput(window);
-
+        angleRotation2++;
 
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -265,7 +297,17 @@ int main( void )
         glUniformMatrix4fv(viewID, 1, GL_FALSE, glm::value_ptr(viewMatrix));
         glUniformMatrix4fv(projectionID, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
+            GLuint vertexbuffer;
+        glGenBuffers(1, &vertexbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        glBufferData(GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::vec3), &indexed_vertices[0], GL_STATIC_DRAW);
 
+        // Generate a buffer for the indices as well
+        GLuint elementbuffer;
+        glGenBuffers(1, &elementbuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0] , GL_STATIC_DRAW);
+        
 
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -289,6 +331,13 @@ int main( void )
                     (void*)0           // element array buffer offset
                     );
 
+        //rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation2), glm::vec3(0.,1.,0.0));
+        rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)radians(-angleRotation), glm::vec3(0.,0.,1.0));
+        rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)radians(-angleRotation2), glm::vec3(0.,1.,0.0));
+        translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(-4.f, 2.,0.0f));
+
+        modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
+        glUniformMatrix4fv(modelID, 1, GL_FALSE, glm::value_ptr(modelmatrix));
 
         // Draw the triangles !
         glDrawElements(
@@ -300,41 +349,75 @@ int main( void )
         
 
         float flip = M_PI/4;
-        scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(scaleFactor));
+        scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(1.5*scaleFactor));
         
         //rotationMatrix  = glm::rotate(glm::mat4(1.0f), flip, glm::vec3(1.,0.,0.0));
         rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation), glm::vec3(0.,0.,1.0));
-        rotationMatrix  = glm::rotate(glm::mat4(1.0f), flip, glm::vec3(1.,0.,0.0));
+        rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation2), glm::vec3(0.,1.,0.0));
+        //rotationMatrix  = glm::rotate(glm::mat4(1.0f), flip, glm::vec3(1.,0.,0.0));
         
-        translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(0.f, 0.,0.0f));
+        translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(0.f, 2.,0.0f));
 
         modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
         glUniformMatrix4fv(modelID, 1, GL_FALSE, glm::value_ptr(modelmatrix));
-        /*
+        
         // Draw the triangles !
         glDrawElements(
                     GL_TRIANGLES,      // mode
                     indices.size(),    // count
                     GL_UNSIGNED_SHORT,   // type
                     (void*)0           // element array buffer offset
-                    );*/
-        
-/*
+                    );
+       
+
         scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(1.5*scaleFactor));
-        rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation), glm::vec3(0.,0.,1.0));
-        translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(0.f, 0.,0.0f));
+        rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)M_PI/2, glm::vec3(-1.,0.,0.0));
+        translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(-2.f, -5.,0.0f));
 
         modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
         glUniformMatrix4fv(modelID, 1, GL_FALSE, glm::value_ptr(modelmatrix));
 
+        glGenBuffers(1, &vertexbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        glBufferData(GL_ARRAY_BUFFER, indexed_vertices2.size() * sizeof(glm::vec3), &indexed_vertices2[0], GL_STATIC_DRAW);
+
+        // Generate a buffer for the indices as well
+
+        glGenBuffers(1, &elementbuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices2.size() * sizeof(unsigned short), &indices2[0] , GL_STATIC_DRAW);
+        
+
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        glVertexAttribPointer(
+                    0,                  // attribute
+                    3,                  // size
+                    GL_FLOAT,           // type
+                    GL_FALSE,           // normalized?
+                    0,                  // stridedeltaTime
+                    (void*)0           // element array buffer offset
+                    );
+        
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+        glVertexAttribPointer(
+                    1,                  // attribute
+                    2,                  // size
+                    GL_FLOAT,           // type
+                    GL_FALSE,           // normalized?
+                    0,                  // stridedeltaTime
+                    (void*)0           // element array buffer offset
+                    );
+
                  // Draw the triangles !
         glDrawElements(
                     GL_TRIANGLES,      // mode
-                    indices.size(),    // count
+                    indices2.size(),    // count
                     GL_UNSIGNED_SHORT,   // typecamera_position
                         (void*)0           // element array buffer offset
                     );
-*/
+
     
     
 
@@ -346,8 +429,8 @@ int main( void )
            glfwWindowShouldClose(window) == 0 );
 
     // Cleanup VBO and shader
-    glDeleteBuffers(1, &vertexbuffer);
-    glDeleteBuffers(1, &elementbuffer);
+    //glDeleteBuffers(1, &vertexbuffer);
+    //glDeleteBuffers(1, &elementbuffer);
     glDeleteProgram(programID);
     glDeleteVertexArrays(1, &VertexArrayID);
 

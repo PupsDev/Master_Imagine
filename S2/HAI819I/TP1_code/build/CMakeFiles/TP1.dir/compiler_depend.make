@@ -308,7 +308,10 @@ CMakeFiles/TP1.dir/TP1/TP1.cpp.o: ../TP1/TP1.cpp \
   ../common/PerlinNoise.h \
   ../common/texture.hpp \
   ../common/objloader.hpp \
-  ../common/vboindexer.hpp
+  ../common/vboindexer.hpp \
+  ../common/functions.cpp \
+  ../common/image_ppm.h \
+  /usr/include/c++/10/math.h
 
 CMakeFiles/TP1.dir/common/PerlinNoise.cpp.o: ../common/PerlinNoise.cpp \
   /usr/include/stdc-predef.h \
@@ -1519,6 +1522,10 @@ CMakeFiles/TP1.dir/common/vboindexer.cpp.o: ../common/vboindexer.cpp \
 
 ../common/PerlinNoise.cpp:
 
+/usr/include/c++/10/math.h:
+
+../common/image_ppm.h:
+
 ../common/vboindexer.hpp:
 
 ../common/objloader.hpp:
@@ -1956,6 +1963,8 @@ CMakeFiles/TP1.dir/common/vboindexer.cpp.o: ../common/vboindexer.cpp \
 /usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
 
 /usr/include/c++/10/string:
+
+../common/functions.cpp:
 
 /usr/include/c++/10/bits/cxxabi_forced.h:
 

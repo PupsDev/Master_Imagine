@@ -265,4 +265,7 @@ CMakeFiles/TP1.dir/TP1/TP1.cpp.o: \
  /home/pups/Documents/Master_Imagine/S2/HAI819I/TP1_code/./common/PerlinNoise.h \
  /home/pups/Documents/Master_Imagine/S2/HAI819I/TP1_code/./common/texture.hpp \
  /home/pups/Documents/Master_Imagine/S2/HAI819I/TP1_code/./common/objloader.hpp \
- /home/pups/Documents/Master_Imagine/S2/HAI819I/TP1_code/./common/vboindexer.hpp
+ /home/pups/Documents/Master_Imagine/S2/HAI819I/TP1_code/./common/vboindexer.hpp \
+ /home/pups/Documents/Master_Imagine/S2/HAI819I/TP1_code/./common/functions.cpp \
+ /home/pups/Documents/Master_Imagine/S2/HAI819I/TP1_code/./common/image_ppm.h \
+ /usr/include/c++/10/math.h
