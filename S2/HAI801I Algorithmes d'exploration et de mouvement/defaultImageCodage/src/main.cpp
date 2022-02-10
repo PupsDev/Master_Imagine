@@ -80,7 +80,7 @@ void printImage(NDG image, int nW,int nH)
 int main(int argc, char* argv[]) {
     char inputName[250];
     int nH, nW;
-    char * folderIn = (char*)"res/";
+   char * folderIn = (char*)"../../res/";
     char * folderOut = (char*)"out/"; 
 
     if (argc != 2) 

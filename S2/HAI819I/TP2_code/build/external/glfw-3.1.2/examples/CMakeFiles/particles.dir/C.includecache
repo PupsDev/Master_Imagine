@@ -74,19 +74,19 @@ GL/glext.h
 GL/glu.h
 -
 
-/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/external/glfw-3.1.2/deps/getopt.c
+/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/external/glfw-3.1.2/deps/getopt.c
 getopt.h
-/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/external/glfw-3.1.2/deps/getopt.h
+/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/external/glfw-3.1.2/deps/getopt.h
 stddef.h
 -
 string.h
 -
 
-/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/external/glfw-3.1.2/deps/getopt.h
+/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/external/glfw-3.1.2/deps/getopt.h
 
-/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/external/glfw-3.1.2/deps/tinycthread.c
+/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/external/glfw-3.1.2/deps/tinycthread.c
 tinycthread.h
-/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/external/glfw-3.1.2/deps/tinycthread.h
+/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/external/glfw-3.1.2/deps/tinycthread.h
 stdlib.h
 -
 signal.h
@@ -104,7 +104,7 @@ process.h
 sys/timeb.h
 -
 
-/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/external/glfw-3.1.2/deps/tinycthread.h
+/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/external/glfw-3.1.2/deps/tinycthread.h
 time.h
 -
 pthread.h
@@ -112,7 +112,7 @@ pthread.h
 windows.h
 -
 
-/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/external/glfw-3.1.2/examples/particles.c
+/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/external/glfw-3.1.2/examples/particles.c
 stdlib.h
 -
 stdio.h

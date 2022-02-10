@@ -6,5 +6,5 @@ C_FLAGS =   -Wall
 
 C_DEFINES = -DGLEW_STATIC -DTW_NO_DIRECT3D -DTW_NO_LIB_PRAGMA -DTW_STATIC -D_CRT_SECURE_NO_WARNINGS
 
-C_INCLUDES = -I/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/external/glfw-3.1.2/include -I/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/external/glfw-3.1.2/deps 
+C_INCLUDES = -I/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/external/glfw-3.1.2/include -I/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/external/glfw-3.1.2/deps 
 

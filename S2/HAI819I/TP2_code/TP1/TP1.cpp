@@ -47,7 +47,7 @@ float angleRotation = 0.;
 float zoom = 1.;
 /*******************************************************************************/
 
-int sommets = 16;
+int sommets = 64;
 int resolution=0;
 
 std::vector<glm::vec2> indexed_uvs;

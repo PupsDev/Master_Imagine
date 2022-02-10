@@ -36,7 +36,7 @@ GL/glew.h
 windows.h
 -
 
-/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/external/glew-1.13.0/src/glew.c
+/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/external/glew-1.13.0/src/glew.c
 GL/glew.h
 -
 GL/wglew.h

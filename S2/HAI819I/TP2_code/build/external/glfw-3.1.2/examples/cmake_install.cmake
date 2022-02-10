@@ -1,4 +1,4 @@
-# Install script for directory: /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/external/glfw-3.1.2/examples
+# Install script for directory: /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/external/glfw-3.1.2/examples
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

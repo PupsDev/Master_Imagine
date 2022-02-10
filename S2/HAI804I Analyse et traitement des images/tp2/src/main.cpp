@@ -534,7 +534,7 @@ int main(int argc, char* argv[]) {
     sscanf (argv[2],"%d",&composante);
      sscanf (argv[3],"%s",inputName2) ;
 
-    char * folderIn = (char*)"";
+    char * folderIn = (char*)"../../res/";
     char * folderOut = (char*)"out/"; 
 
     char * pathIn = makePath(inputName,folderIn);

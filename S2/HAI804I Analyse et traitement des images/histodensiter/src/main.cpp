@@ -189,7 +189,7 @@ bool IsPathExist(const std::string &s)
 int main(int argc, char* argv[]) {
     char inputName[250];
     int nH, nW;
-    char * folderIn = (char*)"res/";
+   char * folderIn = (char*)"../../res/";
     char * folderOut = (char*)"out/"; 
      int color ;
 

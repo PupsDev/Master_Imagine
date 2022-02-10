@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
     sscanf (argv[1],"%s",inputName) ;
     sscanf (argv[2],"%d",&composante);
 
-    char * folderIn = (char*)"res/";
+   char * folderIn = (char*)"../../res/";
     char * folderOut = (char*)"out/"; 
 
     char * pathIn = makePath(inputName,folderIn);

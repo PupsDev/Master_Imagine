@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code
+CMAKE_SOURCE_DIR = /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/build
+CMAKE_BINARY_DIR = /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/TP1.dir/depend.make
@@ -59,94 +59,94 @@ include CMakeFiles/TP1.dir/flags.make
 
 CMakeFiles/TP1.dir/TP1/TP1.cpp.o: CMakeFiles/TP1.dir/flags.make
 CMakeFiles/TP1.dir/TP1/TP1.cpp.o: ../TP1/TP1.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/TP1.dir/TP1/TP1.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/TP1.dir/TP1/TP1.cpp.o -c /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/TP1/TP1.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/TP1.dir/TP1/TP1.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/TP1.dir/TP1/TP1.cpp.o -c /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/TP1/TP1.cpp
 
 CMakeFiles/TP1.dir/TP1/TP1.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/TP1.dir/TP1/TP1.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/TP1/TP1.cpp > CMakeFiles/TP1.dir/TP1/TP1.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/TP1/TP1.cpp > CMakeFiles/TP1.dir/TP1/TP1.cpp.i
 
 CMakeFiles/TP1.dir/TP1/TP1.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/TP1.dir/TP1/TP1.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/TP1/TP1.cpp -o CMakeFiles/TP1.dir/TP1/TP1.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/TP1/TP1.cpp -o CMakeFiles/TP1.dir/TP1/TP1.cpp.s
 
 CMakeFiles/TP1.dir/common/shader.cpp.o: CMakeFiles/TP1.dir/flags.make
 CMakeFiles/TP1.dir/common/shader.cpp.o: ../common/shader.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/TP1.dir/common/shader.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/TP1.dir/common/shader.cpp.o -c /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/shader.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/TP1.dir/common/shader.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/TP1.dir/common/shader.cpp.o -c /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/shader.cpp
 
 CMakeFiles/TP1.dir/common/shader.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/TP1.dir/common/shader.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/shader.cpp > CMakeFiles/TP1.dir/common/shader.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/shader.cpp > CMakeFiles/TP1.dir/common/shader.cpp.i
 
 CMakeFiles/TP1.dir/common/shader.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/TP1.dir/common/shader.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/shader.cpp -o CMakeFiles/TP1.dir/common/shader.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/shader.cpp -o CMakeFiles/TP1.dir/common/shader.cpp.s
 
 CMakeFiles/TP1.dir/common/controls.cpp.o: CMakeFiles/TP1.dir/flags.make
 CMakeFiles/TP1.dir/common/controls.cpp.o: ../common/controls.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/TP1.dir/common/controls.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/TP1.dir/common/controls.cpp.o -c /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/controls.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/TP1.dir/common/controls.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/TP1.dir/common/controls.cpp.o -c /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/controls.cpp
 
 CMakeFiles/TP1.dir/common/controls.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/TP1.dir/common/controls.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/controls.cpp > CMakeFiles/TP1.dir/common/controls.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/controls.cpp > CMakeFiles/TP1.dir/common/controls.cpp.i
 
 CMakeFiles/TP1.dir/common/controls.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/TP1.dir/common/controls.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/controls.cpp -o CMakeFiles/TP1.dir/common/controls.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/controls.cpp -o CMakeFiles/TP1.dir/common/controls.cpp.s
 
 CMakeFiles/TP1.dir/common/texture.cpp.o: CMakeFiles/TP1.dir/flags.make
 CMakeFiles/TP1.dir/common/texture.cpp.o: ../common/texture.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/TP1.dir/common/texture.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/TP1.dir/common/texture.cpp.o -c /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/texture.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/TP1.dir/common/texture.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/TP1.dir/common/texture.cpp.o -c /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/texture.cpp
 
 CMakeFiles/TP1.dir/common/texture.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/TP1.dir/common/texture.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/texture.cpp > CMakeFiles/TP1.dir/common/texture.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/texture.cpp > CMakeFiles/TP1.dir/common/texture.cpp.i
 
 CMakeFiles/TP1.dir/common/texture.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/TP1.dir/common/texture.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/texture.cpp -o CMakeFiles/TP1.dir/common/texture.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/texture.cpp -o CMakeFiles/TP1.dir/common/texture.cpp.s
 
 CMakeFiles/TP1.dir/common/PerlinNoise.cpp.o: CMakeFiles/TP1.dir/flags.make
 CMakeFiles/TP1.dir/common/PerlinNoise.cpp.o: ../common/PerlinNoise.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/TP1.dir/common/PerlinNoise.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/TP1.dir/common/PerlinNoise.cpp.o -c /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/PerlinNoise.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/TP1.dir/common/PerlinNoise.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/TP1.dir/common/PerlinNoise.cpp.o -c /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/PerlinNoise.cpp
 
 CMakeFiles/TP1.dir/common/PerlinNoise.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/TP1.dir/common/PerlinNoise.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/PerlinNoise.cpp > CMakeFiles/TP1.dir/common/PerlinNoise.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/PerlinNoise.cpp > CMakeFiles/TP1.dir/common/PerlinNoise.cpp.i
 
 CMakeFiles/TP1.dir/common/PerlinNoise.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/TP1.dir/common/PerlinNoise.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/PerlinNoise.cpp -o CMakeFiles/TP1.dir/common/PerlinNoise.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/PerlinNoise.cpp -o CMakeFiles/TP1.dir/common/PerlinNoise.cpp.s
 
 CMakeFiles/TP1.dir/common/objloader.cpp.o: CMakeFiles/TP1.dir/flags.make
 CMakeFiles/TP1.dir/common/objloader.cpp.o: ../common/objloader.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/TP1.dir/common/objloader.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/TP1.dir/common/objloader.cpp.o -c /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/objloader.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/TP1.dir/common/objloader.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/TP1.dir/common/objloader.cpp.o -c /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/objloader.cpp
 
 CMakeFiles/TP1.dir/common/objloader.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/TP1.dir/common/objloader.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/objloader.cpp > CMakeFiles/TP1.dir/common/objloader.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/objloader.cpp > CMakeFiles/TP1.dir/common/objloader.cpp.i
 
 CMakeFiles/TP1.dir/common/objloader.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/TP1.dir/common/objloader.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/objloader.cpp -o CMakeFiles/TP1.dir/common/objloader.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/objloader.cpp -o CMakeFiles/TP1.dir/common/objloader.cpp.s
 
 CMakeFiles/TP1.dir/common/vboindexer.cpp.o: CMakeFiles/TP1.dir/flags.make
 CMakeFiles/TP1.dir/common/vboindexer.cpp.o: ../common/vboindexer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/TP1.dir/common/vboindexer.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/TP1.dir/common/vboindexer.cpp.o -c /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/vboindexer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/TP1.dir/common/vboindexer.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/TP1.dir/common/vboindexer.cpp.o -c /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/vboindexer.cpp
 
 CMakeFiles/TP1.dir/common/vboindexer.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/TP1.dir/common/vboindexer.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/vboindexer.cpp > CMakeFiles/TP1.dir/common/vboindexer.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/vboindexer.cpp > CMakeFiles/TP1.dir/common/vboindexer.cpp.i
 
 CMakeFiles/TP1.dir/common/vboindexer.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/TP1.dir/common/vboindexer.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/common/vboindexer.cpp -o CMakeFiles/TP1.dir/common/vboindexer.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/common/vboindexer.cpp -o CMakeFiles/TP1.dir/common/vboindexer.cpp.s
 
 # Object files for target TP1
 TP1_OBJECTS = \
@@ -192,9 +192,9 @@ TP1: /usr/lib/x86_64-linux-gnu/libXcursor.so
 TP1: /usr/lib/x86_64-linux-gnu/libGL.so
 TP1: /usr/lib/x86_64-linux-gnu/libGLU.so
 TP1: CMakeFiles/TP1.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable TP1"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable TP1"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/TP1.dir/link.txt --verbose=$(VERBOSE)
-	/usr/bin/cmake -E copy /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/build/./TP1 /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/TP1/
+	/usr/bin/cmake -E copy /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/./TP1 /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/TP1/
 
 # Rule to build all files generated by this target.
 CMakeFiles/TP1.dir/build: TP1
@@ -206,6 +206,6 @@ CMakeFiles/TP1.dir/clean:
 .PHONY : CMakeFiles/TP1.dir/clean
 
 CMakeFiles/TP1.dir/depend:
-	cd /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/build /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/build /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/build/CMakeFiles/TP1.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/CMakeFiles/TP1.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/TP1.dir/depend
 

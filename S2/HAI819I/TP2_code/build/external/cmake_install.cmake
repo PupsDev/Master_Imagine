@@ -1,4 +1,4 @@
-# Install script for directory: /home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/external
+# Install script for directory: /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/external
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,7 +39,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/e20150011037/Documents/Master_Imagine-main/S2/HAI819I/TP2_code/build/external/glfw-3.1.2/cmake_install.cmake")
+  include("/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/external/glfw-3.1.2/cmake_install.cmake")
 
 endif()
 
