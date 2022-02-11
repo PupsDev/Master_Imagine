@@ -171,16 +171,12 @@ void ondelette1D(ImageG &data, int nW,int nH, double Q1, double Q2)
             O = 1./Q1 * O;
             Y = 1./Q2 * Y;
             Z = 1./Q2 * Z;
-
+            std::cout<<O<<" "<<Y<<" "<<Z<<" "<<std::endl;
             out[(i / 2)][(j / 2)] =                     std::max( std::min(255.,X),0.);
-			out[(i / 2)][nW / 2 + (j / 2)] =            std::max( std::min(255.,Y+128.),0.);
-			out[nH / 2 + (i / 2)][(j / 2)] =            std::max( std::min(255.,Z+128.),0.);
-			out[nH / 2 + (i / 2)][nW / 2 + (j / 2)] =   std::max( std::min(255.,O+128.),0.);
-            
-            BF[i/2][j/2]= std::max( std::min(255.,X),0.);
-            MFV[i/2][j/2]=std::max( std::min(255.,Y+128.),0.);
-            MFH[i/2][j/2]=std::max( std::min(255.,Z+128.),0.);
-            HF [i/2][j/2]=std::max( std::min(255.,O+128.),0.);
+            out[(i / 2)][nW / 2 + (j / 2)] =            std::max( std::min(255.,Y +128.),0.);
+			out[nH / 2 + (i / 2)][(j / 2)] =            std::max( std::min(255.,Z +128.),0.);
+			out[nH / 2 + (i / 2)][nW / 2 + (j / 2)] =   std::max( std::min(255.,O +128.),0.);
+
 
 		}
 	}
@@ -191,12 +187,14 @@ void ondelette1D(ImageG &data, int nW,int nH, double Q1, double Q2)
             data[i][j]=out[i][j];
         }
     }
+    /*
     char * folderOut = (char*)"out/"; 
     char * inputName = (char*)"lena256.pgm"; 
     saveImage(makeFinalPath( folderOut, (char*)"BF",inputName), nH/2,nW/2,BF);
     saveImage(makeFinalPath( folderOut, (char*)"MFV_",inputName), nH/2,nW/2,MFV);
     saveImage(makeFinalPath( folderOut, (char*)"MFH_",inputName), nH/2,nW/2,MFH);
     saveImage(makeFinalPath( folderOut, (char*)"HF_",inputName), nH/2,nW/2,HF);
+    */
 }
 
 /*
@@ -233,24 +231,7 @@ void ondelette2(ImageG &image, int nW,int nH, double Q1, double Q2)
     }
     */
 }
-/*
-void write(ostream& str, const bitset& bs)
-{
-    while( bits_remaining_in_bs )
-    {
-        int bitstoextract = 8 - bitswritten;
 
-        bitbuffer |= extract_bits_from_bitset( bs, bitstoextract );
-        
-        if(bitswritten == 8)
-        {
-            str.write(&bitbuffer,1);
-            bitswritten = 0;
-            bitbuffer = 0;
-        }
-    }
-}
-*/
 int stringTochar(std::string mybitset)
 {
     int n = 0;
@@ -292,48 +273,66 @@ void codageParPlage(ImageG &image,char * out ,int nW,int nH)
     int plage = 5; // 5 bits par plage 
     int i=0;
     std::string codage = std::string("");
-    while(i< (nH*nH)-1 )
+    std::vector<int> test;
+    for(int i = 0 ; i < nH;i++)
     {
-        int px = image[i/nW][i%nW];
-        int counter = 1;
+        for(int j =0  ; j < nH;j++)
+        {
+            test.push_back(image[i][j]);
+        }
+
+    }
+
+    while(i< (nH*nH))
+    {
+        int px = test[i];
+        int counter = 0;
+        int j=0;
         do
         {
-            i++;
+            j++;
             counter++;
         }
-        while(px == image[i/nW][i%nW] && counter<pow(2,5) );
-
+        while(px == test[i+j] && counter<pow(2,5) );
+        i+=counter;
+        /*if(counter==32)
+            std::cout<<test[i]<<std::endl;*/
         std::string binary = std::bitset<8>(px).to_string();
         std::string counterString = std::bitset<5>(counter).to_string();
-       
+        //cout<<"\n"<<binary<<" "<<counterString<<endl;
         codage+=binary+counterString;
-        i++;
+ 
     }
+    
+    //cout<<codage<<endl;
     // 8 -> 13
     FILE * fp = fopen("codage.mlc", "wb+");
 
-    for(int i =0; i < codage.size()/8;i+=8)
+    for(int i =0; i < codage.size();i+=8)
     {
         std::string mybitset= std::string("");
         for(int j = 0 ; j <8;j++)
             mybitset+=codage[i+j];
-        fputc(stringTochar(mybitset)+'0', fp);
+        //cout<<stringTochar(mybitset)<<endl;
+        fputc(stringTochar(mybitset), fp);
     }
 
 }
 int main(int argc, char* argv[]) {
     char inputName[250];
     int nH, nW;
-   char * folderIn = (char*)"../../res/";
+    char * folderIn = (char*)"../../res/";
     char * folderOut = (char*)"out/"; 
-
-    if (argc != 2) 
+    int q1,q2;
+    if (argc != 4) 
     {
-        printf("Usage: ImageIn.ppm   \n"); 
+        printf("Usage: ImageIn.ppm  q1 q2 \n"); 
         exit (1) ;
     }
 
     sscanf (argv[1],"%s",inputName) ;
+    sscanf (argv[2],"%s",&q1) ;
+    sscanf (argv[3],"%s",&q2) ;
 
     char * pathIn = makePath(inputName,folderIn);
     /*
@@ -371,7 +370,7 @@ int main(int argc, char* argv[]) {
     lire_nb_lignes_colonnes_image_pgm(pathIn, &nH, &nW);
     resize(image,nW,nH);
     loadImage(pathIn,image,nW, nH);
-    ondelette2(image,nW,nH,Q1,Q2);
+    ondelette2(image,nW,nH,q1,q2);
     codageParPlage(image,(char*)"out",nW,nH);
     saveImage(makeFinalPath( folderOut, (char*)"originale_",inputName), nH,nW,image);
 

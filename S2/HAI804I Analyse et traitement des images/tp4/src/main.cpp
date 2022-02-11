@@ -284,25 +284,44 @@ float carteDeVerite(ImageG seuil, ImageG seuilGimp, float &x, float &y,float &re
 
             if( (seuil[i][j] == seuilGimp[i][j])&&(seuilGimp[i][j]==0) ) //VP
             {
+                VN++;
+            }
+            else if( (seuil[i][j] == seuilGimp[i][j])&&(seuilGimp[i][j]==255) ) //VN
+            {
                 VP++;
             }
-            if( (seuil[i][j] == seuilGimp[i][j])&&(seuilGimp[i][j]==255) ) //VN
+            else if( (seuil[i][j] !=seuilGimp[i][j]) &&(seuilGimp[i][j]==0) ) // FOND FP
+            {
+                FN++;
+            }
+            else if( (seuil[i][j] !=seuilGimp[i][j]) &&(seuilGimp[i][j]==255) ) // OBJET FN
+            {   
+                FP++;
+
+            }
+            /*if( (seuil[i][j] == seuilGimp[i][j])&&(seuilGimp[i][j]==0) ) //VP
+            {
+                VP++;
+            }
+            else if( (seuil[i][j] == seuilGimp[i][j])&&(seuilGimp[i][j]==255) ) //VN
             {
                 VN++;
             }
-            if( (seuil[i][j] !=seuilGimp[i][j]) &&(seuilGimp[i][j]==0) ) // FOND FP
+            else if( (seuil[i][j] !=seuilGimp[i][j]) &&(seuilGimp[i][j]==0) ) // FOND FP
             {
                 FP++;
             }
-            if( (seuil[i][j] !=seuilGimp[i][j]) &&(seuilGimp[i][j]==255) ) // OBJET FN
+            else if( (seuil[i][j] !=seuilGimp[i][j]) &&(seuilGimp[i][j]==255) ) // OBJET FN
             {   
                 FN++;
 
-            }
+            }*/
         }
         //std::cout<<VP<<" "<<VN<<" "<<FP<<" "<<FN<<std::endl;
         y = VP/(VP+FN);
-        x = 1.-VN/(VN+FP);
+
+        x = VN/(VN+FP);
+
         recall=VP/(VP+FN);
         precision=VP/(VP+FP);
         f1 = (2*recall+precision)/(recall+precision);
@@ -398,7 +417,7 @@ int main(int argc, char* argv[]) {
 
             d2 = carteDeVerite(imageG2, imageGimp,x,y,recall,precision,f1);
             std::cout<<x <<y<<std::endl;
-            fprintf(file,"%f %f\n",x, y);
+            fprintf(file,"%f %f\n",y, x);
         
             if(d2<d)
             {
