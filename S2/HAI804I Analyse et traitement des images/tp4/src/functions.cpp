@@ -141,3 +141,84 @@ void saveImage(char * pathOut,char * salt,char * inputName,ImageRGB image )
 {
     saveImage(makeFinalPath( pathOut, salt,inputName), image.size(),image[0].size(),image);
 }
+void erosion(std::vector<std::vector<int>> &image, int nH, int nW, int c)
+{
+    std::vector<std::vector<int>> erosionMatrix {
+                { 0, 1, 0 },
+                { 1, 1, 1 },
+                { 0, 1, 0 }
+            };
+
+
+    int boundary = erosionMatrix.size()/2;
+    std::vector<std::vector<int>> image2;
+    image2.resize(nH);
+    for(auto & line: image2)
+        line.resize(nW);
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+          
+           image2[i][j] =image[i][j];
+
+        }
+    }
+
+    for(int i = boundary ; i < image.size()-(boundary+1); i++)
+    {
+        int s = image[i].size();
+        for(int j = boundary ; j < s-(boundary+1); j++)
+        {
+
+            // compute erosion
+            for(int u = -boundary ; u < (boundary+1); u++)
+            {
+                for(int v = -boundary ; v < (boundary+1); v++)
+                {
+                    int p = i+u;
+                    int k = j+v;
+                    if( (p>=0 && p<nH) && (k>=0 && k<nW))
+                    {
+                        if( erosionMatrix[boundary+u][boundary+v] && image[p][k]==c )
+                        {
+                            image2[i][j]=c;
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+    for (int i=0; i < nH; i++)
+    {
+        for (int j=0; j < nW ; j++)
+        {
+          
+           image[i][j] =image2[i][j];
+
+        }
+    }
+
+}
+void invert(std::vector<std::vector<int>> &image, int nH, int nW)
+{
+    for(int i = 0 ; i < image.size();i++)
+    {
+         int s = image[i].size();
+        for(int j = 0 ; j < s;j++)
+        {
+            image[i][j]=255-image[i][j];
+        }
+    }
+
+}
+void dilatation(std::vector<std::vector<int>> &image, int nH, int nW, int c)
+{
+
+    invert(image,nH,nW);
+    erosion(image,nH,nW,c);
+    invert(image,nH,nW);
+
+}
