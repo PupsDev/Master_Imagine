@@ -8,6 +8,7 @@
 #include <bitset>
 #include <fstream>
 #include <string>
+#include "linalg.h"
 
 struct couleur
 {
@@ -153,7 +154,6 @@ void ondelette1D(ImageG &data, int nW,int nH, double Q1, double Q2)
     resize(MFH,nW/2,nH/2);
     resize(HF,nW/2,nH/2);
 
-    std::cout<<nW<<nH<<std::endl;
     for (size_t i = 0; i < nH-1; i++)
 	{
 		for (size_t j = 0; j < nW-1; j++)
@@ -163,19 +163,33 @@ void ondelette1D(ImageG &data, int nW,int nH, double Q1, double Q2)
 			double C = data[i+1][j];
 			double D = data[i+1][j+1];
 
-			double X = double(A + B + C + D) / 4;
-			double Y = double(A + B - C - D) / 2;
-			double Z = double(A - B + C - D) / 2;
-			double O = double(A - B - C + D);
+            linalg::aliases::double4x4 a_matrix{ {0.25,0.25,0.25,0.25},
+            
+                                                {0.5,0.5,-0.5,-0.5},
+            
+                                                {0.5,-0.5,0.5,-0.5},
+            
+                                                {1,-1.,-1.,1},
+                                                };
+            linalg::aliases::double4 outVec = linalg::mul(transpose(a_matrix), linalg::aliases::double4(A,B,C,D));
+
+            double X = outVec[0];
+            double Y = outVec[1];
+            double Z = outVec[2];
+            double O = outVec[3];
 
             O = 1./Q1 * O;
             Y = 1./Q2 * Y;
             Z = 1./Q2 * Z;
-            std::cout<<O<<" "<<Y<<" "<<Z<<" "<<std::endl;
             out[(i / 2)][(j / 2)] =                     std::max( std::min(255.,X),0.);
             out[(i / 2)][nW / 2 + (j / 2)] =            std::max( std::min(255.,Y +128.),0.);
 			out[nH / 2 + (i / 2)][(j / 2)] =            std::max( std::min(255.,Z +128.),0.);
 			out[nH / 2 + (i / 2)][nW / 2 + (j / 2)] =   std::max( std::min(255.,O +128.),0.);
+            BF[i/2][j/2]=  X;
+            MFV[i/2][j/2]= Y;
+            MFH[i/2][j/2]= Z;
+            HF[i/2][j/2]=  O;
+
 
 
 		}
@@ -187,14 +201,15 @@ void ondelette1D(ImageG &data, int nW,int nH, double Q1, double Q2)
             data[i][j]=out[i][j];
         }
     }
-    /*
+
+    
     char * folderOut = (char*)"out/"; 
     char * inputName = (char*)"lena256.pgm"; 
     saveImage(makeFinalPath( folderOut, (char*)"BF",inputName), nH/2,nW/2,BF);
     saveImage(makeFinalPath( folderOut, (char*)"MFV_",inputName), nH/2,nW/2,MFV);
     saveImage(makeFinalPath( folderOut, (char*)"MFH_",inputName), nH/2,nW/2,MFH);
     saveImage(makeFinalPath( folderOut, (char*)"HF_",inputName), nH/2,nW/2,HF);
-    */
+    
 }
 
 /*
@@ -274,7 +289,15 @@ void codageParPlage(ImageG &image,char * out ,int nW,int nH)
     int i=0;
     std::string codage = std::string("");
     std::vector<int> test;
-    for(int i = 0 ; i < nH;i++)
+    for(int i = 0 ; i < nH/2;i++)
+    {
+        for(int j =nH/2  ; j < nH;j++)
+        {
+            test.push_back(image[i][j]);
+        }
+
+    }
+    for(int i = nH/2 ; i < nH;i++)
     {
         for(int j =0  ; j < nH;j++)
         {
@@ -282,7 +305,15 @@ void codageParPlage(ImageG &image,char * out ,int nW,int nH)
         }
 
     }
+    FILE * fp = fopen("codage.mlc", "wb+");
+    for(int i = 0 ; i < nH/2;i++)
+    {
+        for(int j =0  ; j < nH/2;j++)
+        {
+            fputc(image[i][j], fp);
+        }
 
+    }
     while(i< (nH*nH))
     {
         int px = test[i];
@@ -306,7 +337,7 @@ void codageParPlage(ImageG &image,char * out ,int nW,int nH)
     
     //cout<<codage<<endl;
     // 8 -> 13
-    FILE * fp = fopen("codage.mlc", "wb+");
+    
 
     for(int i =0; i < codage.size();i+=8)
     {

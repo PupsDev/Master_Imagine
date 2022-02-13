@@ -1,0 +1,2 @@
+
+plot "psnr.dat" u 2:3 with lines

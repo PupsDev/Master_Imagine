@@ -162,41 +162,63 @@ void inverseOndelette(ImageG &image, int q1, int q2)
     resize(HF,nW/2,nH/2);
 
     //std::cout<<nW<<nH<<std::endl;
+    for (size_t i = 0; i < nH; i++)
+	{
+		for (size_t j = 0; j < nW; j++)
+		{
+			BF[i/2][j/2] = image[(i / 2)][(j / 2)];
+			MFV[i/2][j/2] = q2*(image[(i / 2)][nW / 2 + (j / 2)]-128);
+			MFH[i/2][j/2] = q1*(image[nH / 2 + (i / 2)][(j / 2)]-128);
+			HF[i/2][j/2] = q2*(image[nH / 2 + (i / 2)][nW / 2 + (j / 2)]-128);
+            //BF[i/2][j/2] =std::max( std::min(255.,(double)BF[i/2][j/2]),0.);
+            //MFV[i/2][j/2] =std::max( std::min(255.,(double)MFV[i/2][j/2]),0.);
+            //MFH[i/2][j/2] =std::max( std::min(255.,(double)MFH[i/2][j/2]),0.);
+            //HF[i/2][j/2] =std::max( std::min(255.,(double)HF[i/2][j/2]),0.);
+
+		}
+	}
+    saveImage(makeFinalPath( (char*)"", (char*)"BFt_",(char*)"test.pgm"), nH/2,nW/2,BF);
+    saveImage(makeFinalPath( (char*)"", (char*)"MFV_",(char*)"test.pgm"), nH/2,nW/2,MFV);
+    saveImage(makeFinalPath( (char*)"", (char*)"MFH_",(char*)"test.pgm"), nH/2,nW/2,MFH);
+    saveImage(makeFinalPath( (char*)"", (char*)"HFt_",(char*)"test.pgm"), nH/2,nW/2,HF);
     for (size_t i = 0; i < nH-1; i+=2)
 	{
 		for (size_t j = 0; j < nW-1; j+=2)
 		{
-			double X = image[(i / 2)][(j / 2)];
-			double Y = q2*(image[(i / 2)][nW / 2 + (j / 2)]-128);
-			double Z = q2*(image[nH / 2 + (i / 2)][(j / 2)]-128);
-			double O = q1*(image[nH / 2 + (i / 2)][nW / 2 + (j / 2)]-128);
 
-            //X= std::max( std::min(255.,X),0.);
-            //Y= std::max( std::min(255.,Y),0.);
-            //O= std::max( std::min(255.,O),0.);
-            linalg::aliases::double4x4 a_matrix{ {0,1./8.,1./8.,0},
-                                                {1./4.,0,0,-1./4.},
-                                                {1./4.,-1./4.,0,0},
-                                                {0,0,-1./2.,-1./2.},
+            double X = BF[i/2][j/2];
+            double Y = MFV[i/2][j/2];
+            double Z = MFH[i/2][j/2];
+            double O = HF[i/2][j/2];
+
+            
+            linalg::aliases::double4x4 a_matrix2{ {1.,0.5,0.5,0.25},
+                                                    {1.,0.5,-0.5,-0.25},
+                                                    {1.,-0.5,0.5,-0.25},
+                                                    {1.,-0.5,-0.5,0.25},
                                                 };
-            linalg::aliases::double4 outVec = linalg::mul(transpose(a_matrix), linalg::aliases::double4(X,Y,Z,O));
-            cout<<outVec[0]<<" "<<outVec[1]<<" "<<outVec[2]<<" "<<outVec[3]<<" "<<endl;
+            linalg::aliases::double4 outVec = linalg::mul(transpose(a_matrix2), linalg::aliases::double4(X,Y,Z,O));
+            //cout<<outVec[0]<<" "<<outVec[1]<<" "<<outVec[2]<<" "<<outVec[3]<<" "<<endl;
 
-			double A = X;//double(2*X+Y+Z+O/2.);
-			double B = X+outVec[1];//double(4*X+2*Y-A);
-			double D = X+outVec[2];//2*((-X-Z)+A);
-			double C = X+outVec[3];//-(4*X - A - B- D);
-            //Y = 1./Q2 * Y;
-            //Z = 1./Q2 * Z;
-            //cout<<A<<" "<<B<<" "<<C<<" "<<D<<endl;
+			double A = outVec[0];//double(2*X+Y+Z+O/2.);
+			double B = outVec[1];//double(4*X+2*Y-A);
+			double C = outVec[2];//-(4*X - A - B- D);
+			double D = outVec[3];//2*((-X-Z)+A);
+            
             out[i][j] =     std::max( std::min(255.,A),0.);
 			out[i][j+1] =   std::max( std::min(255.,B),0.);
 			out[i+1][j] =   std::max( std::min(255.,C),0.);
 			out[i+1][j+1] = std::max( std::min(255.,D),0.);
-            
+        }
+    }
+    for (size_t i = 0; i < nH-1; i++)
+	{
+		for (size_t j = 0; j < nW-1; j++)
+		{
+              image[i][j]= out[i][j];
+        }
+    }
 
-		}
-	}
 
     char * folderOut = (char*)""; 
     char * inputName = (char*)"image.pgm"; 
@@ -222,6 +244,20 @@ void save(int imageDecode[])
             }
             free(imgColor);
 }
+float psnr(ImageG ImgIn,ImageG ImgOut, int nH, int nW)
+{
+  int d =255;
+  float diff =0.;
+  for(int i =0; i < nH; i++)
+  {
+    for(int j =0; j < nW ; j++)
+    {
+        diff += sqrt( (ImgIn[i][j]-ImgOut[i][j])*(ImgIn[i][j]-ImgOut[i][j]) );
+    }
+  }
+    float EQM = 1./(nH*nW) * diff;
+  return 10*log10(d*d / EQM);
+}
 int main(int argc, char* argv[]) {
     char inputName[250];
     int nH=256, nW=256;
@@ -240,9 +276,18 @@ int main(int argc, char* argv[]) {
     char * pathIn = makePath(inputName,folderIn);
     ImageG image;
     resize(image,256,256);
+
+    ImageG imageOriginale;
+    resize(imageOriginale,256,256);
+    loadImage((char*)"../../res/lena256.pgm",imageOriginale,256,256);
+
     decode(inputName,image);
     inverseOndelette(image,q1,q2);
     saveImage(makeFinalPath( folderOut, (char*)"originale_",(char*)"output.pgm"), nH,nW,image);
+    FILE * fp = fopen("psnr.dat", "a");
+    float psnrval = psnr(imageOriginale,image,256,256);
+    std::cout<<"PSNR:"<<psnrval;
+    fprintf(fp,"%d %d %f\n",q1,q2,psnrval);
     //codageParPlage();
 
 
