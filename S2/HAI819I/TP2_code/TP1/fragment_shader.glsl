@@ -10,18 +10,22 @@ uniform sampler2D myTextureSampler[6];
 
 void main(){
         
-        float factor = texture(myTextureSampler[3], UV ).r ;
-        if(factor< 0.1){
-                color = mix( texture( myTextureSampler[0], UV ).rgb,texture( myTextureSampler[1], UV ).rgb,factor);
+        float factor = texture(myTextureSampler[4], UV ).r;
+        if(factor< 0.33){
+                color = vec3(0.,0.,1.);
 
         }
-        else if (factor < 0.5)
+        else if(factor< 0.66){
+                color = mix(  vec3(0.,0.,1.),texture( myTextureSampler[0], UV ).rgb,factor);
+
+        }
+        else if (factor < 0.9)
         {
-                color = mix(texture( myTextureSampler[1], UV ).rgb,texture( myTextureSampler[2], UV ).rgb,factor);
+                color = mix(texture( myTextureSampler[0], UV ).rgb,texture( myTextureSampler[1], UV ).rgb,factor);
         }
         else
         {
-                color = texture( myTextureSampler[2], UV ).rgb;
+                color = mix(texture( myTextureSampler[1], UV ).rgb,texture( myTextureSampler[2], UV ).rgb,factor);
 
         }
 

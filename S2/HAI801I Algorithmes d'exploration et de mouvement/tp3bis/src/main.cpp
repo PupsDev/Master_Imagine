@@ -142,15 +142,84 @@ class Node
             int i = move-1;
             int x = (1<<i);
             int res;
-            if(!checkWin(board[turn]))
+            if(!checkWin(board[turn]) || (board[0]+board[1])==511)
             {
                 if(checkMove(i))
                 {
                     board[turn]+=x;
                 }
 
-            }            
+            }
+            else
+            {
+                
+                if(checkWin(board[turn]) )
+                {
+                    this->value = turn == 0 ? 1 : -1;
+                }
+                else if(checkWin(board[!turn]) )
+                {
+                    this->value = turn == 1 ? 1 : -1;
+                }
+                else 
+                    this->value =0;
+
+            }           
             turn = 1-turn;
+        }
+        int minimax(int depth,int player)
+        {
+            int res;
+            int score = 0;
+
+            int bestScore = 0;
+            if(depth == 0 || (board[0]+board[1])==511)
+            {
+                //printBoard();
+                cout<<this->value<<"\n";
+                return this->value;
+            }
+            if(player)
+            {
+                res = -INT32_MAX;
+                for(int i = 0 ; i < SIZE*SIZE;i++)
+                {
+                    Node<int>* child = new Node<int>(this);
+
+                    if(checkMove(i+1))
+                    {
+                        child->play(i+1);
+                        res = child->minimax(depth-1,!player);
+                        children.push_back(child);
+                        if(res > bestScore)
+                        {
+                            bestScore = res;
+                        }
+                    }   
+                }
+            }
+            else
+            {
+                res = INT32_MAX;
+                for(int i = 0 ; i < SIZE*SIZE;i++)
+                {
+                    Node<int>* child = new Node<int>(this);
+
+                    if(checkMove(i+1))
+                    {
+                        child->play(i+1);
+                        res = child->minimax(depth-1,player);
+                        children.push_back(child);
+
+                        
+                        if(res < bestScore)
+                        {
+                            bestScore = res;  
+                        }
+                    }    
+                }        
+            }
+            return res;
         }
         std::vector<Node*> children;
         int value;
@@ -181,6 +250,7 @@ int play(int board[2],int turn,int move)
     turn = 1-turn;
     return res;
 }
+/*
 int minimax(int board[2],int depth,int player, int &move)
 {
     int res;
@@ -196,6 +266,7 @@ int minimax(int board[2],int depth,int player, int &move)
         }
         else 
             res =0;
+        cout<<"value "<<res<<"\n";
         return res;
     }
     if(player)
@@ -203,27 +274,26 @@ int minimax(int board[2],int depth,int player, int &move)
         res = -INT32_MAX;
         for(int i = 0 ; i < SIZE*SIZE;i++)
         {
-            if(checkMove(board,i,player))
+            if(checkMove(board,i,!player))
             {
+
                 play(board,player,i+1);
+                
                 res = minimax(board,depth-1,!player,move);
                 int x = (1<<i);
-                board[player]-=x;
+                board[!player]-=x;
 
                 if(res > bestScore)
                 {
                     bestScore = res;
                     move=i;
                 }
-            }    
-
+            }   
         }
-        //cout<<"Move: "<<move<<"\n";
     }
     else
     {
         res = INT32_MAX;
-        
         for(int i = 0 ; i < SIZE*SIZE;i++)
         {
             if(checkMove(board,i,player))
@@ -239,13 +309,11 @@ int minimax(int board[2],int depth,int player, int &move)
                     move=i;
                 }
             }    
-
-        }
-        //cout<<"Move: "<<move<<"\n";
-        
+        }        
     }
     return res;
 }
+*/
 
 int main() {
 
@@ -258,11 +326,19 @@ int main() {
     //root->tryAllMove();
     //root->try_move();
     root->play(1);
+    //root->play(2);
+    //root->play(4);
+    //root->play(3);
+    //root->play(6);
+    //root->play(5);
+    //root->play(8);
+    //root->tryAllMove();
+
     //root->play(5);
     root->printBoard();
     int move=0;
-    cout<<minimax(root->board,10,1,move);
-    cout<<"Move ! -> "<<move;
+    cout<<root->minimax(10,1);
+    cout<<"Move ! -> "<<move<<"\n";
     return 0;
     
 }

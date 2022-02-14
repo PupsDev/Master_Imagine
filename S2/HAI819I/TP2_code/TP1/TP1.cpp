@@ -43,12 +43,15 @@ float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
 //rotation
-float angleRotation = 0.;
+float angleRotation = 1.;
+float coeffAngle2 = 1.;
+float angleRotation2=0.;
 float zoom = 1.;
 /*******************************************************************************/
 
 int sommets = 64;
-int resolution=0;
+double resolution=32.;
+int orbital = 1;
 
 std::vector<glm::vec2> indexed_uvs;
 std::vector<unsigned short> indices2; 
@@ -71,31 +74,42 @@ double OctavePerlin(double x, double y, double z, int octaves, double persistenc
     
     return total/maxValue;
 }
-void createMap(    std::vector<unsigned short> &indices,std::vector<glm::vec3> &indexed_vertices,std::vector<glm::vec2> &indexed_uvs, int sommets)
+void createMap(    std::vector<unsigned short> &indices,std::vector<glm::vec3> &indexed_vertices,std::vector<glm::vec2> &indexed_uvs, double sommets)
 {
     indexed_vertices.clear();
     indexed_uvs.clear();
     indices.clear();
     float size = 0.2;
-    std::cout<<"sommets:"<<sommets<<"\n";
+    //std::cout<<"sommets:"<<sommets<<"\n";
+    int sizeMap = 128;
+    unsigned int seed = 237;
+    PerlinNoise pn(seed);
+    std::vector<std::vector<double>> mapNoise;
+
+    mapNoise.resize(sommets);
+    for(auto& mn : mapNoise)mn.resize(sommets);
+
     for(int i = 0 ; i < sommets ; i++)
         for(int j = 0 ; j < sommets ; j++)
         {
-            indexed_vertices.push_back( glm::vec3((float)i*size - (sommets/2)*size ,(float)j*size- (sommets/2)*size,0./* mapHeight[i][j]+0.2*mapNoise[i][j]+0.01*mapNoise2[i][j]*/ ));//size*rand()/RAND_MAX) );
-            
+            mapNoise[i][j] = (double)5.* pn.noise(j, i, 0.8) ;
+            //std::cout<<mapNoise[i][j]<<std::endl;
+        }
+
+    for(int i = 0 ; i < sommets ; i++)
+        for(int j = 0 ; j < sommets ; j++)
+        {
+            indexed_vertices.push_back( glm::vec3((float)(i*sizeMap/sommets)*size - (sizeMap/2)*size ,(float)(j*sizeMap/sommets)*size- (sizeMap/2)*size,0.2*mapNoise[i][j]));//size*rand()/RAND_MAX) );
              
         }
         
     for(int i = 0 ; i < sommets; i++)
         for(int j = 0; j < sommets ; j++)
         {
-
-
             indexed_uvs.push_back( glm::vec2(1.-(float)(i)/(sommets+1) ,1.-(float)(j)/(sommets+1) ));
-   
+
         }
         
-
      for(int i = 0 ; i < sommets -1; i++)
         for(int j = 0 ; j < sommets-1 ; j++)
         {
@@ -173,6 +187,7 @@ int main( void )
 
     // Create and compile our GLSL program from the shaders
     GLuint programID = LoadShaders( "vertex_shader.glsl", "fragment_shader.glsl" );
+    GLuint programID2 = LoadShaders( "vertex_shader2.glsl", "fragment_shader2.glsl" );
     
 
    
@@ -194,15 +209,8 @@ int main( void )
 
     
     float size = 0.2;
-    unsigned int seed = 237;
-    PerlinNoise pn(seed);
-    std::vector<std::vector<double>> mapNoise;
-    mapNoise.resize(sommets);
-    for(auto& mn : mapNoise)mn.resize(sommets);
 
-    std::vector<std::vector<double>> mapHeight;
-    mapHeight.resize(sommets);
-    for(auto& mn : mapHeight)mn.resize(sommets);
+
 
     ImageG imageG;
     int nH, nW;
@@ -212,66 +220,9 @@ int main( void )
     loadImage("heightmap.pgm",imageG,nW, nH);
 
     //saveImage( folderOut, (char*)"originale_",inputName,imageG);
+    createMap(  indices2,indexed_vertices2,indexed_uvs,  resolution);
 
-    for(int i = 0 ; i < sommets ; i++)
-        for(int j = 0 ; j < sommets ; j++)
-        {
-            mapHeight[i][j]=(5.*(double)imageG[2*i][2*j])/255.;
-        }
-    for(int i = 0 ; i < sommets ; i++)
-        for(int j = 0 ; j < sommets ; j++)
-        {
-            mapNoise[i][j] = (double)2.* OctavePerlin(j, i,0.8, 1,1.5) ;
-            //std::cout<<mapNoise[i][j]<<std::endl;
-        }
     
-    PerlinNoise pn2(114);
-    std::vector<std::vector<double>> mapNoise2;
-    mapNoise2.resize(sommets);
-    for(auto& mn : mapNoise2)mn.resize(sommets);
-
-    for(int i = 0 ; i < sommets ; i+=2)
-        for(int j = 0 ; j < sommets ; j+=2)
-        {
-            mapNoise2[i][j] = (double)2.* pn2.noise(j, i, 0.8) ;
-            mapNoise2[i+1][j] = (double)2.* pn2.noise(j, i, 0.8) ;
-            mapNoise2[i][j+1] = (double)2.* pn2.noise(j, i, 0.8) ;
-            mapNoise2[i+1][j+1] = (double)2.* pn2.noise(j, i, 0.8) ;
-            //std::cout<<mapNoise2[i][j]<<std::endl;
-        }
-/*
-    for(int i = 0 ; i < sommets ; i++)
-        for(int j = 0 ; j < sommets ; j++)
-        {
-            indexed_vertices2.push_back( glm::vec3((float)i*size - (sommets/2)*size ,(float)j*size- (sommets/2)*size,0./* mapHeight[i][j]+0.2*mapNoise[i][j]+0.01*mapNoise2[i][j] ));//size*rand()/RAND_MAX) );
-            
-             
-        }
-        
-    for(int i = 0 ; i < sommets; i++)
-        for(int j = 0; j < sommets ; j++)
-        {
-
-
-            indexed_uvs.push_back( glm::vec2(1.-(float)(i)/(sommets+1) ,1.-(float)(j)/(sommets+1) ));
-   
-        }
-        
-
-     for(int i = 0 ; i < sommets -1; i++)
-        for(int j = 0 ; j < sommets-1 ; j++)
-        {
-            indices2.push_back(i*sommets +j);
-            indices2.push_back(i*sommets +j+1); 
-            indices2.push_back((i+1)*sommets +j); 
-
-            indices2.push_back(i*sommets +j+1); 
-            indices2.push_back((i+1)*sommets +j); 
-            indices2.push_back((i+1)*sommets +j+1); 
-
-        }
-        */
-    createMap(  indices2,indexed_vertices2,indexed_uvs,  sommets);
         
         
 
@@ -290,15 +241,6 @@ int main( void )
 
     //GLuint Texture = loadBMP_custom((char *)"maison.bmp");
     GLuint Texture = loadBMP_custom((char *)"mountain.bmp");
-  
-    //glActiveTexture(GL_TEXTURE0);
-    //glBindTexture(GL_TEXTURE_2D, Texture);
-
-    //GLuint Texture2 = loadBMP_custom((char *)"mountain.bmp");
-
-    //GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");
-    //GLuint TextureID2  = glGetUniformLocation(programID, "myTextureSampler2");
-    std::cout<<"TEST";
 
     GLuint TextureMountain[6];
     TextureMountain[0] = loadBMP_custom((char *)"textures/tex_grass.bmp");
@@ -310,13 +252,7 @@ int main( void )
     //TextureMountain[5] = loadBMP_custom((char *)"textures/hmap_rocky.bmp");
     TextureMountain[5] = loadBMP_custom((char *)"mountain.bmp");
     GLuint TextureID[6];
-    /*std::cout<<"TEST";
-    for(int i = 0 ; i < 6;i++)
-    {
-        std::string textureSamplerString = std::string("myTextureSampler[")+(char*)i+std::string("]");
-        std::cout<<textureSamplerString;
-        //TextureID[i]  = glGetUniformLocation(programID,(char*)textureSamplerString.c_str() );
-    }   */
+
     TextureID[0]  = glGetUniformLocation(programID,"myTextureSampler[0]" );
     TextureID[1]  = glGetUniformLocation(programID,"myTextureSampler[1]" );
     TextureID[2]  = glGetUniformLocation(programID,"myTextureSampler[2]" );
@@ -343,7 +279,7 @@ int main( void )
     // For speed computation
     double lastTime = glfwGetTime();
     int nbFrames = 0;
-    float angleRotation2=0.;
+
     
     float transflateFactor = 1.5;
     float scaleFactor =1.;
@@ -360,6 +296,14 @@ int main( void )
     GLuint viewID = glGetUniformLocation(programID, "view");
     GLuint projectionID  = glGetUniformLocation(programID, "projection");
 
+    glUseProgram(programID2);
+    GLuint TextureID2;
+    TextureID2  = glGetUniformLocation(programID2,"myTextureSampler2" );
+
+    GLuint modelID2 = glGetUniformLocation(programID2, "model");
+    GLuint viewID2 = glGetUniformLocation(programID2, "view");
+    GLuint projectionID2  = glGetUniformLocation(programID2, "projection");
+
 
     do{
 
@@ -370,33 +314,32 @@ int main( void )
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         processInput(window);
-        angleRotation2++;
+        angleRotation2+=max(1.f,(coeffAngle2/10));
 
-        if(resolution!=0)
-        {
-            if(resolution)
-                createMap(  indices2,indexed_vertices2,indexed_uvs,  sommets=32);
-            else
-                createMap(  indices2,indexed_vertices2,indexed_uvs,  sommets=8); 
-            resolution = 0;
-        }
+        angleRotation2 = (angleRotation2 > 360) ? 0 : angleRotation2;
+
 
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Use our shader
-        glUseProgram(programID);
+        glUseProgram(programID2);
         glm::mat4 viewMatrix  = glm::lookAt(camera_position,camera_position+camera_target,camera_up);
-
+        if(orbital)
+        {
+            camera_position = glm::vec3(-1.,20.,40.);
+            camera_target= glm::vec3(0.0f, 0.0f, -1.0f);
+             glm::mat4 viewMatrix  = glm::lookAt(camera_position,camera_position+camera_target,camera_up);
+        }
 
         modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*modelmatrix;
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, Texture);
-        glUniform1i(TextureID[0], 0);
+        glUniform1i(TextureID2, 0);
 
-        glUniformMatrix4fv(modelID, 1, GL_FALSE, glm::value_ptr(modelmatrix));
-        glUniformMatrix4fv(viewID, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-        glUniformMatrix4fv(projectionID, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+        glUniformMatrix4fv(modelID2, 1, GL_FALSE, glm::value_ptr(modelmatrix));
+        glUniformMatrix4fv(viewID2, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+        glUniformMatrix4fv(projectionID2, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
             GLuint vertexbuffer;
         glGenBuffers(1, &vertexbuffer);
@@ -433,34 +376,38 @@ int main( void )
                     );
 
         //rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation2), glm::vec3(0.,1.,0.0));
+         scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(5.*scaleFactor));
         rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)radians(-angleRotation), glm::vec3(0.,0.,1.0));
         rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)radians(-angleRotation2), glm::vec3(0.,1.,0.0));
-        translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(-4.f, 2.,0.0f));
+        translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(-10.f, 20.,0.0f));
 
         modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
-        glUniformMatrix4fv(modelID, 1, GL_FALSE, glm::value_ptr(modelmatrix));
+        glUniformMatrix4fv(modelID2, 1, GL_FALSE, glm::value_ptr(modelmatrix));
 
         // Draw the triangles !
+        
         glDrawElements(
                     GL_TRIANGLES,      // mode
                     indices.size(),    // count
                     GL_UNSIGNED_SHORT,   // type
                     (void*)0           // element array buffer offset
                     );
+                    
         
 
         float flip = M_PI/4;
-        scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(1.5*scaleFactor));
+        scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(5.*scaleFactor));
         
         //rotationMatrix  = glm::rotate(glm::mat4(1.0f), flip, glm::vec3(1.,0.,0.0));
-        rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation), glm::vec3(0.,0.,1.0));
+
+        rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)radians(-angleRotation), glm::vec3(0.,0.,1.0));
         rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation2), glm::vec3(0.,1.,0.0));
         //rotationMatrix  = glm::rotate(glm::mat4(1.0f), flip, glm::vec3(1.,0.,0.0));
         
-        translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(0.f, 2.,0.0f));
+        translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(0.f, 20.,0.0f));
 
         modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
-        glUniformMatrix4fv(modelID, 1, GL_FALSE, glm::value_ptr(modelmatrix));
+        glUniformMatrix4fv(modelID2, 1, GL_FALSE, glm::value_ptr(modelmatrix));
         
         // Draw the triangles !
         glDrawElements(
@@ -471,13 +418,21 @@ int main( void )
                     );
        
         // PLAN
-
+        glUseProgram(programID);
         scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(1.5*scaleFactor));
-        rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)M_PI/2, glm::vec3(-1.,0.,0.0));
+        if(orbital)
+        {
+             rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)M_PI/2, glm::vec3(-1.,0.,0.0));
+             rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation2), glm::vec3(0.,0.,1.0));
+        }
+        else
+            rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)M_PI/2, glm::vec3(-1.,0.,0.0));
         translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(-2.f, -5.,0.0f));
 
         modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
-        glUniformMatrix4fv(modelID, 1, GL_FALSE, glm::value_ptr(modelmatrix));
+        glUniformMatrix4fv(modelID2, 1, GL_FALSE, glm::value_ptr(modelmatrix));
+        glUniformMatrix4fv(viewID2, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+        glUniformMatrix4fv(projectionID2, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
         
        
         glGenBuffers(1, &vertexbuffer);
@@ -489,6 +444,10 @@ int main( void )
         glGenBuffers(1, &elementbuffer);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices2.size() * sizeof(unsigned short), &indices2[0] , GL_STATIC_DRAW);
+            
+        glGenBuffers(1, &uvbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+        glBufferData(GL_ARRAY_BUFFER, indexed_uvs.size()* sizeof(glm::vec2), &indexed_uvs[0], GL_STATIC_DRAW);
         
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, TextureMountain[0]);
@@ -518,6 +477,29 @@ int main( void )
 
                  // Draw the triangles !
         glDrawElements(
+                    GL_TRIANGLES,      // mode
+                    indices2.size(),    // count
+                    GL_UNSIGNED_SHORT,   // typecamera_position
+                        (void*)0           // element array buffer offset
+                    );
+
+        translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(34.f, -5.,0.0f));
+        
+        /*for(int i = 0 ; i < resolution ; i++)
+        for(int j = 0 ; j < resolution ; j++)
+        {
+            indexed_vertices2[i][j]=indexed_vertices2[i][j];
+             
+        }*/
+        
+             
+        glGenBuffers(1, &vertexbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        glBufferData(GL_ARRAY_BUFFER, indexed_vertices2.size() * sizeof(glm::vec3), &indexed_vertices2[0], GL_STATIC_DRAW);
+
+        modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
+        glUniformMatrix4fv(modelID2, 1, GL_FALSE, glm::value_ptr(modelmatrix));
+                glDrawElements(
                     GL_TRIANGLES,      // mode
                     indices2.size(),    // count
                     GL_UNSIGNED_SHORT,   // typecamera_position
@@ -554,7 +536,7 @@ void processInput(GLFWwindow *window)
         glfwSetWindowShouldClose(window, true);
 
     //Camera zoom in and out
-    float cameraSpeed = 2.5 * deltaTime;
+    float cameraSpeed = 20. * deltaTime;
     float angle = 0.01;
     if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS)
         camera_position += cameraSpeed * camera_target;
@@ -568,13 +550,13 @@ void processInput(GLFWwindow *window)
         camera_position += cameraSpeed * glm::vec3(1.,0.,0.);
     
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        camera_position -= cameraSpeed * glm::vec3(0.,0.,1.);
+        camera_position += cameraSpeed * camera_target;
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        camera_position += cameraSpeed * glm::vec3(0.,0.,1.);
+        camera_position -= cameraSpeed * camera_target;
 
-    if (glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera_position += cameraSpeed * glm::vec3(0.,1.,0.);
-    if (glfwGetKey(window, GLFW_KEY_KP_2) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         camera_position -= cameraSpeed * glm::vec3(0.,1.,0.);
     
     if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
@@ -582,24 +564,40 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS)
         camera_target =  glm::rotateY(camera_target,-angle);
     
+    if (glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS)
+        camera_target =  glm::rotateX(camera_target,angle);
+    if (glfwGetKey(window, GLFW_KEY_KP_2) == GLFW_PRESS)
+        camera_target =  glm::rotateX(camera_target,-angle);
+    
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+        coeffAngle2++;
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+        coeffAngle2 = coeffAngle2--<1?1:coeffAngle2;
     if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS)
     {
-        std::cout<<"sommets:"<<sommets<<"\n";
-        resolution = 1;
+
+        resolution+=1;
+        std::cout<<"resolution : "<<resolution<<std::endl;  
         
-        //createMap(  indices2,indexed_vertices2,indexed_uvs,  sommets);
+        createMap(  indices2,indexed_vertices2,indexed_uvs,  resolution);
     }
     if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS)
     {
-        std::cout<<"sommets:"<<sommets<<"\n";
-        resolution = -1;
-        //createMap(  indices2,indexed_vertices2,indexed_uvs,  sommets);
+
+        resolution = resolution-- ==1 ? 1: resolution;
+        std::cout<<"resolution : "<<resolution<<std::endl;
+        createMap(  indices2,indexed_vertices2,indexed_uvs,  resolution);
     }  
 
-    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
         angleRotation ++;
-    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
         angleRotation --;
+    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+    {
+        orbital =!orbital;
+            
+    }
 
     //TODO add translations
 
