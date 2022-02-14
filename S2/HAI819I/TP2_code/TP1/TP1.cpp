@@ -123,6 +123,55 @@ void createMap(    std::vector<unsigned short> &indices,std::vector<glm::vec3> &
 
         }
 }
+void createMap2(    std::vector<unsigned short> &indices,std::vector<glm::vec3> &indexed_vertices,std::vector<glm::vec2> &indexed_uvs, double sommets)
+{
+    indexed_vertices.clear();
+    indexed_uvs.clear();
+    indices.clear();
+    float size = 0.2;
+    //std::cout<<"sommets:"<<sommets<<"\n";
+    int sizeMap = 128;
+    unsigned int seed = 237;
+    PerlinNoise pn(seed);
+    std::vector<std::vector<double>> mapNoise;
+
+    mapNoise.resize(sommets);
+    for(auto& mn : mapNoise)mn.resize(sommets);
+
+    for(int i = 0 ; i < sommets ; i++)
+         for(int j = 0; j < sommets ; j++)
+        {
+            mapNoise[i][j] = (double)5.* pn.noise(j, i, 0.8) ;
+            //std::cout<<mapNoise[i][j]<<std::endl;
+        }
+
+    for(int i = 0 ; i < sommets ; i++)
+        for(int j = 0; j < sommets ; j++)
+        {
+            indexed_vertices.push_back( glm::vec3((float)(i*sizeMap/sommets)*size - (sizeMap/2)*size ,(float)(j*sizeMap/sommets)*size- (sizeMap/2)*size,0.2*mapNoise[i][j]));//size*rand()/RAND_MAX) );
+             
+        }
+        
+    for(int i = 0 ; i < sommets; i++)
+         for(int j = 0; j < sommets ; j++)
+        {
+            indexed_uvs.push_back( glm::vec2(1.-(float)(sommets-i)/(sommets+1) ,1.-(float)(j)/(sommets+1) ));
+
+        }
+        
+     for(int i = 0 ; i < sommets -1; i++)
+        for(int j = 0 ; j < sommets-1 ; j++)
+        {
+            indices.push_back(i*sommets +j);
+            indices.push_back(i*sommets +j+1); 
+            indices.push_back((i+1)*sommets +j); 
+
+            indices.push_back(i*sommets +j+1); 
+            indices.push_back((i+1)*sommets +j); 
+            indices.push_back((i+1)*sommets +j+1); 
+
+        }
+}
 int main( void )
 {
     // Initialise GLFW
@@ -418,6 +467,7 @@ int main( void )
                     );
        
         // PLAN
+        createMap(  indices2,indexed_vertices2,indexed_uvs,  resolution);
         glUseProgram(programID);
         scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(1.5*scaleFactor));
         if(orbital)
@@ -483,7 +533,7 @@ int main( void )
                         (void*)0           // element array buffer offset
                     );
 
-        translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(34.f, -5.,0.0f));
+        translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(35.f, -5.,0.0f));
         
         /*for(int i = 0 ; i < resolution ; i++)
         for(int j = 0 ; j < resolution ; j++)
@@ -491,14 +541,42 @@ int main( void )
             indexed_vertices2[i][j]=indexed_vertices2[i][j];
              
         }*/
-        
+        createMap2(  indices2,indexed_vertices2,indexed_uvs,  resolution);
              
         glGenBuffers(1, &vertexbuffer);
         glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
         glBufferData(GL_ARRAY_BUFFER, indexed_vertices2.size() * sizeof(glm::vec3), &indexed_vertices2[0], GL_STATIC_DRAW);
+                glGenBuffers(1, &elementbuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices2.size() * sizeof(unsigned short), &indices2[0] , GL_STATIC_DRAW);
+            
+        glGenBuffers(1, &uvbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+        glBufferData(GL_ARRAY_BUFFER, indexed_uvs.size()* sizeof(glm::vec2), &indexed_uvs[0], GL_STATIC_DRAW);
 
         modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
         glUniformMatrix4fv(modelID2, 1, GL_FALSE, glm::value_ptr(modelmatrix));
+                glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        glVertexAttribPointer(
+                    0,                  // attribute
+                    3,                  // size
+                    GL_FLOAT,           // type
+                    GL_FALSE,           // normalized?
+                    0,                  // stridedeltaTime
+                    (void*)0           // element array buffer offset
+                    );
+        
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+        glVertexAttribPointer(
+                    1,                  // attribute
+                    2,                  // size
+                    GL_FLOAT,           // type
+                    GL_FALSE,           // normalized?
+                    0,                  // stridedeltaTime
+                    (void*)0           // element array buffer offset
+                    );
+
                 glDrawElements(
                     GL_TRIANGLES,      // mode
                     indices2.size(),    // count
