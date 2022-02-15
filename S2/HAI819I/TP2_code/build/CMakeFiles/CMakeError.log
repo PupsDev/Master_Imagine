@@ -1,21 +1,21 @@
 Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
 Change Dir: /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/make cmTC_ee2a5/fast && /usr/bin/make -f CMakeFiles/cmTC_ee2a5.dir/build.make CMakeFiles/cmTC_ee2a5.dir/build
+Run Build Command(s):/usr/bin/make cmTC_dc6c1/fast && /usr/bin/make -f CMakeFiles/cmTC_dc6c1.dir/build.make CMakeFiles/cmTC_dc6c1.dir/build
 make[1] : on entre dans le répertoire « /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/CMakeFiles/CMakeTmp »
-Building C object CMakeFiles/cmTC_ee2a5.dir/src.c.o
-/usr/bin/cc   -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_ee2a5.dir/src.c.o   -c /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/CMakeFiles/CMakeTmp/src.c
-Linking C executable cmTC_ee2a5
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ee2a5.dir/link.txt --verbose=1
-/usr/bin/cc  -DCMAKE_HAVE_LIBC_PTHREAD    -rdynamic CMakeFiles/cmTC_ee2a5.dir/src.c.o  -o cmTC_ee2a5 
-/usr/bin/ld : CMakeFiles/cmTC_ee2a5.dir/src.c.o : dans la fonction « main » :
+Building C object CMakeFiles/cmTC_dc6c1.dir/src.c.o
+/usr/bin/cc   -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_dc6c1.dir/src.c.o   -c /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_dc6c1
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_dc6c1.dir/link.txt --verbose=1
+/usr/bin/cc  -DCMAKE_HAVE_LIBC_PTHREAD    -rdynamic CMakeFiles/cmTC_dc6c1.dir/src.c.o  -o cmTC_dc6c1 
+/usr/bin/ld : CMakeFiles/cmTC_dc6c1.dir/src.c.o : dans la fonction « main » :
 src.c:(.text+0x46) : référence indéfinie vers « pthread_create »
 /usr/bin/ld : src.c:(.text+0x52) : référence indéfinie vers « pthread_detach »
 /usr/bin/ld : src.c:(.text+0x63) : référence indéfinie vers « pthread_join »
 collect2: error: ld returned 1 exit status
-make[1]: *** [CMakeFiles/cmTC_ee2a5.dir/build.make:87 : cmTC_ee2a5] Erreur 1
+make[1]: *** [CMakeFiles/cmTC_dc6c1.dir/build.make:87 : cmTC_dc6c1] Erreur 1
 make[1] : on quitte le répertoire « /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/CMakeFiles/CMakeTmp »
-make: *** [Makefile:121 : cmTC_ee2a5/fast] Erreur 2
+make: *** [Makefile:121 : cmTC_dc6c1/fast] Erreur 2
 
 
 Source file was:
@@ -41,18 +41,18 @@ int main(void)
 Determining if the function pthread_create exists in the pthreads failed with the following output:
 Change Dir: /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/make cmTC_fcc3a/fast && /usr/bin/make -f CMakeFiles/cmTC_fcc3a.dir/build.make CMakeFiles/cmTC_fcc3a.dir/build
+Run Build Command(s):/usr/bin/make cmTC_d5bde/fast && /usr/bin/make -f CMakeFiles/cmTC_d5bde.dir/build.make CMakeFiles/cmTC_d5bde.dir/build
 make[1] : on entre dans le répertoire « /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/CMakeFiles/CMakeTmp »
-Building C object CMakeFiles/cmTC_fcc3a.dir/CheckFunctionExists.c.o
-/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_fcc3a.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.16/Modules/CheckFunctionExists.c
-Linking C executable cmTC_fcc3a
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_fcc3a.dir/link.txt --verbose=1
-/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    -rdynamic CMakeFiles/cmTC_fcc3a.dir/CheckFunctionExists.c.o  -o cmTC_fcc3a  -lpthreads 
+Building C object CMakeFiles/cmTC_d5bde.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_d5bde.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.16/Modules/CheckFunctionExists.c
+Linking C executable cmTC_d5bde
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d5bde.dir/link.txt --verbose=1
+/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    -rdynamic CMakeFiles/cmTC_d5bde.dir/CheckFunctionExists.c.o  -o cmTC_d5bde  -lpthreads 
 /usr/bin/ld : ne peut trouver -lpthreads
 collect2: error: ld returned 1 exit status
-make[1]: *** [CMakeFiles/cmTC_fcc3a.dir/build.make:87 : cmTC_fcc3a] Erreur 1
+make[1]: *** [CMakeFiles/cmTC_d5bde.dir/build.make:87 : cmTC_d5bde] Erreur 1
 make[1] : on quitte le répertoire « /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/CMakeFiles/CMakeTmp »
-make: *** [Makefile:121 : cmTC_fcc3a/fast] Erreur 2
+make: *** [Makefile:121 : cmTC_d5bde/fast] Erreur 2
 
 
 

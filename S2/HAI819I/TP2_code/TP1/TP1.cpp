@@ -541,7 +541,7 @@ int main( void )
             indexed_vertices2[i][j]=indexed_vertices2[i][j];
              
         }*/
-        createMap2(  indices2,indexed_vertices2,indexed_uvs,  resolution);
+        //createMap2(  indices2,indexed_vertices2,indexed_uvs,  resolution);
              
         glGenBuffers(1, &vertexbuffer);
         glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
