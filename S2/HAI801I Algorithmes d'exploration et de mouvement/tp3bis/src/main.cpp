@@ -59,11 +59,9 @@ string intToChar(int bit,int size)
     return result;
 
 }
-struct board{
-    int O;
-    int X;
-}
-typedef board board;
+typedef struct board{
+    int side[2];
+}BOARD;
 template<typename T>
 class Node
 {
@@ -71,25 +69,25 @@ class Node
         Node(T turn)
         {
             this->turn=turn;
-            this->board[0] = 0;
-            this->board[1] = 0;
+            this->board.side[0] = 0;
+            this->board.side[1] = 0;
             this->value=0;
         }
         Node(Node* parent)
         {
             this->turn=parent->turn;
-            this->board[0] = parent->board[0];
-            this->board[1] = parent->board[1];
+            this->board.side[0] = parent->board.side[0];
+            this->board.side[1] = parent->board.side[1];
             this->value=0;
         }
-        void printBoard()
+        void printBoard(BOARD board)
         {
             
             cout<<"\nBoard :\n";
-            string boardStringO = intToChar( this->board[0],SIZE);  
-            string boardStringX = intToChar( this->board[1],SIZE); 
+            string boardStringO = intToChar( board.side[0],SIZE);  
+            string boardStringX = intToChar( board.side[1],SIZE); 
 
-            char c = this->turn==1 ? 'O' : 'X';
+            char c = this->turn==0 ? 'O' : 'X';
             printf("TOUR: %c \n",c);
             for(int i = 0 ; i < SIZE;i++)
             {
@@ -114,7 +112,7 @@ class Node
             }
         }
     
-        void resetDiscovered()
+        /*void resetDiscovered()
         {
             this->discovered=false;
             for(auto child:children)
@@ -123,7 +121,7 @@ class Node
                     child->resetDiscovered();
             }
 
-        }
+        }*/
 
         void tryAllMove()
         {
@@ -133,218 +131,199 @@ class Node
 
             }
         }
-        int checkMove(int i)
+        int checkMove(int i,BOARD board)
         {
-            int ennemyPos = board[!turn]>>i;
-            int Pos =       board[turn ]>>i;
+            int ennemyPos = board.side[0]>>i;
+            int Pos =       board.side[1]>>i;
+
 
             return ( !(ennemyPos&1) && !(Pos&1) );
             
         }
-        int play(int move)
+        void play(BOARD &board2,int turn,int move)
         {
            
             int i = move-1;
-            int x = (1<<i);
-            int res;
-            if(!checkWin(board[turn]) || (board[0]+board[1])==511)
+            int x = (1<<move);
+            if(checkMove(i+1,board2)&& (board.side[0]+board.side[1])<512 )
             {
-                if(checkMove(i))
-                {
-                    board[turn]+=x;
-                }
-
-            }
-            else
-            {
+                board2.side[turn]+=x;
                 
-                if(checkWin(board[turn]) )
-                {
-                    this->value = turn == 0 ? 1 : -1;
-                }
-                else if(checkWin(board[!turn]) )
-                {
-                    this->value = turn == 1 ? 1 : -1;
-                }
-                else 
-                    this->value =0;
 
             }           
-            turn = 1-turn;
+            string boardStringO = intToChar( board.side[0],SIZE);  
+            string boardStringX = intToChar( board.side[1],SIZE); 
+            //cout<<boardStringO<<"\n";
+            //cout<<boardStringX<<"\n";
+             
+            //if(value)cout<<"WIN";
+            //turn = 1-turn;
         }
-        int minimax(int depth,int player)
+        int minimax(BOARD &board2,int depth,int player)
         {
             int res;
-            int score = 0;
 
-            int bestScore = 0;
-            if(depth == 0 || (board[0]+board[1])==511)
+            if(checkWin(board2.side[0]) || checkWin(board2.side[1]) )
             {
-                //cout<<this->value<<"\n";
-                return this->value;
+                //printBoard(board2);
+                //board2.side[0]=0;
+                //board2.side[1]=0;
+                if(player==1)return -1;
+                if(player==0)return 1;
             }
-            if(player)
+            else if((board2.side[0]+board2.side[1])==511)
+                return 0;
+            else 
             {
-                res = -INT32_MAX;
-                for(int i = 0 ; i < SIZE*SIZE;i++)
+                if(depth>0)
                 {
-                   
-
-                    if(checkMove(i+1))
+                    if(player==1)
                     {
-                         Node<int>* child = new Node<int>(this);
-                        child->play(i+1);
-                        res = child->minimax(depth-1,!player);
-                        children.push_back(child);
-                        if(res > bestScore)
+                        res = -INT32_MAX;
+                        for(int i = 0 ; i < (SIZE*SIZE);i++)
                         {
-                            bestScore = res;
+                            if(checkMove(i,board2))
+                            {
+                        
+                                play(board2,1,i+1);
+                         
+                                res = max(res,minimax(board2,depth-1,0));                                
+                                int x=(1<<i);
+                                board2.side[1]-=x;
+                            }   
                         }
-                    }   
+                        return res;
+
+                    }
+                    else if(player==0)
+                    {
+                        res = INT32_MAX;
+                        for(int i = 0 ; i < (SIZE*SIZE);i++)
+                        {
+                            
+                            if(checkMove(i,board2))
+                            {   
+                                
+                                play(board2,0,i+1);
+                                res = min(res,minimax(board2,depth-1,1));
+                                
+                                int x=(1<<i);
+                                board2.side[0]-=x;
+             
+                
+   
+                            }    
+                        }
+                        return res;        
+                    }
+                }
+                else
+                {
+                    return 0;
                 }
             }
-            else
+            return 0;
+           
+        }
+        
+        int findMove()
+        {
+            int bestScore=-1000;
+            int move=-1;
+            int depth = 10;
+            //turn = !turn;
+            for(int i = 0 ; i < (SIZE*SIZE);i++)
             {
-                res = INT32_MAX;
-                for(int i = 0 ; i < SIZE*SIZE;i++)
+                if(checkMove(i,board))
                 {
-                   
-
-                    if(checkMove(i+1))
+                    //play(board,turn,i+1);
+                    int x = (1<<i);
+                    if((board.side[0]+board.side[1])<512 )
                     {
-                         Node<int>* child = new Node<int>(this);
-                        child->play(i+1);
-                        res = child->minimax(depth-1,player);
-                        children.push_back(child);
-
+                        board.side[turn]+=x;
                         
-                        if(res < bestScore)
-                        {
-                            bestScore = res;  
-                        }
+
                     }    
-                }        
+                     BOARD board2;
+                     board2=board;
+                    int res = minimax(board2,depth-1,!turn ); 
+                    //cout<<"side 0; "<<board.side[0]<<"side 1; "<<board.side[1]<<"\n";
+                    string boardStringO = intToChar( board.side[0],SIZE);  
+                    string boardStringX = intToChar( board.side[1],SIZE); 
+                    //cout<<boardStringO<<"\n";
+                    //cout<<boardStringX<<"\n";
+
+                    //int x=(1<<i);
+                    //printBoard(board);
+                    board.side[turn]-=x;
+                    boardStringO = intToChar( board.side[0],SIZE);
+                    boardStringX = intToChar( board.side[1],SIZE);
+                    //cout<<boardStringO<<"\n";
+                    //cout<<boardStringX<<"\n\n";
+                    //printBoard(board);
+                    
+                    if(res>bestScore)
+                    {
+                        bestScore = res;
+                        move = i;
+                    }                            
+
+                }   
             }
-            return res;
+            cout<<"Move : "<<move<<endl;
+            return move;
+
         }
         std::vector<Node*> children;
         int value;
-        int board[2];
+        BOARD board;
         T turn;
 };
-int checkMove(int board[2], int i, int turn)
-{
-    int ennemyPos = board[!turn]>>i;
-    int Pos =       board[turn ]>>i;
-
-    return ( !(ennemyPos&1) && !(Pos&1) );
-    
-}
-int play(int board[2],int turn,int move)
-{
-    
-    int i = move-1;
-    int x = (1<<i);
-    int res;
-    
-    if(checkMove(board,i,turn))
-    {
-        board[turn]+=x;
-    }
-        
-    res = checkWin(board[turn]);
-    turn = 1-turn;
-    return res;
-}
-/*
-int minimax(int board[2],int depth,int player, int &move)
-{
-    int res;
-    int score = 0;
-
-    int bestScore = 0;
-    if(depth == 0 || (board[0]+board[1])==511)
-    {
-        int res;
-        if(checkWin(board[player]))
-        {
-            res = player == 0 ? 1 : -1;
-        }
-        else 
-            res =0;
-        cout<<"value "<<res<<"\n";
-        return res;
-    }
-    if(player)
-    {
-        res = -INT32_MAX;
-        for(int i = 0 ; i < SIZE*SIZE;i++)
-        {
-            if(checkMove(board,i,!player))
-            {
-
-                play(board,player,i+1);
-                
-                res = minimax(board,depth-1,!player,move);
-                int x = (1<<i);
-                board[!player]-=x;
-
-                if(res > bestScore)
-                {
-                    bestScore = res;
-                    move=i;
-                }
-            }   
-        }
-    }
-    else
-    {
-        res = INT32_MAX;
-        for(int i = 0 ; i < SIZE*SIZE;i++)
-        {
-            if(checkMove(board,i,player))
-            {
-                play(board,player,i+1);
-                res = minimax(board,depth-1,player,move);
-                int x = (1<<i);
-                board[player]-=x;
-                
-                if(res < bestScore)
-                {
-                    bestScore = res;
-                    move=i;
-                }
-            }    
-        }        
-    }
-    return res;
-}
-*/
 
 int main() {
 
     Node<int>*root = new Node<int>( 0);
-    //root->play(1);
-    //root->printBoard();
-    //root->play(1);
-    //root->tryAllMove();
-    //root->turn = !root->turn;
-    //root->tryAllMove();
-    //root->try_move();
-    root->play(1);
-    //root->play(2);
-    //root->play(4);
-    //root->play(3);
-    //root->play(6);
-    //root->play(5);
-    //root->play(8);
-    //root->tryAllMove();
+    int turn = 0;
+    int move = -1;
 
-    //root->play(5);
-    root->printBoard();
-    int move=0;
-    cout<<root->minimax(10,1);
-    cout<<"Move ! -> "<<move<<"\n";
+    root->play(root->board,root->turn,0);
+    root->play(root->board,!root->turn,1);
+    move = root->findMove();
+    root->play(root->board,root->turn,move);
+    root->printBoard(root->board);
+
+    root->play(root->board,!root->turn,4);
+    root->printBoard(root->board);
+
+    //root->turn = !root->turn;
+    move = root->findMove();
+
+    root->play(root->board,root->turn,move);
+    root->printBoard(root->board);
+/*
+    //root->turn = !root->turn;
+    move = root->findMove();
+    root->play(root->board,root->turn,move);
+    root->printBoard(root->board);
+
+    //root->turn = !root->turn;
+    move = root->findMove();
+    root->play(root->board,!root->turn,move);
+    root->printBoard(root->board);
+/*
+        //root->turn = !root->turn;
+    move = root->findMove();
+    root->play(root->board,root->turn,move+1);
+    root->printBoard(root->board);*/
+    /*
+root->play(4);
+    root->play(2);
+root->play(5);    
+    root->play(3);
+    */
+    
+    //int move=0;
+
     return 0;
     
 }
