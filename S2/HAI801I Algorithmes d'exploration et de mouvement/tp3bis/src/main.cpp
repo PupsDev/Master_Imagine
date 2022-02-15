@@ -59,6 +59,11 @@ string intToChar(int bit,int size)
     return result;
 
 }
+struct board{
+    int O;
+    int X;
+}
+typedef board board;
 template<typename T>
 class Node
 {
@@ -175,8 +180,7 @@ class Node
             int bestScore = 0;
             if(depth == 0 || (board[0]+board[1])==511)
             {
-                //printBoard();
-                cout<<this->value<<"\n";
+                //cout<<this->value<<"\n";
                 return this->value;
             }
             if(player)
@@ -184,10 +188,11 @@ class Node
                 res = -INT32_MAX;
                 for(int i = 0 ; i < SIZE*SIZE;i++)
                 {
-                    Node<int>* child = new Node<int>(this);
+                   
 
                     if(checkMove(i+1))
                     {
+                         Node<int>* child = new Node<int>(this);
                         child->play(i+1);
                         res = child->minimax(depth-1,!player);
                         children.push_back(child);
@@ -203,10 +208,11 @@ class Node
                 res = INT32_MAX;
                 for(int i = 0 ; i < SIZE*SIZE;i++)
                 {
-                    Node<int>* child = new Node<int>(this);
+                   
 
                     if(checkMove(i+1))
                     {
+                         Node<int>* child = new Node<int>(this);
                         child->play(i+1);
                         res = child->minimax(depth-1,player);
                         children.push_back(child);
