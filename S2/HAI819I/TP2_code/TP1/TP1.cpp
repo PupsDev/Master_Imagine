@@ -16,6 +16,7 @@ GLFWwindow* window;
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp> 
 #include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <iostream>
 #include <string>
 using namespace glm;
@@ -84,7 +85,6 @@ void createMap(    std::vector<unsigned short> &indices,std::vector<glm::vec3> &
     indexed_uvs.clear();
     indices.clear();
     float size = 0.2;
-    //std::cout<<"sommets:"<<sommets<<"\n";
     int sizeMap = 512;
     unsigned int seed = 237;
     PerlinNoise pn(seed);
@@ -97,7 +97,7 @@ void createMap(    std::vector<unsigned short> &indices,std::vector<glm::vec3> &
         for(int j = 0 ; j < sommets ; j++)
         {
             mapNoise[i][j] = (double)5.* pn.noise(j, i, 0.8) ;
-            //std::cout<<mapNoise[i][j]<<std::endl;
+            
         }
 
     for(int i = 0 ; i < sommets ; i++)
@@ -127,39 +127,26 @@ void createMap(    std::vector<unsigned short> &indices,std::vector<glm::vec3> &
 
         }
 }
-void createMap2(    std::vector<unsigned short> &indices,std::vector<glm::vec3> &indexed_vertices,std::vector<glm::vec2> &indexed_uvs, double sommets)
+void createPlane(    std::vector<unsigned short> &indices,std::vector<glm::vec3> &indexed_vertices,std::vector<glm::vec2> &indexed_uvs, double sommets)
 {
     indexed_vertices.clear();
     indexed_uvs.clear();
     indices.clear();
     float size = 0.2;
-    //std::cout<<"sommets:"<<sommets<<"\n";
-    int sizeMap = 128;
-    unsigned int seed = 237;
-    PerlinNoise pn(seed);
-    std::vector<std::vector<double>> mapNoise;
 
-    mapNoise.resize(sommets);
-    for(auto& mn : mapNoise)mn.resize(sommets);
+    int sizeMap = 512;
 
     for(int i = 0 ; i < sommets ; i++)
-         for(int j = 0; j < sommets ; j++)
+        for(int j = 0 ; j < sommets ; j++)
         {
-            mapNoise[i][j] = (double)5.* pn.noise(j, i, 0.8) ;
-            //std::cout<<mapNoise[i][j]<<std::endl;
-        }
-
-    for(int i = 0 ; i < sommets ; i++)
-        for(int j = 0; j < sommets ; j++)
-        {
-            indexed_vertices.push_back( glm::vec3((float)(i*sizeMap/sommets)*size - (sizeMap/2)*size ,(float)(j*sizeMap/sommets)*size- (sizeMap/2)*size,0.2*mapNoise[i][j]));//size*rand()/RAND_MAX) );
+            indexed_vertices.push_back( glm::vec3((float)(i*sizeMap/sommets)*size - (sizeMap/2)*size ,(float)(j*sizeMap/sommets)*size- (sizeMap/2)*size,0.));
              
         }
         
     for(int i = 0 ; i < sommets; i++)
-         for(int j = 0; j < sommets ; j++)
+        for(int j = 0; j < sommets ; j++)
         {
-            indexed_uvs.push_back( glm::vec2(1.-(float)(sommets-i)/(sommets+1) ,1.-(float)(j)/(sommets+1) ));
+            indexed_uvs.push_back( glm::vec2(1.-(float)(i)/(sommets+1) ,1.-(float)(j)/(sommets+1) ));
 
         }
         
@@ -263,19 +250,6 @@ int main( void )
     
     float size = 0.2;
 
-
-
-    ImageG imageG;
-    int nH, nW;
-    lire_nb_lignes_colonnes_image_pgm("heightmap.pgm", &nH, &nW);
-    resize(imageG,nW,nH);
-    
-    loadImage("heightmap.pgm",imageG,nW, nH);
-
-    //saveImage( folderOut, (char*)"originale_",inputName,imageG);
-    createMap(  indices2,indexed_vertices2,indexed_uvs,  resolution);
-
-    
         
         
 
@@ -283,30 +257,26 @@ int main( void )
 
 
 
-    GLuint uvbuffer;
-    glGenBuffers(1, &uvbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-    glBufferData(GL_ARRAY_BUFFER, indexed_uvs.size()* sizeof(glm::vec2), &indexed_uvs[0], GL_STATIC_DRAW);
+
 
     // Get a handle for our "LightPosition" uniform
     glUseProgram(programID);
     GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
 
-    //GLuint Texture = loadBMP_custom((char *)"maison.bmp");
-    GLuint Texture = loadBMP_custom((char *)"mountain.bmp");
 
-    GLuint TextureMountain[7];
+    GLuint TextureMountain[8];
     TextureMountain[0] = loadBMP_custom((char *)"textures/tex_grass.bmp");
     TextureMountain[1] = loadBMP_custom((char *)"textures/tex_rock.bmp");
     TextureMountain[2] = loadBMP_custom((char *)"textures/tex_snowrock.bmp");
 
     TextureMountain[3] = loadBMP_custom((char *)"textures/hmap_cliffs.bmp");
-    TextureMountain[4] = loadBMP_custom((char *)"textures/hmap_mountain.bmp");
-    //TextureMountain[5] = loadBMP_custom((char *)"textures/hmap_rocky.bmp");
+
+    TextureMountain[4] = loadBMP_custom((char *)"textures/sand.bmp");
     TextureMountain[5] = loadBMP_custom((char *)"textures/rance.bmp");
     TextureMountain[6] = loadBMP_custom((char *)"textures/wata.bmp");
+    TextureMountain[7] = loadBMP_custom((char *)"textures/color.bmp");
 
-    GLuint TextureID[7];
+    GLuint TextureID[8];
 
     TextureID[0]  = glGetUniformLocation(programID,"myTextureSampler[0]" );
     TextureID[1]  = glGetUniformLocation(programID,"myTextureSampler[1]" );
@@ -315,22 +285,17 @@ int main( void )
     TextureID[4]  = glGetUniformLocation(programID,"myTextureSampler[4]" );
     TextureID[5]  = glGetUniformLocation(programID,"myTextureSampler[5]" );
     TextureID[6]  = glGetUniformLocation(programID,"myTextureSampler[6]" );
+    TextureID[7]  = glGetUniformLocation(programID,"myTextureSampler[7]" );
     
 
-    //glActiveTexture(GL_TEXTURE0);
-    //glBindTexture(GL_TEXTURE_2D, Texture2);
-    //glUniform1i(TextureID[0], 0);
 
-    for(int i=0;i<7;i++)
+    for(int i=0;i<8;i++)
     {
         glActiveTexture(GL_TEXTURE0+i);
         glBindTexture(GL_TEXTURE_2D, TextureMountain[i]);
         glUniform1i(TextureID[i], i);
 
-    }
-
-    //glUniform1i(TextureID[0]2, 1);
-     
+    }    
 
     // For speed computation
     double lastTime = glfwGetTime();
@@ -356,11 +321,50 @@ int main( void )
     GLuint TextureID2;
     TextureID2  = glGetUniformLocation(programID2,"myTextureSampler2" );
 
+    GLuint TextureID3;
+    TextureID3  = glGetUniformLocation(programID2,"height");
+
+
     GLuint modelID2 = glGetUniformLocation(programID2, "model");
     GLuint viewID2 = glGetUniformLocation(programID2, "view");
     GLuint projectionID2  = glGetUniformLocation(programID2, "projection");
 
+    
+    GLuint vertexbuffer;
+    GLuint elementbuffer;
+    GLuint uvbuffer;
+    
+    GLuint vertexbuffer2;
+    GLuint elementbuffer2;
+    GLuint uvbuffer2;
 
+
+    createMap(  indices2,indexed_vertices2,indexed_uvs,  resolution);
+        //wata
+    glGenBuffers(1, &vertexbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+    glBufferData(GL_ARRAY_BUFFER, indexed_vertices2.size() * sizeof(glm::vec3), &indexed_vertices2[0], GL_STATIC_DRAW);
+
+    glGenBuffers(1, &elementbuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices2.size() * sizeof(unsigned short), &indices2[0] , GL_STATIC_DRAW);
+        
+    glGenBuffers(1, &uvbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+    glBufferData(GL_ARRAY_BUFFER, indexed_uvs.size()* sizeof(glm::vec2), &indexed_uvs[0], GL_STATIC_DRAW);
+
+    createPlane(  wata_indice,wata_vertices,wata_uv,  resolution);
+    glGenBuffers(1, &vertexbuffer2);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer2);
+    glBufferData(GL_ARRAY_BUFFER, wata_vertices.size() * sizeof(glm::vec3), &wata_vertices[0], GL_STATIC_DRAW);
+
+    glGenBuffers(1, &elementbuffer2);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer2);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, wata_indice.size() * sizeof(unsigned short), &wata_indice[0] , GL_STATIC_DRAW);
+        
+    glGenBuffers(1, &uvbuffer2);
+    glBindBuffer(GL_ARRAY_BUFFER, uvbuffer2);
+    glBufferData(GL_ARRAY_BUFFER, wata_uv.size()* sizeof(glm::vec2), &wata_uv[0], GL_STATIC_DRAW);
     do{
 
         // Measure speed
@@ -381,11 +385,37 @@ int main( void )
         // Use our shader
        
          glm::mat4 viewMatrix;
+         float flip = M_PI/4;
+
+
+        // Si resolution change 
+        glGenBuffers(1, &vertexbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        glBufferData(GL_ARRAY_BUFFER, indexed_vertices2.size() * sizeof(glm::vec3), &indexed_vertices2[0], GL_STATIC_DRAW);
+
+        glGenBuffers(1, &elementbuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices2.size() * sizeof(unsigned short), &indices2[0] , GL_STATIC_DRAW);
+            
+        glGenBuffers(1, &uvbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+        glBufferData(GL_ARRAY_BUFFER, indexed_uvs.size()* sizeof(glm::vec2), &indexed_uvs[0], GL_STATIC_DRAW);
+
+        glGenBuffers(1, &vertexbuffer2);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer2);
+        glBufferData(GL_ARRAY_BUFFER, wata_vertices.size() * sizeof(glm::vec3), &wata_vertices[0], GL_STATIC_DRAW);
+
+        glGenBuffers(1, &elementbuffer2);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer2);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, wata_indice.size() * sizeof(unsigned short), &wata_indice[0] , GL_STATIC_DRAW);
+            
+        glGenBuffers(1, &uvbuffer2);
+        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer2);
+        glBufferData(GL_ARRAY_BUFFER, wata_uv.size()* sizeof(glm::vec2), &wata_uv[0], GL_STATIC_DRAW);
          
         if(orbital)
         {
             camera_position = glm::vec3(1.6,137.,-90.);
-            camera_position = glm::vec3(0.,40.,50.);
             camera_target= glm::vec3(0.0f, 0.0f, -1.0f);
 
             camera_position =  glm::rotateY(camera_position,(float)radians(angleRotation2));
@@ -395,101 +425,13 @@ int main( void )
         {
             
              viewMatrix  = glm::lookAt(camera_position,camera_position+camera_target,camera_up);
-             std::cout<<camera_position[0]<<":"<<camera_position[1]<<":"<<camera_position[2]<<"\n";
+             
         }
             
-        
-         glUseProgram(programID2);
-        modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*modelmatrix;
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, Texture);
-        glUniform1i(TextureID2, 0);
-
-        glUniformMatrix4fv(modelID2, 1, GL_FALSE, glm::value_ptr(modelmatrix));
-        glUniformMatrix4fv(viewID2, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-        glUniformMatrix4fv(projectionID2, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-
-            GLuint vertexbuffer;
-        glGenBuffers(1, &vertexbuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-        glBufferData(GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::vec3), &indexed_vertices[0], GL_STATIC_DRAW);
-
-        // Generate a buffer for the indices as well
-        GLuint elementbuffer;
-        glGenBuffers(1, &elementbuffer);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0] , GL_STATIC_DRAW);
-        /*
-
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-        glVertexAttribPointer(
-                    0,                  // attribute
-                    3,                  // size
-                    GL_FLOAT,           // type
-                    GL_FALSE,           // normalized?
-                    0,                  // stridedeltaTime
-                    (void*)0           // element array buffer offset
-                    );
-        
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-        glVertexAttribPointer(
-                    1,                  // attribute
-                    2,                  // size
-                    GL_FLOAT,           // type
-                    GL_FALSE,           // normalized?
-                    0,                  // stridedeltaTime
-                    (void*)0           // element array buffer offset
-                    );
-
-        //rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation2), glm::vec3(0.,1.,0.0));
-         scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(5.*scaleFactor));
-        rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)radians(-angleRotation), glm::vec3(0.,0.,1.0));
-        rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)radians(-angleRotation2), glm::vec3(0.,1.,0.0));
-        translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(-10.f, 20.,0.0f));
-
-        modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
-        glUniformMatrix4fv(modelID2, 1, GL_FALSE, glm::value_ptr(modelmatrix));
-
-        // Draw the triangles !
-        
-        glDrawElements(
-                    GL_TRIANGLES,      // mode
-                    indices.size(),    // count
-                    GL_UNSIGNED_SHORT,   // type
-                    (void*)0           // element array buffer offset
-                    );
-                    
-        
-
-        float flip = M_PI/4;
-        scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(5.*scaleFactor));
-        
-        //rotationMatrix  = glm::rotate(glm::mat4(1.0f), flip, glm::vec3(1.,0.,0.0));
-
-        rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)radians(-angleRotation), glm::vec3(0.,0.,1.0));
-        rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation2), glm::vec3(0.,1.,0.0));
-        //rotationMatrix  = glm::rotate(glm::mat4(1.0f), flip, glm::vec3(1.,0.,0.0));
-        
-        translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(0.f, 20.,0.0f));
-
-        modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
-        glUniformMatrix4fv(modelID2, 1, GL_FALSE, glm::value_ptr(modelmatrix));
-        
-        // Draw the triangles !
-        glDrawElements(
-                    GL_TRIANGLES,      // mode
-                    indices.size(),    // count
-                    GL_UNSIGNED_SHORT,   // type
-                    (void*)0           // element array buffer offset
-                    );
-                    */
-       
-        // PLAN
-        createMap(  indices2,indexed_vertices2,indexed_uvs,  resolution);
-        //wata
-        for(int i=0;i<7;i++)
+    
+        // TERRAIN
+        glUseProgram(programID);
+        for(int i=0;i<2;i++)
         {
             glActiveTexture(GL_TEXTURE0+i);
             glBindTexture(GL_TEXTURE_2D, TextureMountain[i]);
@@ -499,94 +441,73 @@ int main( void )
 
         glUseProgram(programID);
         scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(1.5*scaleFactor));
+        rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)M_PI/2, glm::vec3(-1.,0.,0.0));
         
-        if(orbital)
-        {
-             rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)M_PI/2, glm::vec3(-1.,0.,0.0));
-             //rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation2), glm::vec3(0.,0.,1.0));
-        }
-        else
-            rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)M_PI/2, glm::vec3(-1.,0.,0.0));
-            
         translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(-2.f, -5.,0.0f));
 
         modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
+
+        glUniformMatrix4fv(modelID, 1, GL_FALSE, glm::value_ptr(modelmatrix));
+        glUniformMatrix4fv(viewID, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+        glUniformMatrix4fv(projectionID, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+        
+
+        
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        glVertexAttribPointer(
+                    0,                  // attribute
+                    3,                  // size
+                    GL_FLOAT,           // type
+                    GL_FALSE,           // normalized?
+                    0,                  // stridedeltaTime
+                    (void*)0           // element array buffer offset
+                    );
+        
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+        glVertexAttribPointer(
+                    1,                  // attribute
+                    2,                  // size
+                    GL_FLOAT,           // type
+                    GL_FALSE,           // normalized?
+                    0,                  // stridedeltaTime
+                    (void*)0           // element array buffer offset
+                    );
+
+                 // Draw the triangles !
+        
+        glDrawElements(
+                    GL_TRIANGLES,      // mode
+                    indices2.size(),    // count
+                    GL_UNSIGNED_SHORT,   // typecamera_position
+                        (void*)0           // element array buffer offset
+                    );
+    
+        // wata ?
+        
+        glUseProgram(programID2);
+
+        modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
+
 
         glUniformMatrix4fv(modelID2, 1, GL_FALSE, glm::value_ptr(modelmatrix));
         glUniformMatrix4fv(viewID2, 1, GL_FALSE, glm::value_ptr(viewMatrix));
         glUniformMatrix4fv(projectionID2, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
         
-       
-        glGenBuffers(1, &vertexbuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-        glBufferData(GL_ARRAY_BUFFER, indexed_vertices2.size() * sizeof(glm::vec3), &indexed_vertices2[0], GL_STATIC_DRAW);
-
-        glGenBuffers(1, &elementbuffer);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices2.size() * sizeof(unsigned short), &indices2[0] , GL_STATIC_DRAW);
-            
-        glGenBuffers(1, &uvbuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-        glBufferData(GL_ARRAY_BUFFER, indexed_uvs.size()* sizeof(glm::vec2), &indexed_uvs[0], GL_STATIC_DRAW);
-        
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, TextureMountain[0]);
-        glUniform1i(TextureID[0], 0);
-
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-        glVertexAttribPointer(
-                    0,                  // attribute
-                    3,                  // size
-                    GL_FLOAT,           // type
-                    GL_FALSE,           // normalized?
-                    0,                  // stridedeltaTime
-                    (void*)0           // element array buffer offset
-                    );
-        
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-        glVertexAttribPointer(
-                    1,                  // attribute
-                    2,                  // size
-                    GL_FLOAT,           // type
-                    GL_FALSE,           // normalized?
-                    0,                  // stridedeltaTime
-                    (void*)0           // element array buffer offset
-                    );
-
-                 // Draw the triangles !
-        glDrawElements(
-                    GL_TRIANGLES,      // mode
-                    indices2.size(),    // count
-                    GL_UNSIGNED_SHORT,   // typecamera_position
-                        (void*)0           // element array buffer offset
-                    );
-                    /*
-        createMap( wata_indice,wata_vertices,wata_uv,resolution);
-        
-        glUseProgram(programID2);
-         modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
-        glUniformMatrix4fv(modelID2, 1, GL_FALSE, glm::value_ptr(modelmatrix));
-
-            glGenBuffers(1, &vertexbuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-        glBufferData(GL_ARRAY_BUFFER, wata_vertices.size() * sizeof(glm::vec3), &wata_vertices[0], GL_STATIC_DRAW);
-
-        glGenBuffers(1, &elementbuffer);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, wata_indice.size() * sizeof(unsigned short), &wata_indice[0] , GL_STATIC_DRAW);
-            
-        glGenBuffers(1, &uvbuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-        glBufferData(GL_ARRAY_BUFFER, wata_uv.size()* sizeof(glm::vec2), &wata_uv[0], GL_STATIC_DRAW);
-        
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, TextureMountain[6]);
-        glUniform1i(TextureID[6], 6);
+        glUniform1i(TextureID2, 0);
+        
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, TextureMountain[5]);
+        glUniform1i(TextureID3, 1);
+       
+
+        
 
         glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer2);
         glVertexAttribPointer(
                     0,                  // attribute
                     3,                  // size
@@ -597,7 +518,7 @@ int main( void )
                     );
         
         glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer2);
         glVertexAttribPointer(
                     1,                  // attribute
                     2,                  // size
@@ -610,64 +531,14 @@ int main( void )
                  // Draw the triangles !
         glDrawElements(
                     GL_TRIANGLES,      // mode
-                    indices2.size(),    // count
+                    wata_indice.size(),    // count
                     GL_UNSIGNED_SHORT,   // typecamera_position
                         (void*)0           // element array buffer offset
                     );
-    */
+                    
+
         translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(35.f, -5.,0.0f));
-        
-        /*for(int i = 0 ; i < resolution ; i++)
-        for(int j = 0 ; j < resolution ; j++)
-        {
-            indexed_vertices2[i][j]=indexed_vertices2[i][j];
-             
-        }*/
-        /*
-        createMap2(  indices2,indexed_vertices2,indexed_uvs,  resolution);
-             
-        glGenBuffers(1, &vertexbuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-        glBufferData(GL_ARRAY_BUFFER, indexed_vertices2.size() * sizeof(glm::vec3), &indexed_vertices2[0], GL_STATIC_DRAW);
-                glGenBuffers(1, &elementbuffer);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices2.size() * sizeof(unsigned short), &indices2[0] , GL_STATIC_DRAW);
-            
-        glGenBuffers(1, &uvbuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-        glBufferData(GL_ARRAY_BUFFER, indexed_uvs.size()* sizeof(glm::vec2), &indexed_uvs[0], GL_STATIC_DRAW);
-
-        modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
-        glUniformMatrix4fv(modelID2, 1, GL_FALSE, glm::value_ptr(modelmatrix));
-                glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-        glVertexAttribPointer(
-                    0,                  // attribute
-                    3,                  // size
-                    GL_FLOAT,           // type
-                    GL_FALSE,           // normalized?
-                    0,                  // stridedeltaTime
-                    (void*)0           // element array buffer offset
-                    );
-        
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-        glVertexAttribPointer(
-                    1,                  // attribute
-                    2,                  // size
-                    GL_FLOAT,           // type
-                    GL_FALSE,           // normalized?
-                    0,                  // stridedeltaTime
-                    (void*)0           // element array buffer offset
-                    );
-
-                glDrawElements(
-                    GL_TRIANGLES,      // mode
-                    indices2.size(),    // count
-                    GL_UNSIGNED_SHORT,   // typecamera_position
-                        (void*)0           // element array buffer offset
-                    );
-
-    */
+       
     
 
         // Swap buffers
@@ -678,9 +549,16 @@ int main( void )
            glfwWindowShouldClose(window) == 0 );
 
     // Cleanup VBO and shader
-    //glDeleteBuffers(1, &vertexbuffer);
-    //glDeleteBuffers(1, &elementbuffer);
+    glDeleteBuffers(1, &vertexbuffer);
+    glDeleteBuffers(1, &elementbuffer);
+
+    glDeleteBuffers(1, &vertexbuffer2);
+    glDeleteBuffers(1, &elementbuffer2);
+    
+    glDeleteBuffers(1, &uvbuffer);
+    glDeleteBuffers(1, &uvbuffer2);
     glDeleteProgram(programID);
+    glDeleteProgram(programID2);
     glDeleteVertexArrays(1, &VertexArrayID);
 
     // Close OpenGL window and terminate GLFW
@@ -699,21 +577,21 @@ void processInput(GLFWwindow *window)
     //Camera zoom in and out
     float cameraSpeed = 20. * deltaTime;
     float angle = 0.01;
-    if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS)
+    /*if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS)
         camera_position += cameraSpeed * camera_target;
         
     if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS)
         camera_position -= cameraSpeed * camera_target;
-    
+    */
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        camera_position -= cameraSpeed * glm::normalize(glm::cross(camera_target, camera_up));
+        camera_position -= deltaTime * glm::cross(camera_target, camera_up);
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        camera_position += cameraSpeed * glm::normalize(glm::cross(camera_target, camera_up));
+        camera_position += deltaTime * glm::cross(camera_target, camera_up);
     
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        camera_position += cameraSpeed * camera_target;
+        camera_position += deltaTime * camera_target;
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        camera_position -= cameraSpeed * camera_target;
+        camera_position -= deltaTime * camera_target;
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera_position += cameraSpeed * glm::vec3(0.,1.,0.);
@@ -721,14 +599,22 @@ void processInput(GLFWwindow *window)
         camera_position -= cameraSpeed * glm::vec3(0.,1.,0.);
     
     if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
-        camera_target =  glm::rotateY(camera_target,angle);
+    {
+        camera_target =  glm::vec3(glm::rotate(glm::mat4(1),2*angle,camera_up)*glm::vec4(camera_target,1));
+    }
     if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS)
-        camera_target =  glm::rotateY(camera_target,-angle);
+    {
+        camera_target =  glm::vec3(glm::rotate(glm::mat4(1),-2*angle,camera_up)*glm::vec4(camera_target,1));
+    }
     
     if (glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS)
-        camera_target =  glm::rotateX(camera_target,angle);
+    {
+        camera_target =  glm::vec3(glm::rotate(glm::mat4(1),2*angle,glm::cross(camera_target, camera_up))*glm::vec4(camera_target,1));
+    }    
     if (glfwGetKey(window, GLFW_KEY_KP_2) == GLFW_PRESS)
-        camera_target =  glm::rotateX(camera_target,-angle);
+    {
+        camera_target =  glm::vec3(glm::rotate(glm::mat4(1),-2*angle,glm::cross(camera_target, camera_up))*glm::vec4(camera_target,1));
+    }    
     
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
         coeffAngle2++;
@@ -738,16 +624,21 @@ void processInput(GLFWwindow *window)
     {
 
         resolution+=1;
-        std::cout<<"resolution : "<<resolution<<std::endl;  
+        std::cout<<"resolution : "<<resolution<<std::endl;
+        std::cout<<camera_position[0]<<":"<<camera_position[1]<<":"<<camera_position[2]<<"\n";  
         
         createMap(  indices2,indexed_vertices2,indexed_uvs,  resolution);
+        createPlane(  wata_indice,wata_vertices,wata_uv,  resolution);
     }
     if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS)
     {
 
         resolution = resolution-- ==1 ? 1: resolution;
         std::cout<<"resolution : "<<resolution<<std::endl;
+        std::cout<<camera_position[0]<<":"<<camera_position[1]<<":"<<camera_position[2]<<"\n";
         createMap(  indices2,indexed_vertices2,indexed_uvs,  resolution);
+        createPlane(  wata_indice,wata_vertices,wata_uv,  resolution);
+
     }  
 
     if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
@@ -760,7 +651,9 @@ void processInput(GLFWwindow *window)
         {
             orbital =!orbital;
              
-             camera_position = glm::vec3(0.,40.,50.);
+             camera_position = glm::vec3(20.,40.,-90.);
+             camera_target-=camera_position;
+             
         }
         
             

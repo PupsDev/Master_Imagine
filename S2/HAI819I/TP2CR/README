@@ -1,0 +1,11 @@
+Q1:
+On réalise une heighmap sur le gpu par la carte et on applique à certaines altitudes des textures différentes.
+On peut augmenter et baisser la résolution avec + et -
+Q2
+On peut monter et descendre avec z et s;
+On peut se déplacer avant arriere gauche et droite avec les fleches;
+On peut faire rotation haut bas et gauche droite de la camera avec 8246 du pad numérique.
+
+O et P pour augmenter ou baisser la vitesse de rotation autour du terrain.
+
+Et bien evidemment on peut changer de mode en appuyant sur C.

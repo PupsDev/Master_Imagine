@@ -16,13 +16,23 @@ out vec3 vertexLocal;
 out vec2 UV;
 
 uniform sampler2D myTextureSampler2;
-out vec3 heightmap;
+uniform sampler2D height;
+
 
 void main(){
+        
         vec3 heightmap=vec3(0.,0.,0.);
-        heightmap.z = 8.*(texture(myTextureSampler2, vertexUV ).r);
-
-        gl_Position =  projection*view*model* vec4(vertices_position_modelspace,1);
+        heightmap.z = 20.*(texture(height, vertexUV ).r);
+        
+        if( texture(height, vertexUV ).r<0.47){
+                gl_Position =  projection*view*model* vec4(vertices_position_modelspace+vec3(0.,0.,8),1);
+        }
+        else
+        {
+                gl_Position =  projection*view*model* vec4(vertices_position_modelspace-vec3(0.,0.,5),1);
+        }
+        
+        
         vertex = gl_Position;
         vertexLocal = vertices_position_modelspace;
         UV = vertexUV;

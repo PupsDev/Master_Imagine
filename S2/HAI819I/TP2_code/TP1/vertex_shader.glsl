@@ -15,12 +15,12 @@ out vec4 vertex;
 out vec3 vertexLocal;
 out vec2 UV;
 
-uniform sampler2D myTextureSampler[7];
+uniform sampler2D myTextureSampler[8];
 out vec3 heightmap;
 
 void main(){
         vec3 heightmap=vec3(0.,0.,0.);
-        heightmap.z = 35.*(texture(myTextureSampler[5], vertexUV ).r);
+        heightmap.z = 20.*(texture(myTextureSampler[5], vertexUV ).r);
 
         /*if( texture(myTextureSampler[5], vertexUV ).r< 0.37){
                 gl_Position =  projection*view*model* vec4(vertices_position_modelspace-texture(myTextureSampler[5], vertexUV ).r,1);

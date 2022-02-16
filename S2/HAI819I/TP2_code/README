@@ -1,8 +1,0 @@
-Q1-3 : Après avoir appliqué les transformations aux chaises, on passe à suzanne, on lui applique des transformations comme l'échelle, la rotation et la transformation.
-Les suzannes tournent sur elle même avec un angle de rotation qui augmente avec les fps.
-Q4: On crée un plan avec 128*128 sommets et on lui plaque une texture de montagne.
-Q5: On modifie l'altitude des sommets avec une heightmap et un bruit de perlin. 
-
-Le lien de mon github pour le moteur de jeu : 
-
-https://github.com/PupsDev/Master_Imagine/tree/main/S2/HAI819I

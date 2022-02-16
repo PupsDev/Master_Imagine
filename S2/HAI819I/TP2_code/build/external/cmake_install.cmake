@@ -1,4 +1,4 @@
-# Install script for directory: /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/external
+# Install script for directory: /home/pups/Documents/Master_Imagine/S2/HAI819I/TP2_code/external
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -37,9 +37,14 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
+# Set default install directory permissions.
+if(NOT DEFINED CMAKE_OBJDUMP)
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+endif()
+
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/external/glfw-3.1.2/cmake_install.cmake")
+  include("/home/pups/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/external/glfw-3.1.2/cmake_install.cmake")
 
 endif()
 

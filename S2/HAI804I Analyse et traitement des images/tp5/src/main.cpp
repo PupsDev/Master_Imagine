@@ -183,10 +183,52 @@ void convolution(ImageG &image, ImageG kernel)
             int newpix=0;
             for(int u = -boundary ; u < (boundary+1); u++)
                 for(int v = -boundary ; v < (boundary+1); v++)
-                    newpix += kernel[boundary+u][boundary+v] * image[u+i][v+j]+128;
-            out[i][j]= newpix;
+                    newpix += kernel[boundary+u][boundary+v] * image[u+i][v+j];
+            out[i][j]= newpix;//+128;
+            //cout<<newpix<<"\n";
             
         }
+    }
+        for(int i = 0 ; i < size;i++)
+        for(int j = 0 ; j < size;j++)
+        {
+            image[i][j]=out[i][j];
+        }
+}
+void passage(ImageG &image)
+{
+    int size = image.size();
+    ImageG out;
+    resize(out,image.size(),image.size());
+
+    for(int i = 0 ; i < size-1; i++)
+    {
+        for(int j = 0 ; j < size-1; j++)
+        {
+            int px = image[i][j]; 
+            int pxD = image[i][j+1]; 
+            int pxB = image[i+1][j]; 
+            int res =0;
+            /*
+            if( (px>0 &&pxD<0) || (px<0 &&pxD>0)) // passage zero V
+            {
+                res =255;
+            }
+            else if( (px>0 &&pxB<0) || (px<0 &&pxB>0)) // passage zero H
+            {
+                res =255;
+            }*/
+            int Ai = abs(pxB-px);
+            int Aj = abs(pxD-px);
+            /*float D;
+            if(Ai!=0)
+                D= atan(Aj/Ai);
+            //cout<<D<<"\n";
+            */
+            out[i][j]= max( Ai,Aj);
+            //out[i][j]= 50;//*D;
+        }
+
     }
         for(int i = 0 ; i < size;i++)
         for(int j = 0 ; j < size;j++)
@@ -254,6 +296,8 @@ int main(int argc, char* argv[]) {
         ///saveImage( folderOut, (char*)"Seuil",inputName,imageG);
         convolution(imageG,laplacien);
         saveImage( folderOut, (char*)"Laplace",(char*)"test.pgm",imageG);
+        passage(imageG);
+        saveImage( folderOut, (char*)"Passage",(char*)"test.pgm",imageG);
 
         //hysterique(imageG,threshold-5,threshold+5,imageH);
         //saveImage( folderOut, (char*)"SeuilH",inputName,imageH);

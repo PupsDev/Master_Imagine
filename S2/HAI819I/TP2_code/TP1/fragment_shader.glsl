@@ -5,32 +5,39 @@ in vec3 vertexLocal;
 in vec2 UV;
 
 out vec3 color;
-uniform sampler2D myTextureSampler[7];
+uniform sampler2D myTextureSampler[8];
 
 
 void main(){
         
         float factor = texture(myTextureSampler[5], UV ).r;
-        float t1 = 0.37;
-        float t2 = 0.56;
-        float t3 = 0.58;
-        float t4 = 0.69;
+        float t0 = 0.44;
+        float t1 = 0.47;
+        float t2 = 0.64;
+        float t3 = 0.84;
+        float t4 = 0.98;
 
 
         //color = texture( myTextureSampler[6], UV ).gbr + step(factor,t1)*mix()
-        if(factor< 0.37){
-                color =   texture( myTextureSampler[6], UV ).gbr;
-
+        if(factor< t0){
+                color = texture( myTextureSampler[4], UV ).rgb;
         }
-        else if(factor< 0.45){
+        else if(factor< t1){
+                color = mix(texture(myTextureSampler[4],UV).rgb,texture( myTextureSampler[6], UV ).gbr,factor);
+        }
+        else if(factor< t2){
+                
                 color = texture( myTextureSampler[0], UV ).rgb;//mix(texture( myTextureSampler[0], UV ).rgb,texture( myTextureSampler[1], UV ).rgb,      (factor-t1)/(t2-t1)  );
-
+                color = mix(color,texture(myTextureSampler[7],UV).rgb,0.5);
         }
-        else if (factor < 0.58)
+        else if (factor < t3)
         {
                color = mix(texture( myTextureSampler[0], UV ).rgb,texture( myTextureSampler[1], UV ).gbr,factor);//texture( myTextureSampler[1], UV ).gbr;//mix(texture( myTextureSampler[0], UV ).grb,texture( myTextureSampler[1], UV ).grb, (factor-t2)/(t3-t2));
+               color = mix(color,texture(myTextureSampler[7],UV).rgb,0.5);
         }
-        else if (factor < 0.69)
+
+
+        else if (factor < t4)
         {
                 color = mix(texture( myTextureSampler[1], UV ).gbr,texture( myTextureSampler[2], UV ).rbg,factor);//mix(texture( myTextureSampler[1], UV ).rgb,texture( myTextureSampler[2], UV ).rgb, (factor-t3)/(t3-t2));
         }

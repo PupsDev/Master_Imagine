@@ -1,4 +1,4 @@
-# Install script for directory: /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/external/glfw-3.1.2/src
+# Install script for directory: /home/pups/Documents/Master_Imagine/S2/HAI819I/TP2_code/external/glfw-3.1.2/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -37,7 +37,12 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
+# Set default install directory permissions.
+if(NOT DEFINED CMAKE_OBJDUMP)
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+endif()
+
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/external/glfw-3.1.2/src/libglfw3.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/pups/Documents/Master_Imagine/S2/HAI819I/TP2_code/build/external/glfw-3.1.2/src/libglfw3.a")
 endif()
 
