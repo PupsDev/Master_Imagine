@@ -57,6 +57,10 @@ std::vector<glm::vec2> indexed_uvs;
 std::vector<unsigned short> indices2; 
 std::vector<glm::vec3> indexed_vertices2;
 
+std::vector<glm::vec2>      wata_uv;
+std::vector<unsigned short> wata_indice; 
+std::vector<glm::vec3>      wata_vertices;
+
 double OctavePerlin(double x, double y, double z, int octaves, double persistence) {
     PerlinNoise pn(114);
     double total = 0;
@@ -81,7 +85,7 @@ void createMap(    std::vector<unsigned short> &indices,std::vector<glm::vec3> &
     indices.clear();
     float size = 0.2;
     //std::cout<<"sommets:"<<sommets<<"\n";
-    int sizeMap = 128;
+    int sizeMap = 512;
     unsigned int seed = 237;
     PerlinNoise pn(seed);
     std::vector<std::vector<double>> mapNoise;
@@ -291,7 +295,7 @@ int main( void )
     //GLuint Texture = loadBMP_custom((char *)"maison.bmp");
     GLuint Texture = loadBMP_custom((char *)"mountain.bmp");
 
-    GLuint TextureMountain[6];
+    GLuint TextureMountain[7];
     TextureMountain[0] = loadBMP_custom((char *)"textures/tex_grass.bmp");
     TextureMountain[1] = loadBMP_custom((char *)"textures/tex_rock.bmp");
     TextureMountain[2] = loadBMP_custom((char *)"textures/tex_snowrock.bmp");
@@ -299,8 +303,10 @@ int main( void )
     TextureMountain[3] = loadBMP_custom((char *)"textures/hmap_cliffs.bmp");
     TextureMountain[4] = loadBMP_custom((char *)"textures/hmap_mountain.bmp");
     //TextureMountain[5] = loadBMP_custom((char *)"textures/hmap_rocky.bmp");
-    TextureMountain[5] = loadBMP_custom((char *)"mountain.bmp");
-    GLuint TextureID[6];
+    TextureMountain[5] = loadBMP_custom((char *)"textures/rance.bmp");
+    TextureMountain[6] = loadBMP_custom((char *)"textures/wata.bmp");
+
+    GLuint TextureID[7];
 
     TextureID[0]  = glGetUniformLocation(programID,"myTextureSampler[0]" );
     TextureID[1]  = glGetUniformLocation(programID,"myTextureSampler[1]" );
@@ -308,13 +314,15 @@ int main( void )
     TextureID[3]  = glGetUniformLocation(programID,"myTextureSampler[3]" );
     TextureID[4]  = glGetUniformLocation(programID,"myTextureSampler[4]" );
     TextureID[5]  = glGetUniformLocation(programID,"myTextureSampler[5]" );
+
+    TextureID[6]  = glGetUniformLocation(programID,"myTextureSampler[6]" );
     
 
     //glActiveTexture(GL_TEXTURE0);
     //glBindTexture(GL_TEXTURE_2D, Texture2);
     //glUniform1i(TextureID[0], 0);
 
-    for(int i=0;i<6;i++)
+    for(int i=0;i<7;i++)
     {
         glActiveTexture(GL_TEXTURE0+i);
         glBindTexture(GL_TEXTURE_2D, TextureMountain[i]);
@@ -335,7 +343,7 @@ int main( void )
     glm::mat4 modelmatrix  = glm::mat4( 1.0f );
     glm::mat4 idmatrix  = glm::mat4( 1.0f );
     
-    glm::mat4 projectionMatrix  = glm::perspective(45.,4./3.,0.1,100.);
+    glm::mat4 projectionMatrix  = glm::perspective(45.,4./3.,0.1,1000.);
 
     glm::mat4 scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(1.));
     glm::mat4 rotationMatrix  = glm::rotate(glm::mat4(1.0f), 0.f, glm::vec3(1.0));
@@ -372,15 +380,25 @@ int main( void )
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Use our shader
-        glUseProgram(programID2);
-        glm::mat4 viewMatrix  = glm::lookAt(camera_position,camera_position+camera_target,camera_up);
+       
+         glm::mat4 viewMatrix;
+         
         if(orbital)
         {
-            camera_position = glm::vec3(-1.,20.,40.);
+            camera_position = glm::vec3(0.,40.,50.);
             camera_target= glm::vec3(0.0f, 0.0f, -1.0f);
-             glm::mat4 viewMatrix  = glm::lookAt(camera_position,camera_position+camera_target,camera_up);
-        }
 
+            camera_position =  glm::rotateY(camera_position,(float)radians(angleRotation2));
+            viewMatrix  = glm::lookAt(camera_position,camera_target,camera_up);
+        }
+        else
+        {
+            
+             viewMatrix  = glm::lookAt(camera_position,camera_position+camera_target,camera_up);
+        }
+            
+        
+         glUseProgram(programID2);
         modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*modelmatrix;
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, Texture);
@@ -400,7 +418,7 @@ int main( void )
         glGenBuffers(1, &elementbuffer);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0] , GL_STATIC_DRAW);
-        
+        /*
 
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -465,21 +483,28 @@ int main( void )
                     GL_UNSIGNED_SHORT,   // type
                     (void*)0           // element array buffer offset
                     );
+                    */
        
         // PLAN
         createMap(  indices2,indexed_vertices2,indexed_uvs,  resolution);
+        //wata
+        
+
         glUseProgram(programID);
         scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(1.5*scaleFactor));
+        
         if(orbital)
         {
              rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)M_PI/2, glm::vec3(-1.,0.,0.0));
-             rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation2), glm::vec3(0.,0.,1.0));
+             //rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation2), glm::vec3(0.,0.,1.0));
         }
         else
             rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)M_PI/2, glm::vec3(-1.,0.,0.0));
+            
         translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(-2.f, -5.,0.0f));
 
         modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
+
         glUniformMatrix4fv(modelID2, 1, GL_FALSE, glm::value_ptr(modelmatrix));
         glUniformMatrix4fv(viewID2, 1, GL_FALSE, glm::value_ptr(viewMatrix));
         glUniformMatrix4fv(projectionID2, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
@@ -488,8 +513,6 @@ int main( void )
         glGenBuffers(1, &vertexbuffer);
         glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
         glBufferData(GL_ARRAY_BUFFER, indexed_vertices2.size() * sizeof(glm::vec3), &indexed_vertices2[0], GL_STATIC_DRAW);
-
-        // Generate a buffer for the indices as well
 
         glGenBuffers(1, &elementbuffer);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
@@ -532,7 +555,59 @@ int main( void )
                     GL_UNSIGNED_SHORT,   // typecamera_position
                         (void*)0           // element array buffer offset
                     );
+                    /*
+        createMap( wata_indice,wata_vertices,wata_uv,resolution);
+        
+        glUseProgram(programID2);
+         modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
+        glUniformMatrix4fv(modelID2, 1, GL_FALSE, glm::value_ptr(modelmatrix));
 
+            glGenBuffers(1, &vertexbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        glBufferData(GL_ARRAY_BUFFER, wata_vertices.size() * sizeof(glm::vec3), &wata_vertices[0], GL_STATIC_DRAW);
+
+        glGenBuffers(1, &elementbuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, wata_indice.size() * sizeof(unsigned short), &wata_indice[0] , GL_STATIC_DRAW);
+            
+        glGenBuffers(1, &uvbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+        glBufferData(GL_ARRAY_BUFFER, wata_uv.size()* sizeof(glm::vec2), &wata_uv[0], GL_STATIC_DRAW);
+        
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, TextureMountain[6]);
+        glUniform1i(TextureID[6], 6);
+
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        glVertexAttribPointer(
+                    0,                  // attribute
+                    3,                  // size
+                    GL_FLOAT,           // type
+                    GL_FALSE,           // normalized?
+                    0,                  // stridedeltaTime
+                    (void*)0           // element array buffer offset
+                    );
+        
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+        glVertexAttribPointer(
+                    1,                  // attribute
+                    2,                  // size
+                    GL_FLOAT,           // type
+                    GL_FALSE,           // normalized?
+                    0,                  // stridedeltaTime
+                    (void*)0           // element array buffer offset
+                    );
+
+                 // Draw the triangles !
+        glDrawElements(
+                    GL_TRIANGLES,      // mode
+                    indices2.size(),    // count
+                    GL_UNSIGNED_SHORT,   // typecamera_position
+                        (void*)0           // element array buffer offset
+                    );
+    */
         translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(35.f, -5.,0.0f));
         
         /*for(int i = 0 ; i < resolution ; i++)
@@ -541,7 +616,8 @@ int main( void )
             indexed_vertices2[i][j]=indexed_vertices2[i][j];
              
         }*/
-        //createMap2(  indices2,indexed_vertices2,indexed_uvs,  resolution);
+        /*
+        createMap2(  indices2,indexed_vertices2,indexed_uvs,  resolution);
              
         glGenBuffers(1, &vertexbuffer);
         glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -584,7 +660,7 @@ int main( void )
                         (void*)0           // element array buffer offset
                     );
 
-    
+    */
     
 
         // Swap buffers
@@ -623,9 +699,9 @@ void processInput(GLFWwindow *window)
         camera_position -= cameraSpeed * camera_target;
     
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        camera_position -= cameraSpeed * glm::vec3(1.,0.,0.);
+        camera_position -= cameraSpeed * glm::normalize(glm::cross(camera_target, camera_up));
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        camera_position += cameraSpeed * glm::vec3(1.,0.,0.);
+        camera_position += cameraSpeed * glm::normalize(glm::cross(camera_target, camera_up));
     
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
         camera_position += cameraSpeed * camera_target;
@@ -673,7 +749,12 @@ void processInput(GLFWwindow *window)
         angleRotation --;
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
     {
-        orbital =!orbital;
+        if (glfwGetKey(window, GLFW_KEY_C) == GLFW_RELEASE)
+        {
+            orbital =!orbital;
+             camera_position = glm::vec3(0.,10.,20.);
+        }
+        
             
     }
 

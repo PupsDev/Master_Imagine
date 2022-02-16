@@ -5,21 +5,24 @@ in vec3 vertexLocal;
 in vec2 UV;
 
 out vec3 color;
-uniform sampler2D myTextureSampler[6];
+uniform sampler2D myTextureSampler[7];
 
 
 void main(){
         
-        float factor = texture(myTextureSampler[4], UV ).r;
-        if(factor< 0.33){
-                color = vec3(0.,0.,1.);
+        float factor = texture(myTextureSampler[5], UV ).r;
+        float t1 = 0.25;
+        float t2 = 0.33;
+        float t3 = 0.66;
+        if(factor< 0.25){
+                color =   texture( myTextureSampler[6], UV ).gbr;
 
         }
-        else if(factor< 0.66){
-                color = mix(  vec3(0.,0.,1.),texture( myTextureSampler[0], UV ).rgb,factor);
+        else if(factor< 0.33){
+                color =texture( myTextureSampler[0], UV ).rgb;
 
         }
-        else if (factor < 0.9)
+        else if (factor < 0.66)
         {
                 color = mix(texture( myTextureSampler[0], UV ).rgb,texture( myTextureSampler[1], UV ).rgb,factor);
         }
