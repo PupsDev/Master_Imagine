@@ -140,19 +140,32 @@ class Node
             return ( !(ennemyPos&1) && !(Pos&1) );
             
         }
+        void undo(BOARD &board2,int turn,int move)
+        {
+            int i = move-1;
+            int x=(1<<i);
+            board2.side[turn]-=x;
+        }
         void play(BOARD &board2,int turn,int move)
         {
            
             int i = move-1;
-            int x = (1<<move);
+            int x = (1<<i);
             if(checkMove(i+1,board2)&& (board.side[0]+board.side[1])<512 )
             {
                 board2.side[turn]+=x;
+
                 
 
-            }           
-            string boardStringO = intToChar( board.side[0],SIZE);  
-            string boardStringX = intToChar( board.side[1],SIZE); 
+            }   
+            if(checkWin(board2.side[turn]))
+            {
+
+                if(turn==1)value= -1;
+                if(turn==0)value= 1;
+            }        
+            //string boardStringO = intToChar( board.side[0],SIZE);  
+            //string boardStringX = intToChar( board.side[1],SIZE); 
             //cout<<boardStringO<<"\n";
             //cout<<boardStringX<<"\n";
              
@@ -165,9 +178,7 @@ class Node
 
             if(checkWin(board2.side[0]) || checkWin(board2.side[1]) )
             {
-                //printBoard(board2);
-                //board2.side[0]=0;
-                //board2.side[1]=0;
+
                 if(player==1)return -1;
                 if(player==0)return 1;
             }
@@ -182,14 +193,13 @@ class Node
                         res = -INT32_MAX;
                         for(int i = 0 ; i < (SIZE*SIZE);i++)
                         {
-                            if(checkMove(i,board2))
+                            if(checkMove(i+1,board2))
                             {
                         
                                 play(board2,1,i+1);
                          
                                 res = max(res,minimax(board2,depth-1,0));                                
-                                int x=(1<<i);
-                                board2.side[1]-=x;
+                                undo(board2,1,i+1);
                             }   
                         }
                         return res;
@@ -201,14 +211,13 @@ class Node
                         for(int i = 0 ; i < (SIZE*SIZE);i++)
                         {
                             
-                            if(checkMove(i,board2))
+                            if(checkMove(i+1,board2))
                             {   
                                 
                                 play(board2,0,i+1);
                                 res = min(res,minimax(board2,depth-1,1));
                                 
-                                int x=(1<<i);
-                                board2.side[0]-=x;
+                                undo(board2,0,i+1);
              
                 
    
@@ -231,33 +240,32 @@ class Node
             int bestScore=-1000;
             int move=-1;
             int depth = 10;
+            BOARD board2;
+            board2.side[0]=board.side[0];
+            board2.side[1]=board.side[1];
+
             //turn = !turn;
+            printBoard(board2);
+        
             for(int i = 0 ; i < (SIZE*SIZE);i++)
             {
-                if(checkMove(i,board))
+                if(checkMove(i+1,board2))
                 {
-                    //play(board,turn,i+1);
-                    int x = (1<<i);
-                    if((board.side[0]+board.side[1])<512 )
-                    {
-                        board.side[turn]+=x;
-                        
-
-                    }    
-                     BOARD board2;
-                     board2=board;
+                     
+ 
+                    play(board2,turn,i+1);
+                     
                     int res = minimax(board2,depth-1,!turn ); 
                     //cout<<"side 0; "<<board.side[0]<<"side 1; "<<board.side[1]<<"\n";
-                    string boardStringO = intToChar( board.side[0],SIZE);  
-                    string boardStringX = intToChar( board.side[1],SIZE); 
+                    string boardStringO = intToChar( board2.side[0],SIZE);  
+                    string boardStringX = intToChar( board2.side[1],SIZE); 
                     //cout<<boardStringO<<"\n";
                     //cout<<boardStringX<<"\n";
 
-                    //int x=(1<<i);
-                    //printBoard(board);
-                    board.side[turn]-=x;
-                    boardStringO = intToChar( board.side[0],SIZE);
-                    boardStringX = intToChar( board.side[1],SIZE);
+                    undo(board2,turn,i+1);
+
+                    boardStringO = intToChar( board2.side[0],SIZE);
+                    boardStringX = intToChar( board2.side[1],SIZE);
                     //cout<<boardStringO<<"\n";
                     //cout<<boardStringX<<"\n\n";
                     //printBoard(board);
@@ -270,6 +278,7 @@ class Node
 
                 }   
             }
+            
             cout<<"Move : "<<move<<endl;
             return move;
 
@@ -283,12 +292,53 @@ class Node
 int main() {
 
     Node<int>*root = new Node<int>( 0);
-    int turn = 0;
+    //int turn = 0;
     int move = -1;
 
-    root->play(root->board,root->turn,0);
-    root->play(root->board,!root->turn,1);
+    root->play(root->board,root->turn,1);
+
+    root->printBoard(root->board);
+/*
     move = root->findMove();
+    root->play(root->board,!root->turn,move+1);
+    root->printBoard(root->board);
+    */
+
+/*
+    move = root->findMove();
+    root->play(root->board,root->turn,move+1);
+    root->printBoard(root->board);*/
+
+
+
+    while((root->value!=1 || root->value!=-1 ||root->value!=0) )//|| (root->board.side[0]+root->board.side[1])<512 )
+    {
+        move = root->findMove();
+        root->turn= !root->turn;
+        root->play(root->board, root->turn,move+1);
+        root->printBoard(root->board);
+         cout<<"STATE:"<<root->value<<"\n";
+
+    }
+    cout<<"STATE:"<<root->value;
+
+    
+    /*
+    root->play(root->board,!root->turn,1);
+
+    root->play(root->board,root->turn,2);
+    root->play(root->board,!root->turn,3);
+
+    root->play(root->board,root->turn,4);
+    root->play(root->board,!root->turn,5);
+
+    root->play(root->board,!root->turn,6);
+
+    root->printBoard(root->board);
+
+    move = root->findMove();
+    */
+    /*
     root->play(root->board,root->turn,move);
     root->printBoard(root->board);
 
