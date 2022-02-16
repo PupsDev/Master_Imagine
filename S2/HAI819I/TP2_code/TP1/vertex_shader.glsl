@@ -20,9 +20,10 @@ out vec3 heightmap;
 
 void main(){
         vec3 heightmap=vec3(0.,0.,0.);
-        heightmap.z = 8.*(texture(myTextureSampler[5], vertexUV ).r);
-        /*if( texture(myTextureSampler[5], vertexUV ).r< 0.33){
-                gl_Position =  projection*view*model* vec4(vertices_position_modelspace+(8.*0.33),1);
+        heightmap.z = 35.*(texture(myTextureSampler[5], vertexUV ).r);
+
+        /*if( texture(myTextureSampler[5], vertexUV ).r< 0.37){
+                gl_Position =  projection*view*model* vec4(vertices_position_modelspace-texture(myTextureSampler[5], vertexUV ).r,1);
         }
         else*/
                 gl_Position =  projection*view*model* vec4(vertices_position_modelspace+heightmap,1);

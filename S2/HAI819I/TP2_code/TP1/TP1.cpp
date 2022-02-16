@@ -314,7 +314,6 @@ int main( void )
     TextureID[3]  = glGetUniformLocation(programID,"myTextureSampler[3]" );
     TextureID[4]  = glGetUniformLocation(programID,"myTextureSampler[4]" );
     TextureID[5]  = glGetUniformLocation(programID,"myTextureSampler[5]" );
-
     TextureID[6]  = glGetUniformLocation(programID,"myTextureSampler[6]" );
     
 
@@ -385,6 +384,7 @@ int main( void )
          
         if(orbital)
         {
+            camera_position = glm::vec3(1.6,137.,-90.);
             camera_position = glm::vec3(0.,40.,50.);
             camera_target= glm::vec3(0.0f, 0.0f, -1.0f);
 
@@ -395,6 +395,7 @@ int main( void )
         {
             
              viewMatrix  = glm::lookAt(camera_position,camera_position+camera_target,camera_up);
+             std::cout<<camera_position[0]<<":"<<camera_position[1]<<":"<<camera_position[2]<<"\n";
         }
             
         
@@ -488,7 +489,13 @@ int main( void )
         // PLAN
         createMap(  indices2,indexed_vertices2,indexed_uvs,  resolution);
         //wata
-        
+        for(int i=0;i<7;i++)
+        {
+            glActiveTexture(GL_TEXTURE0+i);
+            glBindTexture(GL_TEXTURE_2D, TextureMountain[i]);
+            glUniform1i(TextureID[i], i);
+
+        }
 
         glUseProgram(programID);
         scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(1.5*scaleFactor));
@@ -752,7 +759,8 @@ void processInput(GLFWwindow *window)
         if (glfwGetKey(window, GLFW_KEY_C) == GLFW_RELEASE)
         {
             orbital =!orbital;
-             camera_position = glm::vec3(0.,10.,20.);
+             
+             camera_position = glm::vec3(0.,40.,50.);
         }
         
             
