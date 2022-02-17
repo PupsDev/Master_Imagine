@@ -27,19 +27,19 @@ void main(){
         }
         else if(factor< t2){
                 
-                color = texture( myTextureSampler[0], UV ).rgb;//mix(texture( myTextureSampler[0], UV ).rgb,texture( myTextureSampler[1], UV ).rgb,      (factor-t1)/(t2-t1)  );
+                color = texture( myTextureSampler[0], UV ).rgb;//*/mix(texture( myTextureSampler[0], UV ).rgb,texture( myTextureSampler[1], UV ).rgb,      (factor-t2)/(t3-t2)  );
                 color = mix(color,texture(myTextureSampler[7],UV).rgb,0.5);
         }
         else if (factor < t3)
         {
-               color = mix(texture( myTextureSampler[0], UV ).rgb,texture( myTextureSampler[1], UV ).gbr,factor);//texture( myTextureSampler[1], UV ).gbr;//mix(texture( myTextureSampler[0], UV ).grb,texture( myTextureSampler[1], UV ).grb, (factor-t2)/(t3-t2));
+               color = mix(texture( myTextureSampler[0], UV ).rgb,texture( myTextureSampler[1], UV ).gbr,(factor-t2)/(t3-t2));//texture( myTextureSampler[1], UV ).gbr;//mix(texture( myTextureSampler[0], UV ).grb,texture( myTextureSampler[1], UV ).grb, (factor-t2)/(t3-t2));
                color = mix(color,texture(myTextureSampler[7],UV).rgb,0.5);
         }
 
 
         else if (factor < t4)
         {
-                color = mix(texture( myTextureSampler[1], UV ).gbr,texture( myTextureSampler[2], UV ).rbg,factor);//mix(texture( myTextureSampler[1], UV ).rgb,texture( myTextureSampler[2], UV ).rgb, (factor-t3)/(t3-t2));
+                color = mix(texture( myTextureSampler[1], UV ).gbr,texture( myTextureSampler[2], UV ).rbg,(factor-t3)/(t4-t3));//mix(texture( myTextureSampler[1], UV ).rgb,texture( myTextureSampler[2], UV ).rgb, (factor-t3)/(t3-t2));
         }
         else
         {
