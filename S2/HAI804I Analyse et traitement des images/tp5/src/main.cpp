@@ -184,8 +184,7 @@ void convolution(ImageG &image, ImageG kernel)
             for(int u = -boundary ; u < (boundary+1); u++)
                 for(int v = -boundary ; v < (boundary+1); v++)
                     newpix += kernel[boundary+u][boundary+v] * image[u+i][v+j];
-            out[i][j]= newpix;//+128;
-            //cout<<newpix<<"\n";
+            out[i][j]= min(255,max(0,newpix+128));
             
         }
     }
@@ -194,6 +193,9 @@ void convolution(ImageG &image, ImageG kernel)
         {
             image[i][j]=out[i][j];
         }
+}
+double map(double x, double b1, double b2, double b3, double b4){
+  return(((x-b1)/(b2-b1))*(b4-b3)+b3);
 }
 void passage(ImageG &image)
 {
@@ -209,7 +211,7 @@ void passage(ImageG &image)
             int pxD = image[i][j+1]; 
             int pxB = image[i+1][j]; 
             int res =0;
-            /*
+            
             if( (px>0 &&pxD<0) || (px<0 &&pxD>0)) // passage zero V
             {
                 res =255;
@@ -217,24 +219,172 @@ void passage(ImageG &image)
             else if( (px>0 &&pxB<0) || (px<0 &&pxB>0)) // passage zero H
             {
                 res =255;
-            }*/
-            int Ai = abs(pxB-px);
-            int Aj = abs(pxD-px);
+            }
+            int Ai = pxB-px;
+            int Aj = pxD-px;
+            //int G = sqrtAi*Ai + Aj*Aj
             /*float D;
-            if(Ai!=0)
-                D= atan(Aj/Ai);
+           
             //cout<<D<<"\n";
             */
-            out[i][j]= max( Ai,Aj);
-            //out[i][j]= 50;//*D;
+            out[i][j]= max(Ai,Aj);
+            /*
+            float D;
+             if(Aj!=0)
+                D= atan2(Ai,Aj);
+            out[i][j]= map(D,0,2*M_PI,0,255);
+            */
         }
 
     }
+    char * folderOut = (char*)"out/"; 
         for(int i = 0 ; i < size;i++)
         for(int j = 0 ; j < size;j++)
         {
             image[i][j]=out[i][j];
         }
+        saveImage( folderOut, (char*)"Passage2",(char*)"test.pgm",out);
+
+
+}
+void passage2(ImageG &image)
+{
+    int size = image.size();
+    ImageG out;
+    resize(out,image.size(),image.size());
+
+    for(int i = 1 ; i < size-1; i++)
+    {
+        for(int j = 1 ; j < size-1; j++)
+        {
+            int newpix=0;
+            int test=0;
+            for(int u = -1 ; u < 2; u++)
+                for(int v = -1 ; v < 2; v++)
+                {
+                    newpix = 1 * image[i][j]*image[i+u][j+v];
+                    if(newpix>0)test=1;
+                }
+            if(test)
+            {
+                  out[i][j]= 255;
+            }
+            else
+            {
+               
+                out[i][j]= 0;
+            }
+          
+            
+        }
+    }
+    char * folderOut = (char*)"out/"; 
+        for(int i = 0 ; i < size;i++)
+        for(int j = 0 ; j < size;j++)
+        {
+            image[i][j]=out[i][j];
+        }
+        saveImage( folderOut, (char*)"Passage2",(char*)"test.pgm",out);
+
+
+}
+void passageSpatola(ImageG &image, ImageG gradient)
+{
+    int size = image.size();
+    ImageG out;
+    resize(out,image.size(),image.size());
+    /*std::vector<std::pair<int,int>> issou = {make_pair(0,1),
+                                    make_pair(-1,1),
+                                    make_pair(-1,0),
+                                    make_pair(-1,-1),
+
+                                    make_pair(0,-1),
+                                    make_pair(1,-1),
+                                    make_pair(1,0),
+                                    make_pair(1,1)};
+                                    */
+    
+        for(int i = 0 ; i< image.size()-1;i++)
+        for(int j =  0 ; j< image.size()-1;j++)
+        {
+            int px = image[i][j];
+            double h  = image[i+1][j] -px;
+            double v  = image[i][j+1] -px;
+
+            
+            
+            float angle;
+             if(v!=0)
+                angle= atan2(h,v);
+            int voisin;
+            if( angle > 7*(M_PI_4 /2) && angle < (M_PI_4 /2) )
+            {
+                 voisin = image[i][j+1];
+            }
+            else if( angle > (M_PI_4 /2) && angle < 2*(M_PI_4 /2) )
+            {
+                 voisin = image[i-1][j+1];
+            }
+            else if( angle > 2*(M_PI_4 /2) && angle < 3*(M_PI_4 /2) )
+            {
+                 voisin = image[i-1][j];
+            }
+            else if( angle > 3*(M_PI_4 /2) && angle < 4*(M_PI_4 /2) )
+            {
+                 voisin = image[i-1][j-1];
+            }
+            else if( angle > 4*(M_PI_4 /2) && angle < 5*(M_PI_4 /2) )
+            {
+                 voisin = image[i-1][j];
+            }
+            else if( angle > 5*(M_PI_4 /2) && angle < 6*(M_PI_4 /2) )
+            {
+                 voisin = image[i+1][j-1];
+            }
+            else if( angle > 6*(M_PI_4 /2) && angle < 7*(M_PI_4 /2) )
+            {
+                 voisin = image[i+1][j];
+            }
+            else
+            {
+                voisin = image[i+1][j+1];
+            }
+            image[i][j]-=128;
+            voisin-=128;
+            if( (image[i][j]*voisin < 0) && (voisin !=0 && image[i][j]!=0))
+            {
+                out[i][j]=gradient[i][j];
+            }
+            else
+            {
+                out[i][j]=0;
+            }
+            //out[i][j]= map(D,0,2*M_PI,0,255);
+            /*
+            int angle = D+ M_PI/8; 
+             out[i][j]=0;
+            for(int k = 0 ; k < 8;k++)
+            {
+                if( angle > M_PI_4 *k &&  angle < M_PI_4*(k+1))
+                {
+                    
+                    if( image[i][j]*image[i+issou[k].first][j+issou[k].second]<0)
+                        out[i][j]= 255;
+                }
+            }*/
+
+        }
+
+    char * folderOut = (char*)"out/"; 
+        for(int i = 0 ; i < size;i++)
+        for(int j = 0 ; j < size;j++)
+        {
+            image[i][j]=out[i][j];
+        }
+        /*
+        saveImage( folderOut, (char*)"Passage2",(char*)"test.pgm",out);*/
+
+
 }
 int main(int argc, char* argv[]) {
     char inputName[250];
@@ -256,6 +406,7 @@ int main(int argc, char* argv[]) {
 
     ImageRGB imageRGB;
     ImageG imageG;
+    ImageG imageGradient;
     resize(imageG,nW,nH);
 
     ImageG imageH;
@@ -277,30 +428,49 @@ int main(int argc, char* argv[]) {
         resize(imageRGB,nW,nH);
         resize(imageG,nW,nH);
         resize(imageH,nW,nH);
+        resize(imageGradient,nW,nH);
 
         loadImage(pathIn,imageRGB,nW, nH);
         saveImage( folderOut, (char*)"originale_",inputName,imageRGB);
         
         wololo(imageRGB,imageG);
-    /*
-        blur(imageG,kernel);
-         blur(imageG,kernel);
-        saveImage( folderOut, (char*)"FlouMoyenneur",inputName,imageG);
+        //wololo(imageRGB,imageGradient);
+        //gradient(imageGradient);
+
+         int threshold = OtsuMethod(imageG);
+        cout<<threshold<<"\n";
+
+        imageGradient = seuillage(imageGradient,threshold);
+
+        
+        //hysterique(imageGradient,0.4*threshold,threshold,imageH);
+        //saveImage( folderOut, (char*)"SeuilH04",inputName,imageH);
+
+        //blur(imageG,kernel);
+         //blur(imageG,kernel);
+        //saveImage( folderOut, (char*)"FlouMoyenneur",inputName,imageG);
 
         gradient(imageG);
         saveImage( folderOut, (char*)"Gradient_",inputName,imageG);
         profil(imageG, 42);
-        */
-        int threshold = OtsuMethod(imageG);
-        //imageG = seuillage(imageG,threshold);
-        ///saveImage( folderOut, (char*)"Seuil",inputName,imageG);
-        convolution(imageG,laplacien);
-        saveImage( folderOut, (char*)"Laplace",(char*)"test.pgm",imageG);
-        passage(imageG);
-        saveImage( folderOut, (char*)"Passage",(char*)"test.pgm",imageG);
+        /*
+        //int threshold = OtsuMethod(imageG);
+        //cout<<threshold<<"\n";
+        imageG = seuillage(imageG,threshold);
 
-        //hysterique(imageG,threshold-5,threshold+5,imageH);
-        //saveImage( folderOut, (char*)"SeuilH",inputName,imageH);
+        saveImage( folderOut, (char*)"Seuil",inputName,imageG);
+
+
+        
+        convolution(imageG,laplacien);
+        //saveImage( folderOut, (char*)"Laplace",(char*)"test.pgm",imageG);
+
+        passageSpatola(imageG,imageGradient);
+        saveImage( folderOut, (char*)"PassageSpatola",(char*)"test.pgm",imageG);
+        //int threshold = OtsuMethod(imageG);
+        hysterique(imageG,0.4*threshold,threshold,imageH);
+        saveImage( folderOut, (char*)"PassageSeuilH",inputName,imageH);
+        */
     }
 
     
