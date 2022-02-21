@@ -118,7 +118,7 @@ double minMax(ImageG image,int startX,int endX, int startY, int endY)
     }   
     return maxi-mini;
 }
-void Split(ImageG &image, int size, double seuil )
+void Split(ImageG &image, int size, double seuil,int custom )
 {
     int nW,nH;
    
@@ -148,7 +148,7 @@ void Split(ImageG &image, int size, double seuil )
     double ecart_type4 = sqrt(ecart_type(image,nW/2,nH, nH/2, nH,cadran4));
 
     //std::cout<<"\nSize :"<<size<<"\n";
-    //std::cout<<"\necart_type: "<<ecart_type1<<"ecart_type: "<<ecart_type2<<"ecart_type: "<<ecart_type3<<"ecart_type: "<<ecart_type4<<"\n";
+    std::cout<<"\necart_type: "<<ecart_type1<<"ecart_type: "<<ecart_type2<<"ecart_type: "<<ecart_type3<<"ecart_type: "<<ecart_type4<<"\n";
 
     for (size_t i = 0; i < nH; i++)
     {
@@ -163,26 +163,26 @@ void Split(ImageG &image, int size, double seuil )
 
         }
     }
-    if(size>=8)
+    if(size>4)
     {
         
         if(ecart_type1>=seuil)
-            Split(A,  size/2,seuil);
+            Split(A,  size/2,seuil,4);
         else
             fill(A,size/2,cadran1);
 
         if(ecart_type2>=seuil)    
-            Split(B,  size/2,seuil);
+            Split(B,  size/2,seuil,4);
         else
             fill(B,size/2,cadran2);
 
         if(ecart_type3>=seuil)
-            Split(C,  size/2,seuil);
+            Split(C,  size/2,seuil,4);
         else
             fill(C,size/2,cadran3);
 
         if(ecart_type4>=seuil)
-            Split(D,  size/2,seuil);
+            Split(D,  size/2,seuil,4);
         else
             fill(D,size/2,cadran4);
         
@@ -219,7 +219,7 @@ void Split(ImageG &image, int size, double seuil )
 
         
 }
-void testSplit(ImageG &image, int size,double seuil )
+void testSplit(ImageG &image, int size,double seuil, int custom )
 {
     int nW,nH;
     
@@ -262,26 +262,26 @@ void testSplit(ImageG &image, int size,double seuil )
 
         }
     }
-    if(size>=8)
+    if(size>=custom)
     {
         
         if(ecart_type1>=seuil)
-            testSplit(A,  size/2,seuil);
+            testSplit(A,  size/2,seuil,custom);
         else
             fill2(A,size/2,cadran1);
 
         if(ecart_type2>=seuil)    
-            testSplit(B,  size/2,seuil);
+            testSplit(B,  size/2,seuil,custom);
         else
             fill2(B,size/2,cadran2);
 
         if(ecart_type3>=seuil)
-            testSplit(C,  size/2,seuil);
+            testSplit(C,  size/2,seuil,custom);
         else
             fill2(C,size/2,cadran3);
 
         if(ecart_type4>=seuil)
-            testSplit(D,  size/2,seuil);
+            testSplit(D,  size/2,seuil,custom);
         else
             fill2(D,size/2,cadran4);
 
@@ -384,23 +384,26 @@ void testSplit2(ImageG &image,ImageG &out, int startI, int startJ, int endI, int
 
 }
 
-void exo3(ImageG greyscale, int nW, double seuil)
+void exo3(ImageG greyscale, int nW, double seuil, int i)
 {
     char * folderOut = (char*)"out/"; 
-        testSplit(greyscale, nW,seuil);
-        std::string output = std::string("image")+std::string(std::to_string((int)seuil))+std::string(".pgm");
+
+        testSplit(greyscale, nW,seuil,i);
+        std::string output = std::string("image")+std::string(std::to_string((int)i))+std::string(".pgm");
         saveImage( folderOut, (char*)"testSplit",&output[0],greyscale);
+
+
 }
-void exo4(ImageG out, int nW, double seuil)
+void exo4(ImageG out, int nW, double seuil,int i)
 {
     char * folderOut = (char*)"out/"; 
    
-        Split(out, nW,seuil);
+        Split(out, nW,seuil,i);
         std::string output = std::string("image")+std::string(std::to_string((int)seuil))+std::string(".pgm");
         saveImage( folderOut, (char*)"Split",&output[0],out);
 }
 
-std::vector<std::vector<int>> rag;
+
 int distance(int x,int y, int x1, int y1)
 {
     return abs(x-x1) +abs(y-y1);
@@ -508,7 +511,7 @@ void SplitGraph(ImageG &image,region* root, int size, double seuil, int sx, int 
     root->children.push_back(rC);
     root->children.push_back(rD);
 
-    if(size>=256)
+    if(size>=32)
     {
         
         if(ecart_type1>=seuil)
@@ -655,41 +658,244 @@ void mergeRegion(region* &r1,region* &r2,int size, ImageG &image)
             }
         } 
 }
-bool tryto(Image& image,int size)
+static ImageG imageBoard;
+static std::vector<std::vector<int>> rag;
+class region2
 {
-    bool test =false;
-    for(int i =1;i<size-1;i++)
-        for(int j=1;j<size-1;j++)
+    public:
+        region2(
+            int indice,
+            double moyenne
+                    )
         {
-            
-            if(r1->bitboard[i][j]==255)
-            {
-                if(r2->bitboard[i+1][j] ==255)
-                {
-                    test=true;
-                    break;
-                }
-                else if(r2->bitboard[i][j+1] ==255)
-                {
-                    test=true;
-                    break;
-                }
-                else if(r2->bitboard[i-1][j] ==255)
-                {
-                    test=true;
-                    break;
-                }
-                else if(r2->bitboard[i][j-1] ==255)
-                {
-                    test=true;
-                    break;
-                }
-                
-            }
+            this->indice=indice;
+            this->moyenne=moyenne;
+
         }
-        return test;
+        int indice;
+        double moyenne;
+
+        std::vector<int> up;
+        std::vector<int> left;
+        std::vector<int> down;
+        std::vector<int> right;
+
+
+
+};
+void addMatric(region2* child)
+{
+    for(auto & indice : child->left)
+    {
+        rag[child->indice][indice]=1;
+        rag[indice][child->indice]=1;
+    }
+    for(auto & indice : child->up)
+    {
+         rag[child->indice][indice]=1;
+         rag[indice][child->indice]=1;
+    }
+    for(auto & indice : child->right)
+    {
+         rag[child->indice][indice]=1;
+         rag[indice][child->indice]=1;
+    }
+    for(auto & indice : child->down)
+    {
+         rag[child->indice][indice]=1;
+         rag[indice][child->indice]=1;
+    }
 
 }
+void SplitGraph2(ImageG &image,region2* root, int size, double seuil, int sx, int sy)
+{
+    int nW,nH;
+   
+    nW=nH=size;
+    ImageG A,B,C,D;
+    resize(A,nW/2,nH/2);
+    resize(B,nW/2,nH/2);
+    resize(C,nW/2,nH/2);
+    resize(D,nW/2,nH/2);
+
+    double cadran1 = moyenne(image,0,nW/2, 0, nH/2);
+    double cadran2 = moyenne(image,nW/2,nW, 0, nH/2);
+    double cadran3 = moyenne(image,0,nW/2, nH/2, nH);
+    double cadran4 = moyenne(image,nW/2,nH, nH/2, nH);
+
+    double ecart_type1 = sqrt(ecart_type(image,0,nW/2, 0, nH/2,cadran1));
+    double ecart_type2 = sqrt(ecart_type(image,nW/2,nW, 0, nH/2,cadran2));
+    double ecart_type3 = sqrt(ecart_type(image,0,nW/2, nH/2, nH,cadran3));
+    double ecart_type4 = sqrt(ecart_type(image,nW/2,nH, nH/2, nH,cadran4));
+
+    //std::cout<<"start:"<<sx<<" "<<sy<<"\n";
+
+    for (size_t i = 0; i < nH; i++)
+    {
+        for (size_t j = 0; j < nW; j++)
+        {
+
+            A[(i / 2)][(j / 2)]=image[(i / 2)][(j / 2)]                   ;                   
+            B[(i / 2)][(j / 2)]=image[(i / 2)][nW / 2 + (j / 2)]          ;          
+            C[(i / 2)][(j / 2)]=image[nH / 2 + (i / 2)][(j / 2)]          ;          
+            D[(i / 2)][(j / 2)]=image[nH / 2 + (i / 2)][nW / 2 + (j / 2)] ; 
+            
+            imageBoard[sy+(i / 2)][sx+(j / 2)]                    = regionIndice+1;                 
+            imageBoard[sy+(i / 2)][sx+nW / 2 + (j / 2)]           = regionIndice+2;    
+            imageBoard[sy+nH / 2 + (i / 2)][sx+(j / 2)]           = regionIndice+3;        
+            imageBoard[sy+nH / 2 + (i / 2)][sx+nW / 2 + (j / 2)]  = regionIndice+4; 
+        
+
+        }
+    }
+    
+    region2 *rA = new region2(regionIndice+1,cadran1);
+    region2 *rB = new region2(regionIndice+2,cadran2);
+    region2 *rC = new region2(regionIndice+3,cadran3);
+    region2 *rD = new region2(regionIndice+4,  cadran4);
+    // On ajoute les enfants ensembles 
+    rA->right.push_back(regionIndice + 2);
+    rA->down.push_back(regionIndice + 3);
+
+    rB->left.push_back(regionIndice + 1);
+    rB->down.push_back(regionIndice + 4);
+
+    rC->up.push_back(regionIndice + 1);
+    rC->right.push_back(regionIndice + 4);
+
+    rD->left.push_back(regionIndice + 3);
+    rD->up.push_back(regionIndice + 2);
+
+    // On ajoute les enfants des parents
+    for(auto & indice : root->left)
+    {
+        rA->left.push_back(indice);
+        rC->left.push_back(indice);
+
+    }
+    for(auto & indice : root->up)
+    {
+        rA->up.push_back(indice);
+        rB->up.push_back(indice);
+
+    }
+    for(auto & indice : root->right)
+    {
+        rB->right.push_back(indice);
+        rD->right.push_back(indice);
+
+    }
+    for(auto & indice : root->down)
+    {
+        rC->down.push_back(indice);
+        rD->down.push_back(indice);
+
+    }
+    // Dans la matrice adjacence
+    rag[regionIndice+1][regionIndice+2]=1;
+    rag[regionIndice+1][regionIndice+3]=1;
+
+    rag[regionIndice+2][regionIndice+1]=1;
+    rag[regionIndice+2][regionIndice+4]=1;
+    
+    rag[regionIndice+3][regionIndice+1]=1;
+    rag[regionIndice+3][regionIndice+4]=1;
+    
+    rag[regionIndice+4][regionIndice+2]=1;
+    rag[regionIndice+4][regionIndice+3]=1;
+    // Les parents dans la matrice
+    addMatric(rA);
+    addMatric(rB);
+    addMatric(rC);
+    addMatric(rD);
+
+    /*
+    std::vector<region2 *>children;
+    for(int i = 0 ; i < 4 ;i++) 
+    {
+        children.push_back(new region2(regionIndice+(i+1),cadran1));
+
+    }*/
+
+    regionIndice+=4;
+    /*root->children.push_back(rA);
+    root->children.push_back(rB);
+    root->children.push_back(rC);
+    root->children.push_back(rD);*/
+
+    if(size>=4)
+    {
+        
+        if(ecart_type1>=seuil)
+            SplitGraph2(A,rA, size/2,seuil,sx,sy);
+        else
+            fill(A,size/2,cadran1);
+
+        if(ecart_type2>=seuil)    
+            SplitGraph2(B,rB, size/2,seuil,sx+size/2,sy);
+        else
+            fill(B,size/2,cadran2);
+
+        if(ecart_type3>=seuil)
+            SplitGraph2(C,rC, size/2,seuil,sx,sy+size/2);
+        else
+            fill(C,size/2,cadran3);
+
+        if(ecart_type4>=seuil)
+            SplitGraph2(D,rD, size/2,seuil,sx+size/2,sy+size/2);
+        else
+            fill(D,size/2,cadran4);
+        
+        for (size_t i = 0; i < nH; i++)
+        {
+            for (size_t j = 0; j < nW; j++)
+            {
+                image[(i / 2)][(j / 2)]                   =A[(i / 2)][(j / 2)];                                                                           
+                image[(i / 2)][nW / 2 + (j / 2)]          =B[(i / 2)][(j / 2)];                                       
+                image[nH / 2 + (i / 2)][(j / 2)]          =C[(i / 2)][(j / 2)];       			                              
+                image[nH / 2 + (i / 2)][nW / 2 + (j / 2)] =D[(i / 2)][(j / 2)];            
+
+            }
+        }
+
+    }
+    else
+    {
+
+
+        for (size_t i = 0; i < nH; i++)
+        {
+            for (size_t j = 0; j < nW; j++)
+            {
+                image[(i / 2)][(j / 2)]                   =cadran1;                                                                           
+                image[(i / 2)][nW / 2 + (j / 2)]          =cadran2;                                       
+                image[nH / 2 + (i / 2)][(j / 2)]          =cadran3;       			                              
+                image[nH / 2 + (i / 2)][nW / 2 + (j / 2)] =cadran4;            
+
+            }
+        }
+        
+    }
+
+        
+}
+/*
+void mergepls()
+{
+    int size = rag.size();
+    for(int i = 0 ; i < size;i++)
+    {
+        for(int j = 0 ; j < size;j++)
+        {
+            if(rag[i][j]==1)
+            {
+                for(int u =0; )
+            }
+        }
+
+    }
+}
+*/
 int main(int argc, char* argv[]) {
     char inputName[250];
     int nH, nW;
@@ -728,26 +934,44 @@ int main(int argc, char* argv[]) {
 
         //exo1(greyscale,512);
         //saveImage( folderOut, (char*)"divide1_",(char*)"greyscale.pgm",greyscale);
-        
-        exo3( greyscale,  nW,  seuil);
-        
+        /*for(int i = 512 ; i >=4;i/=2)
+        {
+            exo3( greyscale,  nW,  seuil,i);
+        }*/
+        /*for(int i = 5 ; i<55;i+=5)
+        { 
+            exo4( greyscale,  nW,  i,512);
+        }*/
         //exo4( out,  nW,  seuil);
         
         
         region *root = new region(regionIndice,greyscale,nW,0,0,0);
-        
-        SplitGraph(out,root, nW,seuil,0,0);
+        /*
+        region2 *root = new region2(regionIndice,0);
+        resize(imageBoard,nW,nH);
+        rag.resize(40000);
+        for(auto& line : rag)
+            line.resize(40000);
+        SplitGraph2(out,root, nW,seuil,0,0);
         //saveImage( folderOut, (char*)"divide1_",(char*)"greyscale.pgm",greyscale);
         //std::string output = std::string("imageSpliut")+std::string(std::to_string((int)seuil))+std::string(".pgm");
         //saveImage( folderOut, (char*)"Split",&output[0],out);
         /*
         printMiniatures(root);
-        */
+        
         std::string output = std::string("imageSpliutBefore")+std::string(std::to_string((int)seuil))+std::string(".pgm");
         saveImage( folderOut, (char*)"Split",&output[0],out);
+       
+       for(int i = 0 ;i < nW;i++)
+               for(int j = 0 ;j < nW;j++)
+               {
+                   std::cout<<rag[i][j]<<" ";
+               }
+*/
+        SplitGraph(out,root, nW,seuil,0,0);
        std::vector<region*> listeRegion;
-       /* make_list(root,listeRegion);
-        //int sizeListe =
+
+        make_list(root,listeRegion);
         for(int i =0; i<listeRegion.size();i++)
         {
 
@@ -759,7 +983,6 @@ int main(int argc, char* argv[]) {
                     {
                         if(computeCloseness(listeRegion[i],listeRegion[j],nW))
                         {
-                            //std::cout<<"lerge\n";
                             mergeRegion(listeRegion[i],listeRegion[j],nW, out);
                             listeRegion.erase(listeRegion.begin() +j);
                         }
@@ -769,9 +992,10 @@ int main(int argc, char* argv[]) {
 
 
             }
-        }*/
-        std::string output2 = std::string("imageSpliut")+std::string(std::to_string((int)seuil))+std::string(".pgm");
-        saveImage( folderOut, (char*)"Split",&output2[0],out);
+        }
+                std::string output = std::string("imageSpliutBefore")+std::string(std::to_string((int)1))+std::string(".pgm");
+        saveImage( folderOut, (char*)"Split",&output[0],out);
+
         
 
     }
