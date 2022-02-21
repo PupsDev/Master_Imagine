@@ -28,6 +28,7 @@ using namespace glm;
 #include <common/vboindexer.hpp>
 #include "common/functions.cpp"
 
+#include "common/Test.hpp"
 #include "common/sceneGraph.hpp"
 
 void processInput(GLFWwindow *window);
@@ -80,18 +81,18 @@ void createMap(    std::vector<unsigned short> &indices,std::vector<glm::vec3> &
             float const y = sin( -M_PI_2 + M_PI * i * R );
             float const x = cos(2*M_PI * j * S) * sin( M_PI * i * R );
             float const z = sin(2*M_PI * j * S) * sin( M_PI * i * R );
-
+            indexed_uvs.push_back(glm::vec2(j*S, i*R));
             indexed_vertices.push_back(vec3(x,y,z) * radius);
             
              
         }
         
-    for(int i = 0 ; i < sommets; i++)
+    /*for(int i = 0 ; i < sommets; i++)
         for(int j = 0; j < sommets ; j++)
         {
             indexed_uvs.push_back( glm::vec2(1.-(float)(i)/(sommets+1) ,1.-(float)(j)/(sommets+1) ));
 
-        }
+        }*/
         
      for(int i = 0 ; i < sommets -1; i++)
         for(int j = 0 ; j < sommets-1 ; j++)
@@ -111,8 +112,8 @@ void createMap(    std::vector<unsigned short> &indices,std::vector<glm::vec3> &
 
 void loadTextures(GLuint (&TextureMountain)[8],GLuint (&TextureID)[8],  GLuint programID)
 {
-    TextureMountain[0] = loadBMP_custom((char *)"textures/terre.bmp");
-    TextureMountain[1] = loadBMP_custom((char *)"textures/sun.bmp");
+    TextureMountain[0] = loadBMP_custom((char *)"textures/sun.bmp");
+    TextureMountain[1] = loadBMP_custom((char *)"textures/terre.bmp");
     TextureMountain[2] = loadBMP_custom((char *)"textures/tex_snowrock.bmp");
 
     TextureMountain[3] = loadBMP_custom((char *)"textures/hmap_cliffs.bmp");
@@ -142,7 +143,35 @@ void loadTextures(GLuint (&TextureMountain)[8],GLuint (&TextureID)[8],  GLuint p
     }   
 
 }
+Mesh * createSphere()
+{
+    Mesh * mesh = new Mesh();
 
+    createMap(mesh->indices,mesh->points,mesh->uvs, resolution);
+    return mesh;
+}
+typedef struct BUFFER
+{
+    GLuint vertexbuffer;
+    GLuint elementbuffer;
+    GLuint uvbuffer;
+
+}BUFFER;
+void sendGPU(BUFFER &buffer, Mesh * mesh)
+{
+    glGenBuffers(1, &buffer.vertexbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer.vertexbuffer);
+    glBufferData(GL_ARRAY_BUFFER, mesh->points.size() * sizeof(glm::vec3), &mesh->points[0], GL_STATIC_DRAW);
+
+    glGenBuffers(1, &buffer.elementbuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer.elementbuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indices.size() * sizeof(unsigned short), &mesh->indices[0] , GL_STATIC_DRAW);
+        
+    glGenBuffers(1, &buffer.uvbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer.uvbuffer);
+    glBufferData(GL_ARRAY_BUFFER, mesh->uvs.size()* sizeof(glm::vec2), &mesh->uvs[0], GL_STATIC_DRAW);
+
+}
 int main( void )
 {
     // Initialise GLFW
@@ -188,7 +217,7 @@ int main( void )
     glfwSetCursorPos(window, 1024/2, 768/2);
 
     // Dark blue background
-    glClearColor(0.8f, 0.8f, 0.8f, 0.0f);
+    glClearColor(0.015f, 0.11f, 0.196f, 0.0f);
 
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
@@ -245,34 +274,135 @@ int main( void )
     GLuint projectionID  = glGetUniformLocation(programID, "projection");
 
     
-    GLuint vertexbuffer;
-    GLuint elementbuffer;
-    GLuint uvbuffer;
+    /*GLuint vertexbuffer;*/
+    /*GLuint elementbuffer;*/
+    /*GLuint uvbuffer;*/
     
 
 
     createMap(  indices2,indexed_vertices2,indexed_uvs,  resolution);
+    /*
+    Test * grapheDeScene = new Test();
+    grapheDeScene->run();
+    grapheDeScene->runRotation();
+    */
+
+    Mesh * mesh_sun = createSphere();
+    Mesh * mesh_earth = createSphere();
+    Mesh * mesh_moon = createSphere();
+
+    SceneGraphComposite* sunGraph = new SceneGraphComposite();
+    SceneGraphComposite* earthGraph = new SceneGraphComposite();
+    SceneGraphLeaf* moonGraph = new SceneGraphLeaf();
+
+    sunGraph->gameObject = new GameObject();
+    earthGraph->gameObject = new GameObject();
+    moonGraph->gameObject = new GameObject();
+
+    Transform * t = new Transform( glm::vec3(10.f,0.,0.0) );
+
+    glm::mat3 rotationAxe = Transform::convertMat4(glm::rotate(glm::mat4(1.0f), (float)M_PI_2,glm::vec3(0.f,1.f,0.0)));
+
+    Transform * earthTransform = new Transform(1.,glm::mat3(1.),glm::vec3(10.f,0.,0.0) );
+    //glm::mat3 rotationAxe = Transform::convertMat4(glm::rotate(glm::mat4(1.0f), (float)M_PI_2,glm::vec3(0.f,1.f,0.0)));
+    Transform * earthTransform2 = new Transform(rotationAxe);
+    Transform * moonTransform = new Transform(0.5,glm::mat3(1.),glm::vec3(2.f,0.,0.0) );
+    //Transform * rotat = new Transform( Transform::convertMat4(glm::rotate(glm::mat4(1.0f), (float)M_PI_2, glm::vec3(0.f,0.f,1.0))) );
+
+    sunGraph->gameObject->mesh = mesh_sun;
+    earthGraph->gameObject->mesh = mesh_earth;
+    moonGraph->gameObject->mesh = mesh_moon;
+
+    BUFFER buffer;
+    BUFFER bufferEarth;
+    BUFFER bufferMoon;
+
+    //moonGraph->gameObject->transformation = moonTransform;
+    earthGraph->gameObject->transformation = earthTransform;
+    earthGraph->add(moonGraph);
+    earthGraph->apply();
+
+    moonGraph->gameObject->transformation = moonTransform;
+    moonGraph->apply();
+
+    earthGraph->gameObject->transformation = earthTransform2;
+    moonGraph->gameObject->transformation = new Transform();
+    //moonGraph->gameObject->transformation = earthTransform2;
+    //earthGraph->update();
+    earthGraph->gameObject->apply();
+
+    moonGraph->gameObject->transformation = earthTransform2;
+    moonGraph->apply();
+    
+    sendGPU(buffer,mesh_sun);
+    sendGPU(bufferEarth,mesh_earth);
+    sendGPU(bufferMoon,mesh_moon);
+
+          /*  earthGraph->inverse();
+
+        moonGraph->gameObject->transformation = moonTransform;
+       
+        glm::mat3 rotationAxe = Transform::convertMat4(glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation2/2.),glm::vec3(0.f,1.f,0.0)));
+        earthTransform = new Transform(1.,rotationAxe,glm::vec3(10.f,0.,0.0) );
+        earthGraph->gameObject->transformation = earthTransform;
+
+        earthGraph->apply();
+        
+        sendGPU(buffer,mesh_sun);
+        sendGPU(bufferEarth,mesh_earth);
+        sendGPU(bufferMoon,mesh_moon);*/
+
+    /*
+    //moonGraph->gameObject->transformation->print();
+    earthGraph->inverse();
+    sendGPU(buffer,mesh_sun);
+    sendGPU(bufferEarth,mesh_earth);
+    sendGPU(bufferMoon,mesh_moon);
+
+    //moonGraph->gameObject->transformation->print();
+    moonGraph->gameObject->transformation = moonTransform;
+    earthGraph->gameObject->transformation = earthTransform;
+    //earthGraph->add(moonGraph);
+    earthGraph->apply();
+    
+    sendGPU(buffer,mesh_sun);
+    sendGPU(bufferEarth,mesh_earth);
+    sendGPU(bufferMoon,mesh_moon);
+    */
+        
+        
+
+    //earthGraph->gameObject->transformation = t;
+    //earthGraph->gameObject->transformation = rotat;
+    //moonGraph->gameObject->transformation = t;
+    //moonGraph->apply();
+    
+
+    //earthGraph->apply();
+    //earthGraph->gameObject->transformation = rotat;
+
+    
+
+
+
 
         //wata
+        /*
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glBufferData(GL_ARRAY_BUFFER, indexed_vertices2.size() * sizeof(glm::vec3), &indexed_vertices2[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, mesh_sun->points.size() * sizeof(glm::vec3), &mesh_sun->points[0], GL_STATIC_DRAW);
 
     glGenBuffers(1, &elementbuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices2.size() * sizeof(unsigned short), &indices2[0] , GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh_sun->indices.size() * sizeof(unsigned short), &mesh_sun->indices[0] , GL_STATIC_DRAW);
         
     glGenBuffers(1, &uvbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-    glBufferData(GL_ARRAY_BUFFER, indexed_uvs.size()* sizeof(glm::vec2), &indexed_uvs[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, mesh_sun->uvs.size()* sizeof(glm::vec2), &mesh_sun->uvs[0], GL_STATIC_DRAW);
 
-    SceneGraphLeaf* leaf = new SceneGraphLeaf();
-    SceneGraphLeaf* leaf2 = new SceneGraphLeaf();
+*/
 
-    SceneGraphComposite* node = new SceneGraphComposite();
-    node->add(leaf);
-    node->add(leaf2);
-    node->methodForChildren();
+    
 
     do{
 
@@ -299,7 +429,7 @@ int main( void )
          
         if(orbital)
         {
-            camera_position = glm::vec3(1.6,137.,-90.);
+            camera_position = glm::vec3(0,50.,0.);
             camera_target= glm::vec3(0.0f, 0.0f, -1.0f);
 
             camera_position =  glm::rotateY(camera_position,(float)radians(angleRotation2));
@@ -311,18 +441,36 @@ int main( void )
              viewMatrix  = glm::lookAt(camera_position,camera_position+camera_target,camera_up);
              
         }
-            
+
     
         // TERRAIN
+        /*
+        rotationAxe = Transform::convertMat4(glm::rotate(glm::mat4(1.0f), (float)radians(coeffAngle2/10.),glm::vec3(0.f,1.f,0.0)));
+        earthTransform2 = new Transform(rotationAxe);
+        //earthGraph->inverse();
+        //moonGraph->gameObject->transformation = moonTransform;
+        earthGraph->gameObject->transformation = earthTransform;
+        earthGraph->apply();
+        earthGraph->gameObject->transformation = earthTransform2;
+        //earthGraph->update();
+        //moonGraph->gameObject->transformation = earthTransform2;
+        earthGraph->apply();
+        earthGraph->inverse();
+        
+        sendGPU(buffer,mesh_sun);
+        sendGPU(bufferEarth,mesh_earth);
+        sendGPU(bufferMoon,mesh_moon);
+        */
+
         glUseProgram(programID);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, TextureMountain[0]);
         glUniform1i(TextureID[0], 0);
 
-        scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(20.*scaleFactor));
-        rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)M_PI/2, glm::vec3(-1.,0.,0.0));
+        //scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(20.*scaleFactor));
+        //rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)M_PI/2, glm::vec3(-1.,0.,0.0));
         
-        translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(-2.f, -5.,0.0f));
+        //translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(-2.f, -5.,0.0f));
 
         modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
 
@@ -333,7 +481,7 @@ int main( void )
 
         
         glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, buffer.vertexbuffer);
         glVertexAttribPointer(
                     0,                  // attribute
                     3,                  // size
@@ -344,7 +492,7 @@ int main( void )
                     );
         
         glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, buffer.uvbuffer);
         glVertexAttribPointer(
                     1,                  // attribute
                     2,                  // size
@@ -365,8 +513,8 @@ int main( void )
     
         // wata ?
         
-         //scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(scaleFactor));
-         translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(50.f, -5.,0.0f));
+        //scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(10.f));
+        //translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(50.f, -5.,0.0f));
         modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, TextureMountain[1]);
@@ -378,7 +526,30 @@ int main( void )
         glUniformMatrix4fv(projectionID, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
         
 
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, bufferEarth.vertexbuffer);
+        glVertexAttribPointer(
+                    0,                  // attribute
+                    3,                  // size
+                    GL_FLOAT,           // type
+                    GL_FALSE,           // normalized?
+                    0,                  // stridedeltaTime
+                    (void*)0           // element array buffer offset
+                    );
+        
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, bufferEarth.uvbuffer);
+        glVertexAttribPointer(
+                    1,                  // attribute
+                    2,                  // size
+                    GL_FLOAT,           // type
+                    GL_FALSE,           // normalized?
+                    0,                  // stridedeltaTime
+                    (void*)0           // element array buffer offset
+                    );
+
                  // Draw the triangles !
+        
         glDrawElements(
                     GL_TRIANGLES,      // mode
                     indices2.size(),    // count
@@ -386,8 +557,49 @@ int main( void )
                         (void*)0           // element array buffer offset
                     );
                     
+        //scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(5.f));
+        //translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(50.f, 10.,20.0f));
+        modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, TextureMountain[2]);
+        glUniform1i(TextureID[0], 0);
 
-        translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(35.f, -5.,0.0f));
+
+        glUniformMatrix4fv(modelID, 1, GL_FALSE, glm::value_ptr(modelmatrix));
+        glUniformMatrix4fv(viewID, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+        glUniformMatrix4fv(projectionID, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, bufferMoon.vertexbuffer);
+        glVertexAttribPointer(
+                    0,                  // attribute
+                    3,                  // size
+                    GL_FLOAT,           // type
+                    GL_FALSE,           // normalized?
+                    0,                  // stridedeltaTime
+                    (void*)0           // element array buffer offset
+                    );
+        
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, bufferMoon.uvbuffer);
+        glVertexAttribPointer(
+                    1,                  // attribute
+                    2,                  // size
+                    GL_FLOAT,           // type
+                    GL_FALSE,           // normalized?
+                    0,                  // stridedeltaTime
+                    (void*)0           // element array buffer offset
+                    );
+
+                 // Draw the triangles !
+        
+        glDrawElements(
+                    GL_TRIANGLES,      // mode
+                    indices2.size(),    // count
+                    GL_UNSIGNED_SHORT,   // typecamera_position
+                        (void*)0           // element array buffer offset
+                    );
+        //translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(35.f, -5.,0.0f));
        
     
 
@@ -399,9 +611,9 @@ int main( void )
            glfwWindowShouldClose(window) == 0 );
 
     // Cleanup VBO and shader
-    glDeleteBuffers(1, &vertexbuffer);
-    glDeleteBuffers(1, &elementbuffer); 
-    glDeleteBuffers(1, &uvbuffer);
+    glDeleteBuffers(1, &buffer.vertexbuffer);
+    glDeleteBuffers(1, &buffer.elementbuffer); 
+    glDeleteBuffers(1, &buffer.uvbuffer);
 
     glDeleteProgram(programID);
 

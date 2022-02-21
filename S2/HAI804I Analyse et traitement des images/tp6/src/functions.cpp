@@ -278,3 +278,98 @@ ImageG seuillage(ImageG image,int seuil)
         return out;
 
 }
+/*
+void exo2(ImageG &image, int size)
+{
+    int nW,nH;
+    double seuil =15;
+    nW=nH=size;
+    ImageG A,B,C,D;
+    resize(A,nW/2,nH/2);
+    resize(B,nW/2,nH/2);
+    resize(C,nW/2,nH/2);
+    resize(D,nW/2,nH/2);
+
+    double cadran1 = moyenne(image,0,nH/2, 0, nW/2);
+    double cadran2 = moyenne(image,0,nH/2, nW/2, nW);
+
+    double cadran3 = moyenne(image,nH/2,nH, 0, nW/2);
+    double cadran4 = moyenne(image,nH/2,nH, nW/2, nW);
+
+    double ecart_type1 = sqrt(ecart_type(image,0,nH/2, 0, nW/2,cadran1));
+    double ecart_type2 = sqrt(ecart_type(image,0,nH/2, nW/2, nW,cadran2));
+      
+    double ecart_type3 = sqrt(ecart_type(image,nH/2,nH, 0, nW/2,cadran3));
+    double ecart_type4 = sqrt(ecart_type(image,nH/2,nH, nW/2, nW,cadran4));
+
+    std::cout<<"\nSize :"<<size<<"\n";
+    //std::cout<<"\necart_type: "<<ecart_type1<<"ecart_type: "<<ecart_type2<<"ecart_type: "<<ecart_type3<<"ecart_type: "<<ecart_type4<<"\n";
+
+    for (size_t i = 0; i < nH-1; i++)
+    {
+        for (size_t j = 0; j < nW-1; j++)
+        {
+
+            A[(i / 2)][(j / 2)]=image[(i / 2)][(j / 2)]                   ;                   
+            B[(i / 2)][(j / 2)]=image[(i / 2)][nW / 2 + (j / 2)]          ;          
+            C[(i / 2)][(j / 2)]=image[nH / 2 + (i / 2)][(j / 2)]          ;          
+            D[(i / 2)][(j / 2)]=image[nH / 2 + (i / 2)][nW / 2 + (j / 2)] ; 
+        
+
+        }
+    }
+    if(size>=4)
+    {
+
+        if(ecart_type1>=seuil)
+            exo2(A,  size/2);
+        else
+            fill(A,size/2,cadran1);
+
+        if(ecart_type2>=seuil)    
+            exo2(B,  size/2);
+        else
+            fill(B,size/2,cadran2);
+
+        if(ecart_type3>=seuil)
+            exo2(C,  size/2);
+        else
+            fill(C,size/2,cadran3);
+
+        if(ecart_type4>=seuil)
+            exo2(D,  size/2);
+        else
+            fill(D,size/2,cadran4);
+        
+        for (size_t i = 0; i < nH-1; i++)
+        {
+            for (size_t j = 0; j < nW-1; j++)
+            {
+                image[(i / 2)][(j / 2)]                   =A[(i / 2)][(j / 2)];                                                                           
+                image[(i / 2)][nW / 2 + (j / 2)]          =B[(i / 2)][(j / 2)];                                       
+                image[nH / 2 + (i / 2)][(j / 2)]          =C[(i / 2)][(j / 2)];       			                              
+                image[nH / 2 + (i / 2)][nW / 2 + (j / 2)] =D[(i / 2)][(j / 2)];            
+
+            }
+        }
+
+    }
+    else
+    {
+        //std::cout<<"\n moyenne: "<<cadran1<<"cadran: "<<cadran2<<"cadran: "<<cadran3<<"cadran: "<<cadran4<<"\n";
+        for (size_t i = 0; i < nH-1; i++)
+        {
+            for (size_t j = 0; j < nW-1; j++)
+            {
+                image[(i / 2)][(j / 2)]                   =cadran1;                                                                           
+                image[(i / 2)][nW / 2 + (j / 2)]          =cadran2;                                       
+                image[nH / 2 + (i / 2)][(j / 2)]          =cadran3;       			                              
+                image[nH / 2 + (i / 2)][nW / 2 + (j / 2)] =cadran4;            
+
+            }
+        }
+    }
+
+        
+}
+*/

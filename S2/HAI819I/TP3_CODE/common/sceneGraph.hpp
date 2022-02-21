@@ -12,9 +12,11 @@ class SceneGraphInterface
     public:
         //virtual ~SceneGraphInterface();
         SceneGraphInterface();
-        virtual void methodForChildren() = 0;
+        virtual void apply() = 0;
+        virtual void inverse() = 0;
 
-    protected:
+
+    
         GameObject* gameObject;
 
         SceneGraphInterface* parent;
@@ -27,13 +29,19 @@ class SceneGraphLeaf : public SceneGraphInterface
 {
     public:
         SceneGraphLeaf();
-        void methodForChildren() override;
+        void apply() override;
+        void inverse() override;
+
+
 };
 class SceneGraphComposite : public SceneGraphInterface
 {
     public:
         SceneGraphComposite();
-        void methodForChildren() override ;
-        void add(SceneGraphLeaf* child);
+        void apply() override ;
+        void inverse() override ;
+
+        void add(SceneGraphInterface* child);
+        void update();
 };
 #endif

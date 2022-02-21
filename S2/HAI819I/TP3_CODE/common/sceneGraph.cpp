@@ -8,21 +8,44 @@ SceneGraphLeaf::SceneGraphLeaf()
 {
 
 }
-void SceneGraphLeaf::methodForChildren() {
-        std::cout << "test" << std::endl;
+void SceneGraphLeaf::apply() {
+        gameObject->apply();
 }
-
+void SceneGraphLeaf::inverse() {
+        gameObject->inverse();
+}
 SceneGraphComposite::SceneGraphComposite()
 {
 
 }
-void SceneGraphComposite:: methodForChildren() {
+void SceneGraphComposite:: apply() {
+        
+        gameObject->apply();
         for( auto &child : children ) {
-            child->methodForChildren();
+            child->apply();
         }
 }
-void SceneGraphComposite::add(SceneGraphLeaf* child)
+void SceneGraphComposite:: inverse() {
+        
+        gameObject->inverse();
+        for( auto &child : children ) {
+            child->inverse();
+        }
+}
+void SceneGraphComposite::add(SceneGraphInterface* child)
 {
+
+     //child->gameObject->transformation=gameObject->transformation;
+     child->gameObject->parentTransformation=gameObject->transformation;
      children.push_back(child);
+
+}
+void SceneGraphComposite::update()
+{
+     //child->gameObject->transformation=gameObject->transformation;
+        for( auto &child : children ) {
+            child->gameObject->parentTransformation=gameObject->transformation;
+        }
+     
 
 }

@@ -68,7 +68,7 @@ add_executable(TP1
 	common/objloader.hpp
 	common/vboindexer.cpp
 	common/vboindexer.hpp
-
+	common/Test.hpp
 	common/sceneGraph.hpp
 	common/sceneGraph.cpp
 
