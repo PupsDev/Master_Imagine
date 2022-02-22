@@ -4,6 +4,8 @@
 #include <vector>
 #include <iostream>
 #include <iterator>
+#include <map>
+#include <algorithm>
 
 // Include GLEW
 #include <GL/glew.h>
@@ -156,60 +158,164 @@ float compressMesure(std::vector<glm::vec3> indexed_vertices,std::vector<glm::ve
     return RMSE(indexed_vertices,vert_original); 
 
 }
-void encodageRANS()
+int find(std::vector<int> v, int K)
 {
-    std::vector<int> alphabet={0,1,2};
-    std::vector<int> sequence={0,1,0,2,2,0};
-    std::vector<int> frequence={3,1,2};
-    std::vector<int> cumul={0,3,4};
+    return  find(v.begin(), v.end(), K)-v.begin();
+}
+int encodageRANS( std::vector<int> sequence,std::map<int,int> counts)
+{
+    std::vector<int> alphabet;
+    std::vector<int> frequence;
+
+    std::map<int, int>::iterator it;
+    for (it = counts.begin(); it != counts.end(); it++)
+    {
+        alphabet.push_back(it->first);    
+        frequence.push_back(it->second);
+                
+    }
+    /*
+    for (auto& alpha : alphabet)
+    {
+        std::cout<<"alpha:"<<alpha<<"\n";
+
+    }
+    for (auto& alpha : frequence)
+    {
+        std::cout<<"freq:"<<alpha<<"\n";
+
+    }
+    */
+    
+    std::vector<int> cumul;
+    cumul.push_back(0);
+    int c =0;
+    for(int i = 0; i <frequence.size()-1;i++)
+    {
+        c += frequence[i];
+        cumul.push_back(c);
+        //std::cout<<"cumul :"<<c<<"\n";
+    }
     int  M = sequence.size();
 
     int x = 0,i=0;
-    std::cout<<"X["<<i<<"]: "<<x<<"\n";
+    //std::cout<<"X["<<i<<"]: "<<x<<"\n";
     while(i<M)
     {
         int s = sequence[i];
-        int fst =frequence[s];
+        int fst =frequence[find(alphabet,s)];
+        //std::cout<<"freq:"<<fst<<" s "<<s<<"\n";
         
-        x = floor(x/fst)*M + cumul[s] + x%fst;
+        if(fst==0)
+        {
+            //std::cout<<"freq:"<<fst<<" s "<<s<<"\n";
+            //std::cout<<"I:"<<s<<"\n";
+            fst=1;
+            
+
+        }
+        assert(fst>0);
+        x = floor(x/fst)*M + cumul[find(alphabet,s)] + x%fst;
         std::cout<<"X["<<i+1<<"]: "<<x<<"\n";
         i++;
     }
-
+    return x;
 }
 int cinverse(std::vector<int> cumul,int x)
 {
     int res =-1;
+    int temp=-1;
     for(int i = 0 ; i < cumul.size();i++)
-    {
-        if(cumul[i]==x)
+    {   
+         //std::cout<<"coumul: "<<cumul[i]<<"\n";
+        if(cumul[i]<x)
+        
+            temp = i;
+        else if(cumul[i]==x)
             res = i;
     }
-    return res;
+    return res!=-1 ? res : temp;
 }
-void decodageRANS(int last)
+std::vector<int> decodageRANS(int last, std::map<int,int> counts, int size)
 {
-    std::vector<int> alphabet={0,1,2};
-    std::vector<int> sequence={0,1,0,2,2,0};
-    std::vector<int> frequence={3,1,2};
-    std::vector<int> cumul={0,3,4};
-    int  M = sequence.size();
-    /*
-    int x = 0,i=0;
-    std::cout<<"X["<<i<<"]: "<<x<<"\n";
-    */
-    /*
-    while(i>=0)
+    std::vector<int> alphabet;
+    std::vector<int> frequence;
+
+    std::map<int, int>::iterator it;
+    for (it = counts.begin(); it != counts.end(); it++)
+    {
+        alphabet.push_back(it->first);    
+        frequence.push_back(it->second);
+                
+    }
+    
+    std::vector<int> cumul;
+    cumul.push_back(0);
+    int c =0;
+    for(int i = 0; i <frequence.size()-1;i++)
+    {
+        c += frequence[i];
+        cumul.push_back(c);
+    }
+    int  M = size;
+    int x;
+    int i = M;
+
+    std::vector<int> sequence;
+    sequence.resize(M);
+    //std::cout<<"last: "<<last<<"\n";
+    while(i>0)
     {
         
+        int slot = last%M;
+         //std::cout<<"slot["<<i<<"]: "<<slot<<"\n";
+        int st = cinverse(cumul,slot); 
+        //std::cout<<"st["<<i<<"]: "<<st<<"\n";
+
+        sequence[i-1]=alphabet[st];
         
-        x = floor(x/fst)*M + cumul[s] + x%fst;
-        std::cout<<"X["<<i+1<<"]: "<<x<<"\n";
-        i++;
+        x = floor(last/M)*frequence[st] + slot -cumul[st];
+        //std::cout<<"X["<<i<<"]: "<<x<<"\n";
+        
+        last = x;
+        i--;
     }
-    */
-    int slot = last%M;
-    std::cout<<cinverse(cumul,frequence[slot]);
+    /*for(int i = 0 ; i < sequence.size();i++)
+         std::cout<<sequence[i]<<" ";*/
+
+   return sequence; 
+
+}
+bool isIn(std::vector<int> vec, int item)
+{
+    return std::find(vec.begin(), vec.end(), item) != vec.end();
+}
+std::map<int, int> count(std::vector<int> points)
+{
+    typedef std::map<int, int> CounterMap;
+    CounterMap counts;
+    for (int i = 0; i < points.size(); ++i)
+    {
+    CounterMap::iterator it(counts.find(points[i]));
+    if (it != counts.end()){
+        it->second++;
+    } else {
+        counts[points[i]] = 1;
+    }
+    }
+    
+    /*std::map<int,  int>::iterator it;
+    for (it = counts.begin(); it != counts.end(); it++)
+    {
+
+                    std::cout << it->first    // string (key)
+                << ':'
+                << it->second   // string's value 
+                << std::endl;
+
+
+    }*/
+    return counts;
 
 }
 int main( void )
@@ -336,9 +442,96 @@ int main( void )
 
     }
     fclose(fp);*/
-    encodageRANS();
-    decodageRANS(139);
+    //std::vector<int> indexed_vertices={0,1,0,2,2,0};
+    /*
+    for(auto& point :sequence)
+    {
+        std::cout<<point<<"";
+    }
+    std::cout<<"\nCodage...\n";
+    */
+   /*
+    glm::vec3 mini = BBmin(indexed_vertices);
+    glm::vec3 maxi = BBmax(indexed_vertices);
+    glm::vec3 range = glm::vec3(abs(maxi[0]-mini[0]),abs(maxi[1]-mini[1]),abs(maxi[2]-mini[2]));
+    float rangeMax = std::fmax( std::fmax(range[0],range[1]),range[2]);
+    int qp =10;
+    std::vector<int> input;
+    
+    for(int i=0; i < indexed_vertices.size() ; i ++)
+    {
+        for(int j=0; j < 3 ; j ++)
+        {
+            //indexed_vertices[i][j] = quantification(qp,indexed_vertices[i][j], rangeMax, mini[j]);
+            input.push_back(floor(indexed_vertices[i][j]));
+            
+        }
+    }
 
+    typedef std::map<int, int> CounterMap;
+    CounterMap alphaSequence =count(input);
+   
+    
+    int last = encodageRANS(input,alphaSequence);
+
+    std::vector<int> output = decodageRANS(last,alphaSequence,input.size());
+    
+    for(int i=0; i < output.size() ; i +=3)
+    {
+        for(int j=0; j < 3 ; j ++)
+        {
+            indexed_vertices[i][j] = output[i+j];//dequantification(qp,output[i+j], rangeMax, mini[j]);
+        }
+    }
+    */
+    
+    /*std::vector<int> sequence;
+    
+    for(int i=0; i < 11 ; i ++)
+    {
+        for(int j=0; j < 3 ; j ++)
+        {
+            //indexed_vertices[i][j] = quantification(qp,indexed_vertices[i][j], rangeMax, mini[j]);
+            sequence.push_back(floor(indexed_vertices[i][j]) +2);
+            
+        }
+    }*/
+    
+    
+    
+    std::vector<int> sequence={1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1};
+    
+    for(auto& point :sequence)
+    {
+        std::cout<<point<<"";
+    }
+    
+    std::cout<<"\nCodage...\n";
+    
+    typedef std::map<int,int> CounterMap;
+    CounterMap alphaSequence =count(sequence);
+    int last = encodageRANS(sequence,alphaSequence);
+    std::vector<int> output = decodageRANS(last,alphaSequence,sequence.size());
+    
+    for(int i = 0 ; i < sequence.size();i++)
+    {
+        if(sequence[i]!=output[i])
+            std::cout<<sequence[i]<<" : "<<output[i]<<"\n";
+        
+    }
+    /*
+    std::cout<<"\nDecodage...\n";
+    
+    for(auto& point :output)
+    {
+        std::cout<<point<<"";
+    }*/
+
+    std::cout<<"\n Fini !\n";
+    
+    
+
+    
 
 
     int sommets = 128;
@@ -526,8 +719,7 @@ int main( void )
                     );
 
         //rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation2), glm::vec3(0.,1.,0.0));
-        rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)radians(-angleRotation), glm::vec3(0.,0.,1.0));
-        rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)radians(-angleRotation2), glm::vec3(0.,1.,0.0));
+
         translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(-4.f, 2.,0.0f));
 
         modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
@@ -546,8 +738,7 @@ int main( void )
         scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(1.5*scaleFactor));
         
         //rotationMatrix  = glm::rotate(glm::mat4(1.0f), flip, glm::vec3(1.,0.,0.0));
-        rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation), glm::vec3(0.,0.,1.0));
-        rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation2), glm::vec3(0.,1.,0.0));
+
         //rotationMatrix  = glm::rotate(glm::mat4(1.0f), flip, glm::vec3(1.,0.,0.0));
         
         translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(0.f, 2.,0.0f));
@@ -563,55 +754,6 @@ int main( void )
                     (void*)0           // element array buffer offset
                     );
        
-
-        scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(1.5*scaleFactor));
-        rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)M_PI/2, glm::vec3(-1.,0.,0.0));
-        translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(-2.f, -5.,0.0f));
-
-        modelmatrix = translationMatrix*rotationMatrix *scaleMatrix*idmatrix;
-        glUniformMatrix4fv(modelID, 1, GL_FALSE, glm::value_ptr(modelmatrix));
-
-        glGenBuffers(1, &vertexbuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-        glBufferData(GL_ARRAY_BUFFER, indexed_vertices2.size() * sizeof(glm::vec3), &indexed_vertices2[0], GL_STATIC_DRAW);
-
-        // Generate a buffer for the indices as well
-
-        glGenBuffers(1, &elementbuffer);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices2.size() * sizeof(unsigned short), &indices2[0] , GL_STATIC_DRAW);
-        
-
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-        glVertexAttribPointer(
-                    0,                  // attribute
-                    3,                  // size
-                    GL_FLOAT,           // type
-                    GL_FALSE,           // normalized?
-                    0,                  // stridedeltaTime
-                    (void*)0           // element array buffer offset
-                    );
-        
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-        glVertexAttribPointer(
-                    1,                  // attribute
-                    2,                  // size
-                    GL_FLOAT,           // type
-                    GL_FALSE,           // normalized?
-                    0,                  // stridedeltaTime
-                    (void*)0           // element array buffer offset
-                    );
-
-                 // Draw the triangles !
-        glDrawElements(
-                    GL_TRIANGLES,      // mode
-                    indices2.size(),    // count
-                    GL_UNSIGNED_SHORT,   // typecamera_position
-                        (void*)0           // element array buffer offset
-                    );
-
     
     
 
