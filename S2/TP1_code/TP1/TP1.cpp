@@ -500,25 +500,76 @@ int main( void )
     
     
     std::vector<int> sequence={1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1};
-    
-    for(auto& point :sequence)
+    int packetSize = 30; 
+    int sequenceSize=sequence.size()-1; 
+    int nbPackets = sequenceSize/packetSize;
+    int remaining = sequenceSize%packetSize;
+   
+
+    std::vector<std::vector<int>> sequence_chunks;
+    std::vector<std::vector<int>> outputs;
+    /*
+    for (int k = 0; k < size2; ++k)
     {
-        std::cout<<point<<"";
+        // get range for the next set of `n` elements
+        auto start_itr = std::next(sequence.cbegin(), k*n);
+        auto end_itr = std::next(sequence.cbegin(), k*n + n);
+ 
+        // allocate memory for the sub-vector
+        sequence_chunks[k].resize(n);
+ 
+        // code to handle the last sub-vector as it might
+        // contain fewer elements
+        if (k*n + n > sequence.size())
+        {
+            end_itr = sequence.cend();
+            sequence_chunks[k].resize(sequence.size() - k*n);
+        }
+ 
+        // copy elements from the input range to the sub-vector
+        std::copy(start_itr, end_itr, sequence_chunks[k].begin());
+    }*/
+    int j =0;
+    for (int i = 0; i < nbPackets+1; ++i)
+    {   
+        std::vector<int> seq;
+        while(j<packetSize && j<sequenceSize)
+        {
+            seq.push_back(sequence[i*packetSize +j]);
+            j++;
+        }
+        j=0;
+        sequence_chunks.push_back(seq);
+    }
+
+    for(auto& seq :sequence_chunks)
+    {
+        std::cout<<"\nCodage...\n";
+        for(auto& point :seq)
+            std::cout<<point<<"";
     }
     
     std::cout<<"\nCodage...\n";
     
+    /*
     typedef std::map<int,int> CounterMap;
-    CounterMap alphaSequence =count(sequence);
-    int last = encodageRANS(sequence,alphaSequence);
-    std::vector<int> output = decodageRANS(last,alphaSequence,sequence.size());
-    
+    for(int i = 0 ; i < nbPackets;i++)
+    {
+        CounterMap alphaSequence =count(sequence);
+        int last = encodageRANS(sequence,alphaSequence);
+        output.push_back(decodageRANS(last,alphaSequence,sequenceSize));
+
+    }
+    */
+
+
+    /*
     for(int i = 0 ; i < sequence.size();i++)
     {
         if(sequence[i]!=output[i])
             std::cout<<sequence[i]<<" : "<<output[i]<<"\n";
         
-    }
+    }*/
     /*
     std::cout<<"\nDecodage...\n";
     

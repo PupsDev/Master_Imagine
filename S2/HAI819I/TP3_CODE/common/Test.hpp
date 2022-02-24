@@ -123,11 +123,11 @@ class Test
             mesh_car->addPoint(glm::vec3(0.,0.,1.));
 
                     
-            Transform * t = new Transform( Transform::convertMat4(glm::rotate(glm::mat4(1.0f), (float)M_PI, glm::vec3(0.,1.,0.0))));
+            Transform * t = new Transform(Transform::convertMat4(glm::rotate(glm::mat4(1.0f), (float)M_PI, glm::vec3(0.,1.,0.0))));
 
             roue1->gameObject = new GameObject();
             roue2->gameObject = new GameObject();
-            roue3->gameObject = new GameObject();
+            roue3->gameObject = new GameObject();   
             roue4->gameObject = new GameObject();
 
             essieu->gameObject = new GameObject();

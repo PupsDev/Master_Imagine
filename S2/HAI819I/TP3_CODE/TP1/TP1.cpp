@@ -299,14 +299,13 @@ int main( void )
     earthGraph->gameObject = new GameObject();
     moonGraph->gameObject = new GameObject();
 
-    Transform * t = new Transform( glm::vec3(10.f,0.,0.0) );
+    //Transform * t = new Transform( glm::vec3(10.f,0.,0.0) );
 
-    glm::mat3 rotationAxe = Transform::convertMat4(glm::rotate(glm::mat4(1.0f), (float)M_PI_2,glm::vec3(0.f,1.f,0.0)));
 
-    Transform * earthTransform = new Transform(1.,glm::mat3(1.),glm::vec3(10.f,0.,0.0) );
+    
+    //Transform * earthTransform = new Transform(1.,orientationAxe,rotationAxe,glm::vec3(10.f,0.,0.0));
     //glm::mat3 rotationAxe = Transform::convertMat4(glm::rotate(glm::mat4(1.0f), (float)M_PI_2,glm::vec3(0.f,1.f,0.0)));
-    Transform * earthTransform2 = new Transform(rotationAxe);
-    Transform * moonTransform = new Transform(0.5,glm::mat3(1.),glm::vec3(2.f,0.,0.0) );
+    //Transform * moonTransform = new Transform(1.,rotationAxe2,glm::vec3(2.f,0.,0.0) );
     //Transform * rotat = new Transform( Transform::convertMat4(glm::rotate(glm::mat4(1.0f), (float)M_PI_2, glm::vec3(0.f,0.f,1.0))) );
 
     sunGraph->gameObject->mesh = mesh_sun;
@@ -316,23 +315,36 @@ int main( void )
     BUFFER buffer;
     BUFFER bufferEarth;
     BUFFER bufferMoon;
+    glm::mat3 rotationAxe = Transform::convertMat4(glm::rotate(glm::mat4(1.0f), (float)M_PI_2,glm::vec3(0.f,1.f,0.0)));
+    glm::mat3 rotationAxe2 = Transform::convertMat4(glm::rotate(glm::mat4(1.0f), (float)M_PI_2,glm::vec3(0.f,1.f,0.0)));
+
+    glm::mat3 orientationAxe = Transform::convertMat4(glm::rotate(glm::mat4(1.0f), (float)M_PI_2 ,glm::vec3(0.f,1.f,0.0)));
+    
+    
+    Transform * earthOrientation = new Transform(rotationAxe);
+    Transform * earthRevolution = new Transform(1.,rotationAxe,glm::vec3(10.f,0.,0.0) );
+    Transform * moonTransform = new Transform(1.,rotationAxe2,glm::vec3(10.f,0.,0.0) );
 
     //moonGraph->gameObject->transformation = moonTransform;
-    earthGraph->gameObject->transformation = earthTransform;
-    earthGraph->add(moonGraph);
+    moonGraph->gameObject->transformation = moonTransform;
+    //earthGraph->gameObject->orientation = earthOrientation;
+    earthGraph->gameObject->transformation = earthRevolution;
+
+    //earthGraph->add(moonGraph);
     earthGraph->apply();
 
-    moonGraph->gameObject->transformation = moonTransform;
-    moonGraph->apply();
+    earthGraph->inverse();
+    //earthGraph->apply();
+    //moonGraph->apply();
 
-    earthGraph->gameObject->transformation = earthTransform2;
-    moonGraph->gameObject->transformation = new Transform();
+    //earthGraph->gameObject->transformation = earthTransform2;
+    //moonGraph->gameObject->transformation = new Transform();
     //moonGraph->gameObject->transformation = earthTransform2;
     //earthGraph->update();
-    earthGraph->gameObject->apply();
+    //earthGraph->gameObject->apply();
 
-    moonGraph->gameObject->transformation = earthTransform2;
-    moonGraph->apply();
+    //moonGraph->gameObject->transformation = earthTransform2;
+    //moonGraph->apply();
     
     sendGPU(buffer,mesh_sun);
     sendGPU(bufferEarth,mesh_earth);
@@ -413,9 +425,10 @@ int main( void )
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         processInput(window);
-        angleRotation2+=max(1.f,(coeffAngle2/10));
+        angleRotation2+=max(1.f,(coeffAngle2/10.f));
 
         angleRotation2 = (angleRotation2 > 360) ? 0 : angleRotation2;
+        //std::cout<<"\n"<<angleRotation2<<"\n";
 
 
         // Clear the screen
@@ -445,22 +458,29 @@ int main( void )
     
         // TERRAIN
         /*
-        rotationAxe = Transform::convertMat4(glm::rotate(glm::mat4(1.0f), (float)radians(coeffAngle2/10.),glm::vec3(0.f,1.f,0.0)));
-        earthTransform2 = new Transform(rotationAxe);
-        //earthGraph->inverse();
-        //moonGraph->gameObject->transformation = moonTransform;
-        earthGraph->gameObject->transformation = earthTransform;
-        earthGraph->apply();
-        earthGraph->gameObject->transformation = earthTransform2;
-        //earthGraph->update();
-        //moonGraph->gameObject->transformation = earthTransform2;
-        earthGraph->apply();
         earthGraph->inverse();
+        rotationAxe = Transform::convertMat4(glm::rotate(glm::mat4(1.0f), (float)M_PI/2.f,glm::vec3(0.f,1.f,0.0)));
+        rotationAxe2 = Transform::convertMat4(glm::rotate(glm::mat4(1.0f), (float)M_PI/2.f,glm::vec3(0.f,1.f,0.0)));
+        orientationAxe = Transform::convertMat4(glm::rotate(glm::mat4(1.0f), (float)M_PI/2.f ,glm::vec3(0.f,1.f,0.0)));
+        
+        
+        earthOrientation = new Transform(rotationAxe);
+        earthRevolution = new Transform(1.,rotationAxe,glm::vec3(10.f,0.,0.0) );
+        moonTransform = new Transform(1.,rotationAxe2,glm::vec3(10.f,0.,0.0) );
+
+        //moonGraph->gameObject->transformation = moonTransform;
+        //moonGraph->gameObject->transformation = moonTransform;
+        earthGraph->gameObject->orientation = earthOrientation;
+        earthGraph->gameObject->transformation = earthRevolution;
+        //earthGraph->add(moonGraph);
+        earthGraph->apply();
+        
         
         sendGPU(buffer,mesh_sun);
         sendGPU(bufferEarth,mesh_earth);
         sendGPU(bufferMoon,mesh_moon);
         */
+        
 
         glUseProgram(programID);
         glActiveTexture(GL_TEXTURE0);

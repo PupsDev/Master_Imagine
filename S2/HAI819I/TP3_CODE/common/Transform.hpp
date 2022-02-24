@@ -12,8 +12,7 @@ class Transform
 {
     public:
         float s; // scale
-        glm::mat3 m; // orientation
-        glm::mat3 m2; // rotation
+        glm::mat3 m; // rotation
         glm::vec3 translation; // translate
 
         Transform()
@@ -52,7 +51,7 @@ class Transform
          }
          void print()
          {
-             std::cout<<"scale: "<<"\n";
+             std::cout<<"\nscale: "<<"\n";
              std::cout<<s<<"\n";
              std::cout<<"matrice: "<<"\n";
             for(int i = 0 ; i < 3;i++)
@@ -87,7 +86,11 @@ class Transform
 
         glm::vec3 applyToPoint(glm::vec3 p)
         {
-            return m * (s*p) +(1.f/s)*translation;
+            return m * (s*p) +translation;
+        }
+        glm::vec3 applyToPointRevolution(glm::vec3 p)
+        {
+            return m *((s*p) +translation);
         }
         
         glm::vec3 applyToVector(glm::vec3 v)
@@ -102,9 +105,9 @@ class Transform
         }
         void inverse()
         {
-            this->s = 1.f;
+            this->s = 1.f/s;
             this->m = glm::inverse(m);
-            this->translation += -1.f*this->translation;
+            this->translation = -1.f*this->translation;
 
         }
         /*Transform interpolate_with(Transform & t, float k)

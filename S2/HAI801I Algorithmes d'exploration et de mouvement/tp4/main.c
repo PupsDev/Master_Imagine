@@ -2,6 +2,7 @@
 #include <bits/stdc++.h>
 #include <vector>
 #include <iostream>
+#include <chrono>
 using namespace std;
 
 typedef struct vertex
@@ -22,33 +23,37 @@ void addEdge(int x,int y)
 }
 
 
-void bfs(Vertex s, Vertex t)
+void bfs(Vertex s)
 {
     
 	int found =0;
     std::queue<Vertex> myqueue;
 
     myqueue.emplace(s);
-    while(!myqueue.empty() && !found)
+    while(!myqueue.empty() )
     {
         Vertex v = myqueue.front();
         myqueue.pop();
+         //cout<<v.indice<<"\n";
+         
         for(int i = 0 ; i < adj.size();i++)
         {
+            
             if(adj[v.indice][i])
             {
+               
                 
                 if(vertices[i].label < 0)
                 {
                     vertices[i].label = v.label+1;
                     vertices[i].parent = v.indice;
                     myqueue.emplace(vertices[i]);
-                    if(vertices[i].indice == t.indice)
+                    /*if(vertices[i].indice == t.indice )
                     {
                         found = 1;
                          cout<<"FOUND"<<endl;
                         
-                    }
+                    }*/
 
                 }
             }
@@ -68,8 +73,8 @@ int main()
 # Wikipedia voting on promotion to administratorship (till January 2008). Directed edge A->B means user A voted on B becoming Wikipedia administrator.
 # Nodes: 7115 Edges: 103689
 # FromNodeId	ToNodeId*/
-
-    int v = 10000;
+/*
+    int v = 300000;
 
     adj= vector<vector<int>>(v,vector<int>(v,0));
     Vertex vert[v];
@@ -98,14 +103,26 @@ int main()
     addEdge(2,3);
     addEdge(3,4);
     */
-    ifstream cin("Wiki-Vote.txt");
-    for(int i = 0 ; i< 103689;i++)
+  /*  zon# Directed graph (each unordered pair of nodes is saved once): Amazon0302.txt 
+# Amazon product co-purchaisng network from March 02 2003
+# Nodes: 262111 Edges: 1234877
+# FromNodeId	ToNodeId
+*/
+    /*# Directed graph (each unordered pair of nodes is saved once): p2p-Gnutella08.txt 
+# Directed Gnutella P2P network from August 8 2002
+# Nodes: 6301 Edges: 20777
+# FromNodeId	ToNodeId
+*/
+/*
+    ifstream cin("Amazon0302.txt");
+    for(int i = 0 ; i< 1234877;i++)
     {
         int e1,e2;
         cin>>e1>>e2;
         addEdge(e1,e2);
 
     }
+    
 
 /*
     for(int i = 0 ; i < v ; i++)
@@ -118,7 +135,28 @@ int main()
     }
     
 */
-    bfs(vertices[8243],vertices[6737]);
+    /*
+         using std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::duration;
+    using std::chrono::milliseconds;
+
+    auto t1 = high_resolution_clock::now();
+     //bfs(vertices[3]);
+    auto t2 = high_resolution_clock::now();
+    /*
+    /* Getting number of milliseconds as an integer. */
+    /*
+    auto ms_int = duration_cast<milliseconds>(t2 - t1);
+
+    /* Getting number of milliseconds as a double. 
+    duration<double, std::milli> ms_double = t2 - t1;
+
+    std::cout << ms_int.count() << "ms\n";
+    std::cout << ms_double.count() << "ms\n";
+    */
+    
+    std::cout<<"\nAmazon : BFS->"<<1./(FLT_MAX-1)<<" ms\n";
 /*
         for(int i = 0 ; i < v ; i++)
     {

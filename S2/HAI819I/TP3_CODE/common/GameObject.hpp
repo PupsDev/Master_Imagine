@@ -17,25 +17,31 @@ class GameObject
         {
             this->mesh=new Mesh();
             this->transformation=new Transform();
+            this->orientation=new Transform();
             this->parentTransformation=new Transform();
         }
         void apply()
-        {   
+        { 
+            //orientation->print();
+            transformation->print();
+            //parentTransformation->print();  
             for(auto& point : mesh->points)
             {
-                point = parentTransformation->applyToPoint(point);
-                point = transformation->applyToPoint(point);
+                point = orientation->applyToPoint(point);
+                //point = parentTransformation->applyToPointRevolution(point);
+                point = transformation->applyToPointRevolution(point);
             }
 
         }
         void inverse()
         {   
-            transformation->inverse();      
-            parentTransformation->inverse();
+            transformation->inverse();    
+            transformation->print();  
+            //parentTransformation->inverse();
             for(auto& point : mesh->points)
             {
-                point = transformation->applyToPoint(point);
-                point = parentTransformation->applyToPoint(point);
+                point = transformation->applyToPointRevolution(point);
+                //point = parentTransformation->applyToPointRevolution(point);
             }
 
         }
@@ -43,6 +49,7 @@ class GameObject
 
     
         Mesh * mesh;
+        Transform* orientation;
         Transform* transformation;
         Transform* parentTransformation;
         std::list<  Component * > components;
