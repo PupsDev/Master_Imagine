@@ -103,12 +103,32 @@ class Transform
             result.s = this->s*k + t.s*(1-k);
             return result;
         }
-        void inverse()
+        Transform* multiply(Transform* t)
         {
-            this->s = 1.f/s;
-            this->m = glm::inverse(m);
-            this->translation = -1.f*this->translation;
+            Transform * result = new Transform();
+            result->s = this->s*t->s;
+            result->m = this->m*t->m;
+            result->translation = this->translation+t->translation;
+            return result;
+        }
+        Transform * inverse()
+        {
+            Transform * result = new Transform();
+            result->s = 1.f/this->s;
+            result->m = glm::inverse(this->m);
+            result->translation = -this->translation;
+            return result;
 
+        }
+        glm::vec3 inversePointRevolution(glm::vec3 p)
+        {
+            //return m *((s*p) +translation);
+            return ((m*p)+translation)*s;
+        }
+        glm::vec3 inversePoint(glm::vec3 p)
+        {
+            //return m *((s*p) +translation);
+            return ((p+translation)*s)*m;
         }
         /*Transform interpolate_with(Transform & t, float k)
         {

@@ -23,25 +23,39 @@ class GameObject
         void apply()
         { 
             //orientation->print();
-            transformation->print();
+            //transformation->print();
             //parentTransformation->print();  
+
+            //Transform* trans = transformation->multiply(parentTransformation);
+            //Transform* trans = parentTransformation->multiply(transformation);
+            //trans = trans->multiply(trans);
+            Transform* trans = parentTransformation->multiply(transformation);
+            trans->print();
             for(auto& point : mesh->points)
             {
-                point = orientation->applyToPoint(point);
+                //point = orientation->applyToPoint(point);
                 //point = parentTransformation->applyToPointRevolution(point);
-                point = transformation->applyToPointRevolution(point);
+                //point = transformation->applyToPointRevolution(point);
+                point = trans->applyToPoint(point);
             }
-
+            
         }
+
         void inverse()
         {   
-            transformation->inverse();    
-            transformation->print();  
+            Transform* trans = parentTransformation->multiply(transformation);
+            //transformation->print();  
+            Transform* itrans = trans->inverse();  
+            //Transform* trans = transformation->multiply(itrans);  
+            //trans->inverse();  
+            
+            //transformation->print();  
+            //itrans->print();
             //parentTransformation->inverse();
             for(auto& point : mesh->points)
             {
-                point = transformation->applyToPointRevolution(point);
-                //point = parentTransformation->applyToPointRevolution(point);
+                //point = parentTransformation->inversePoint(point);
+                point = itrans->inversePoint(point);
             }
 
         }

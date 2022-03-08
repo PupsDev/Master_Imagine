@@ -25,10 +25,12 @@ void SceneGraphComposite:: apply() {
             child->apply();
         }
 }
+
 void SceneGraphComposite:: inverse() {
         
         gameObject->inverse();
         for( auto &child : children ) {
+            //child->gameObject->parentTransformation=gameObject->transformation;
             child->inverse();
         }
 }

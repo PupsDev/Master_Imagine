@@ -6,6 +6,7 @@
 #include <iterator>
 #include <map>
 #include <algorithm>
+#include <string>
 
 // Include GLEW
 #include <GL/glew.h>
@@ -48,23 +49,7 @@ float lastFrame = 0.0f;
 float angleRotation = 0.;
 float zoom = 1.;
 /*******************************************************************************/
-double OctavePerlin(double x, double y, double z, int octaves, double persistence) {
-    PerlinNoise pn(114);
-    double total = 0;
-    double frequency = 4;
-    double amplitude = 128;
-    double maxValue = 0;  // Used for normalizing result to 0.0 - 1.0
-    for(int i=0;i<octaves;i++) {
-        total += pn.noise(x * frequency, y * frequency, z * frequency) * amplitude;
-        
-        maxValue += amplitude;
-        
-        amplitude *= persistence;
-        frequency *= 2;
-    }
-    
-    return total/maxValue;
-}
+
 glm::vec3 BBmin(std::vector<glm::vec3> indexed_vertices)
 {
     glm::vec3 mini= glm::vec3(FLT_MAX,FLT_MAX,FLT_MAX);
@@ -107,16 +92,7 @@ glm::vec3 BBmax(std::vector<glm::vec3> indexed_vertices)
 float computeRange(float mini,float maxi)
 {
     return abs(maxi-mini);
-}/*
-float quantification(int qp,float coordinate, float range, float BBC)
-{
-    return (float) (int)(coordinate *range/ pow(2,qp)) -BBC;
 }
-float dequantification(int qp,float coordinate, float range, float BBC)
-{
-
-    return (float)((coordinate+BBC)*pow(2,qp))/range;
-}*/
 float quantification(int qp,float coordinate, float range, float BBC)
 {
     return (float) (int)( (coordinate-BBC) *pow(2,qp)/range ) ;
@@ -174,18 +150,6 @@ int encodageRANS( std::vector<int> sequence,std::map<int,int> counts)
         frequence.push_back(it->second);
                 
     }
-    /*
-    for (auto& alpha : alphabet)
-    {
-        std::cout<<"alpha:"<<alpha<<"\n";
-
-    }
-    for (auto& alpha : frequence)
-    {
-        std::cout<<"freq:"<<alpha<<"\n";
-
-    }
-    */
     
     std::vector<int> cumul;
     cumul.push_back(0);
@@ -194,29 +158,27 @@ int encodageRANS( std::vector<int> sequence,std::map<int,int> counts)
     {
         c += frequence[i];
         cumul.push_back(c);
-        //std::cout<<"cumul :"<<c<<"\n";
+        
     }
     int  M = sequence.size();
 
     int x = 0,i=0;
-    //std::cout<<"X["<<i<<"]: "<<x<<"\n";
+    
     while(i<M)
     {
         int s = sequence[i];
         int fst =frequence[find(alphabet,s)];
-        //std::cout<<"freq:"<<fst<<" s "<<s<<"\n";
         
+        /*
         if(fst==0)
         {
-            //std::cout<<"freq:"<<fst<<" s "<<s<<"\n";
-            //std::cout<<"I:"<<s<<"\n";
-            fst=1;
-            
+            fst=1; 
 
         }
         assert(fst>0);
+        */
         x = floor(x/fst)*M + cumul[find(alphabet,s)] + x%fst;
-        std::cout<<"X["<<i+1<<"]: "<<x<<"\n";
+        //std::cout<<"X["<<i+1<<"]: "<<x<<"\n";
         i++;
     }
     return x;
@@ -227,7 +189,6 @@ int cinverse(std::vector<int> cumul,int x)
     int temp=-1;
     for(int i = 0 ; i < cumul.size();i++)
     {   
-         //std::cout<<"coumul: "<<cumul[i]<<"\n";
         if(cumul[i]<x)
         
             temp = i;
@@ -263,14 +224,11 @@ std::vector<int> decodageRANS(int last, std::map<int,int> counts, int size)
 
     std::vector<int> sequence;
     sequence.resize(M);
-    //std::cout<<"last: "<<last<<"\n";
     while(i>0)
     {
         
         int slot = last%M;
-         //std::cout<<"slot["<<i<<"]: "<<slot<<"\n";
         int st = cinverse(cumul,slot); 
-        //std::cout<<"st["<<i<<"]: "<<st<<"\n";
 
         sequence[i-1]=alphabet[st];
         
@@ -304,19 +262,98 @@ std::map<int, int> count(std::vector<int> points)
     }
     }
     
-    /*std::map<int,  int>::iterator it;
-    for (it = counts.begin(); it != counts.end(); it++)
-    {
-
-                    std::cout << it->first    // string (key)
-                << ':'
-                << it->second   // string's value 
-                << std::endl;
-
-
-    }*/
     return counts;
 
+}
+void draco(std::vector<glm::vec3>  indexed_vertices, int qp,int packetSize)
+{
+    glm::vec3 mini = BBmin(indexed_vertices);
+    glm::vec3 maxi = BBmax(indexed_vertices);
+    glm::vec3 range = glm::vec3(abs(maxi[0]-mini[0]),abs(maxi[1]-mini[1]),abs(maxi[2]-mini[2]));
+    float rangeMax = std::fmax( std::fmax(range[0],range[1]),range[2]);
+
+    std::vector<int> input;
+    
+    std::vector<int> sequence;
+    
+    for(int i=0; i < indexed_vertices.size() ; i ++)
+    {
+        for(int j=0; j < 3 ; j ++)
+        {
+
+            sequence.push_back(quantification(qp,indexed_vertices[i][j], rangeMax, mini[j]));
+            
+        }
+    }
+    
+    int sequenceSize=sequence.size(); 
+    int nbPackets = sequenceSize/packetSize;
+    int remaining = sequenceSize%packetSize;
+   
+
+    std::vector<std::vector<int>> sequence_chunks;
+    std::vector<std::vector<int>> outputs;
+
+    int j =0;
+    for (int i = 0; i < nbPackets+1; ++i)
+    {   
+        std::vector<int> seq;
+        while(j<packetSize && (i*packetSize +j)<sequenceSize)
+        {
+            seq.push_back(sequence[i*packetSize +j]);
+            j++;
+        }
+        j=0;
+        sequence_chunks.push_back(seq);
+    }
+    std::string outputString = "lapinCompression"+std::to_string(qp)+".mlm";
+    FILE * fp = fopen(&outputString[0],"wb");
+    std::vector<int> lasts;
+    typedef std::map<int,int> CounterMap;
+    for(int i = 0 ; i < nbPackets+1;i++)
+    {   
+        std::vector<int> sequence = sequence_chunks[i];
+        CounterMap alphaSequence =count(sequence);
+        int last = encodageRANS(sequence,alphaSequence);
+        std::map<int,  int>::iterator it;
+        for (it = alphaSequence.begin(); it != alphaSequence.end(); it++)
+        {
+
+
+                    fputc(it->first, fp);
+                    fputc(':',fp);
+                    fputc(it->second,fp);
+
+
+        }
+        fputc('s',fp);
+        fputc(sequence.size(),fp);
+        fputc(':',fp);
+        fputc(last,fp);
+
+        
+        outputs.push_back(decodageRANS(last,alphaSequence,sequence.size()));
+
+    }
+
+
+     std::vector<int> output;
+     for(int j = 0 ; j < nbPackets+1;j++)
+        for(int i = 0 ; i < outputs[j].size();i++)
+        {
+           
+            output.push_back(outputs[j][i]);
+            
+        }
+        
+    for(int i=0; i < output.size() ; i +=3)
+    {
+        for(int j=0; j < 3 ; j ++)
+        {
+            indexed_vertices[i/3][j] = dequantification(qp,output[i+j], rangeMax, mini[j]);
+            
+        }
+    }
 }
 int main( void )
 {
@@ -451,13 +488,16 @@ int main( void )
     std::cout<<"\nCodage...\n";
     */
    /*
+    for(int i = 5 ; i < 31 ; i++)
+        draco(indexed_vertices, i,10);
+*/
     glm::vec3 mini = BBmin(indexed_vertices);
     glm::vec3 maxi = BBmax(indexed_vertices);
     glm::vec3 range = glm::vec3(abs(maxi[0]-mini[0]),abs(maxi[1]-mini[1]),abs(maxi[2]-mini[2]));
     float rangeMax = std::fmax( std::fmax(range[0],range[1]),range[2]);
-    int qp =10;
+    int qp =7;
     std::vector<int> input;
-    
+    /*
     for(int i=0; i < indexed_vertices.size() ; i ++)
     {
         for(int j=0; j < 3 ; j ++)
@@ -485,55 +525,34 @@ int main( void )
     }
     */
     
-    /*std::vector<int> sequence;
+    std::vector<int> sequence;
     
-    for(int i=0; i < 11 ; i ++)
+    for(int i=0; i < indexed_vertices.size() ; i ++)
     {
         for(int j=0; j < 3 ; j ++)
         {
-            //indexed_vertices[i][j] = quantification(qp,indexed_vertices[i][j], rangeMax, mini[j]);
-            sequence.push_back(floor(indexed_vertices[i][j]) +2);
+
+            sequence.push_back(quantification(qp,indexed_vertices[i][j], rangeMax, mini[j]));
             
         }
-    }*/
+    }
     
     
     
-    std::vector<int> sequence={1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1,1,2,1};
-    int packetSize = 30; 
-    int sequenceSize=sequence.size()-1; 
+    int packetSize = 8; 
+    int sequenceSize=sequence.size(); 
     int nbPackets = sequenceSize/packetSize;
     int remaining = sequenceSize%packetSize;
    
 
     std::vector<std::vector<int>> sequence_chunks;
     std::vector<std::vector<int>> outputs;
-    /*
-    for (int k = 0; k < size2; ++k)
-    {
-        // get range for the next set of `n` elements
-        auto start_itr = std::next(sequence.cbegin(), k*n);
-        auto end_itr = std::next(sequence.cbegin(), k*n + n);
- 
-        // allocate memory for the sub-vector
-        sequence_chunks[k].resize(n);
- 
-        // code to handle the last sub-vector as it might
-        // contain fewer elements
-        if (k*n + n > sequence.size())
-        {
-            end_itr = sequence.cend();
-            sequence_chunks[k].resize(sequence.size() - k*n);
-        }
- 
-        // copy elements from the input range to the sub-vector
-        std::copy(start_itr, end_itr, sequence_chunks[k].begin());
-    }*/
+
     int j =0;
     for (int i = 0; i < nbPackets+1; ++i)
     {   
         std::vector<int> seq;
-        while(j<packetSize && j<sequenceSize)
+        while(j<packetSize && (i*packetSize +j)<sequenceSize)
         {
             seq.push_back(sequence[i*packetSize +j]);
             j++;
@@ -541,35 +560,82 @@ int main( void )
         j=0;
         sequence_chunks.push_back(seq);
     }
-
-    for(auto& seq :sequence_chunks)
-    {
-        std::cout<<"\nCodage...\n";
-        for(auto& point :seq)
-            std::cout<<point<<"";
-    }
+    
     
     std::cout<<"\nCodage...\n";
-    
-    /*
+    FILE * fp = fopen("lapinCompression.mlm","wb");
+    std::vector<int> lasts;
     typedef std::map<int,int> CounterMap;
-    for(int i = 0 ; i < nbPackets;i++)
-    {
+    for(int i = 0 ; i < nbPackets+1;i++)
+    {   
+        std::vector<int> sequence = sequence_chunks[i];
         CounterMap alphaSequence =count(sequence);
         int last = encodageRANS(sequence,alphaSequence);
-        output.push_back(decodageRANS(last,alphaSequence,sequenceSize));
+        std::map<int,  int>::iterator it;
+        for (it = alphaSequence.begin(); it != alphaSequence.end(); it++)
+        {
+
+                    fputc(it->first, fp);
+                    fputc(':',fp);
+                    fputc(it->second,fp);
+
+
+        }
+        fputc('s',fp);
+        fputc(sequence.size(),fp);
+        fputc(':',fp);
+        fputc(last,fp);
+
+         //putc("sl:%d:%d;",sequence.size(), last,fp);
+
+        
+        outputs.push_back(decodageRANS(last,alphaSequence,sequence.size()));
 
     }
-    */
+    /*for(int i = 0 ; i < nbPackets;i++)
+    {   
+        std::vector<int> sequence = sequence_chunks[i];
+        CounterMap alphaSequence =count(sequence);
+        int last = encodageRANS(sequence,alphaSequence);
+        lasts.push_back(last);
+        outputs.push_back(decodageRANS(last,alphaSequence,sequenceSize));
 
-
-    /*
-    for(int i = 0 ; i < sequence.size();i++)
-    {
-        if(sequence[i]!=output[i])
-            std::cout<<sequence[i]<<" : "<<output[i]<<"\n";
-        
     }*/
+    
+
+     /*for(int j = 0 ; j < nbPackets+1;j++)
+        for(int i = 0 ; i < outputs[j].size();i++)
+        {
+            if(sequence_chunks[j][i]!=outputs[j][i])
+                std::cout<<sequence_chunks[j][i]<<" : "<<outputs[j][i]<<"\n";
+            
+        }*/
+
+     std::vector<int> output;
+     for(int j = 0 ; j < nbPackets+1;j++)
+        for(int i = 0 ; i < outputs[j].size();i++)
+        {
+           
+            output.push_back(outputs[j][i]);
+            
+        }
+        
+    /*for(int i =0; i < output.size(); i++)
+    {
+        std::cout<<output[i]<<"";
+    }*/
+    for(int i=0; i < output.size() ; i +=3)
+    {
+        for(int j=0; j < 3 ; j ++)
+        {
+            //indexed_vertices[i][j] = quantification(qp,indexed_vertices[i][j], rangeMax, mini[j]);
+            //sequence.push_back(quantification(qp,indexed_vertices[i][j], rangeMax, mini[j]));
+            indexed_vertices[i/3][j] = dequantification(qp,output[i+j], rangeMax, mini[j]);
+            
+        }
+    }
+    
+
     /*
     std::cout<<"\nDecodage...\n";
     
@@ -681,7 +747,7 @@ int main( void )
     GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
 
     //GLuint Texture = loadBMP_custom((char *)"maison.bmp");
-    GLuint Texture = loadBMP_custom((char *)"mountain2.bmp");
+    GLuint Texture = loadBMP_custom((char *)"hmap_rocky.bmp");
     GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, Texture);
@@ -769,7 +835,9 @@ int main( void )
                     (void*)0           // element array buffer offset
                     );
 
-        //rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)radians(angleRotation2), glm::vec3(0.,1.,0.0));
+        rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)-M_PI_2, glm::vec3(1.,0.,0.0));
+        rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)M_PI/4, glm::vec3(0.,1.,0.0));
+        rotationMatrix  *= glm::rotate(glm::mat4(1.0f), (float)M_PI_2, glm::vec3(0.,0.,1.0));
 
         translationMatrix  = glm::translate(glm::mat4(1.0f),glm::vec3(-4.f, 2.,0.0f));
 
@@ -787,8 +855,8 @@ int main( void )
 
         float flip = M_PI/4;
         scaleMatrix  = glm::scale(glm::mat4(1.0f),glm::vec3(1.5*scaleFactor));
-        
-        //rotationMatrix  = glm::rotate(glm::mat4(1.0f), flip, glm::vec3(1.,0.,0.0));
+        //rotationMatrix  = glm::rotate(glm::mat4(1.0f), (float)-M_PI_2, glm::vec3(0.,0.,1.0));
+        //rotationMatrix  = glm::rotate(glm::mat4(1.0f), -flip, glm::vec3(1.,0.,0.0));
 
         //rotationMatrix  = glm::rotate(glm::mat4(1.0f), flip, glm::vec3(1.,0.,0.0));
         

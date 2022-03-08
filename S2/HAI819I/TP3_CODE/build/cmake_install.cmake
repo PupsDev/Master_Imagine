@@ -1,4 +1,4 @@
-# Install script for directory: /home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP3_CODE
+# Install script for directory: /home/pups/Documents/Master_Imagine/S2/HAI819I/TP3_CODE
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -37,9 +37,14 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
+# Set default install directory permissions.
+if(NOT DEFINED CMAKE_OBJDUMP)
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+endif()
+
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP3_CODE/build/external/cmake_install.cmake")
+  include("/home/pups/Documents/Master_Imagine/S2/HAI819I/TP3_CODE/build/external/cmake_install.cmake")
 
 endif()
 
@@ -51,5 +56,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/e20150011037/Documents/Master_Imagine/S2/HAI819I/TP3_CODE/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/pups/Documents/Master_Imagine/S2/HAI819I/TP3_CODE/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
