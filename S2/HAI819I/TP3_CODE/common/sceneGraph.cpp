@@ -38,7 +38,11 @@ void SceneGraphComposite::add(SceneGraphInterface* child)
 {
 
      //child->gameObject->transformation=gameObject->transformation;
-     child->gameObject->parentTransformation=gameObject->transformation;
+     for( auto &trans : gameObject->transformation )
+     {  
+              child->gameObject->parentTransformation.push_back(trans);
+     }
+    
      children.push_back(child);
 
 }
@@ -46,7 +50,11 @@ void SceneGraphComposite::update()
 {
      //child->gameObject->transformation=gameObject->transformation;
         for( auto &child : children ) {
-            child->gameObject->parentTransformation=gameObject->transformation;
+            
+                for( int i = 0 ; i < child->gameObject->parentTransformation.size();i++  )
+                {  
+                        child->gameObject->parentTransformation[i] = gameObject->transformation[i];
+                }
         }
      
 

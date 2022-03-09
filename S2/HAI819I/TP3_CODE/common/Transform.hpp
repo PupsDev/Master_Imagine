@@ -83,7 +83,11 @@ class Transform
             }
             return glm::make_mat3(matrix2);
         }
+        glm::mat4 getMat4()
+        {
 
+            return  glm::mat4(m)+glm::translate(glm::mat4(), translation );;
+        }
         glm::vec3 applyToPoint(glm::vec3 p)
         {
             return m * (s*p) +translation;
@@ -120,6 +124,7 @@ class Transform
             return result;
 
         }
+        
         glm::vec3 inversePointRevolution(glm::vec3 p)
         {
             //return m *((s*p) +translation);

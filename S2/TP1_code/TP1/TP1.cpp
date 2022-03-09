@@ -168,15 +168,7 @@ int encodageRANS( std::vector<int> sequence,std::map<int,int> counts)
     {
         int s = sequence[i];
         int fst =frequence[find(alphabet,s)];
-        
-        /*
-        if(fst==0)
-        {
-            fst=1; 
 
-        }
-        assert(fst>0);
-        */
         x = floor(x/fst)*M + cumul[find(alphabet,s)] + x%fst;
         //std::cout<<"X["<<i+1<<"]: "<<x<<"\n";
         i++;
@@ -441,92 +433,25 @@ int main( void )
     std::string filename("suzanne.off");
     loadOFF(filename, indexed_vertices, indices, triangles );
     loadOFF(filename, vert_original, indices, triangles );
-    /*
-    glm::vec3 mini = BBmin(indexed_vertices);
-    glm::vec3 maxi = BBmax(indexed_vertices);
-    glm::vec3 range = glm::vec3(abs(maxi[0]-mini[0]),abs(maxi[1]-mini[1]),abs(maxi[2]-mini[2]));
-    float rangeMax = std::fmax( std::fmax(range[0],range[1]),range[2]);
-    int qp =20;
-    
-    for(int i=0; i < indexed_vertices.size() ; i ++)
-    {
-        for(int j=0; j < 3 ; j ++)
-        {
-            indexed_vertices[i][j] = quantification(qp,indexed_vertices[i][j], rangeMax, mini[j]);
-            indexed_vertices[i][j] = dequantification( qp,indexed_vertices[i][j], rangeMax, mini[j]);
-        }
-    }*/
-       /* glm::vec3 mini = BBmin(indexed_vertices);
-    glm::vec3 maxi = BBmax(indexed_vertices);
-    glm::vec3 range = glm::vec3(abs(maxi[0]-mini[0]),abs(maxi[1]-mini[1]),abs(maxi[2]-mini[2]));
-    float rangeMax = std::fmax( std::fmax(range[0],range[1]),range[2]);
-    int qp = 1;
-    for(int i=0; i < indexed_vertices.size() ; i ++)
-    {
-        for(int j=0; j < 3 ; j ++)
-        {
-            indexed_vertices[i][j] = quantification(qp,indexed_vertices[i][j], rangeMax, mini[j]);
-            indexed_vertices[i][j] = dequantification( qp,indexed_vertices[i][j], rangeMax, mini[j]);
-        }
-    }*/
-    //std::cout<<"RMSE: "<<RMSE(indexed_vertices,vert_original)<<"\n";
-    //int qp =20;
-    /*FILE *fp = fopen("rmse.dat", "w+");
-    for(int i = 5 ; i < 30;i++ )
-    {
-        float rmse = compressMesure(indexed_vertices,vert_original, i);
-        fprintf(fp, "%d %f\n", i ,rmse);
 
-    }
-    fclose(fp);*/
-    //std::vector<int> indexed_vertices={0,1,0,2,2,0};
-    /*
-    for(auto& point :sequence)
-    {
-        std::cout<<point<<"";
-    }
-    std::cout<<"\nCodage...\n";
-    */
    /*
+    Pour créer plusieurs fichiers compressés du lapin
     for(int i = 5 ; i < 31 ; i++)
         draco(indexed_vertices, i,10);
-*/
+    */
+
+   // Pour faire une compression decompression à la volée 
     glm::vec3 mini = BBmin(indexed_vertices);
     glm::vec3 maxi = BBmax(indexed_vertices);
     glm::vec3 range = glm::vec3(abs(maxi[0]-mini[0]),abs(maxi[1]-mini[1]),abs(maxi[2]-mini[2]));
     float rangeMax = std::fmax( std::fmax(range[0],range[1]),range[2]);
-    int qp =7;
+    int qp =25;
     std::vector<int> input;
-    /*
-    for(int i=0; i < indexed_vertices.size() ; i ++)
-    {
-        for(int j=0; j < 3 ; j ++)
-        {
-            //indexed_vertices[i][j] = quantification(qp,indexed_vertices[i][j], rangeMax, mini[j]);
-            input.push_back(floor(indexed_vertices[i][j]));
-            
-        }
-    }
 
-    typedef std::map<int, int> CounterMap;
-    CounterMap alphaSequence =count(input);
-   
-    
-    int last = encodageRANS(input,alphaSequence);
-
-    std::vector<int> output = decodageRANS(last,alphaSequence,input.size());
-    
-    for(int i=0; i < output.size() ; i +=3)
-    {
-        for(int j=0; j < 3 ; j ++)
-        {
-            indexed_vertices[i][j] = output[i+j];//dequantification(qp,output[i+j], rangeMax, mini[j]);
-        }
-    }
-    */
     
     std::vector<int> sequence;
     
+    // On quantifie
     for(int i=0; i < indexed_vertices.size() ; i ++)
     {
         for(int j=0; j < 3 ; j ++)
@@ -538,7 +463,6 @@ int main( void )
     }
     
     
-    
     int packetSize = 8; 
     int sequenceSize=sequence.size(); 
     int nbPackets = sequenceSize/packetSize;
@@ -547,7 +471,7 @@ int main( void )
 
     std::vector<std::vector<int>> sequence_chunks;
     std::vector<std::vector<int>> outputs;
-
+    // On découpe en paquets
     int j =0;
     for (int i = 0; i < nbPackets+1; ++i)
     {   
@@ -561,7 +485,7 @@ int main( void )
         sequence_chunks.push_back(seq);
     }
     
-    
+    // On encode en rANS dans un fichier
     std::cout<<"\nCodage...\n";
     FILE * fp = fopen("lapinCompression.mlm","wb");
     std::vector<int> lasts;
@@ -588,29 +512,11 @@ int main( void )
 
          //putc("sl:%d:%d;",sequence.size(), last,fp);
 
-        
+        // On récupère les paquets décodés
         outputs.push_back(decodageRANS(last,alphaSequence,sequence.size()));
 
     }
-    /*for(int i = 0 ; i < nbPackets;i++)
-    {   
-        std::vector<int> sequence = sequence_chunks[i];
-        CounterMap alphaSequence =count(sequence);
-        int last = encodageRANS(sequence,alphaSequence);
-        lasts.push_back(last);
-        outputs.push_back(decodageRANS(last,alphaSequence,sequenceSize));
-
-    }*/
-    
-
-     /*for(int j = 0 ; j < nbPackets+1;j++)
-        for(int i = 0 ; i < outputs[j].size();i++)
-        {
-            if(sequence_chunks[j][i]!=outputs[j][i])
-                std::cout<<sequence_chunks[j][i]<<" : "<<outputs[j][i]<<"\n";
-            
-        }*/
-
+    // On concatène les paquets
      std::vector<int> output;
      for(int j = 0 ; j < nbPackets+1;j++)
         for(int i = 0 ; i < outputs[j].size();i++)
@@ -620,30 +526,17 @@ int main( void )
             
         }
         
-    /*for(int i =0; i < output.size(); i++)
-    {
-        std::cout<<output[i]<<"";
-    }*/
+    // On déquantifie la séquence
     for(int i=0; i < output.size() ; i +=3)
     {
         for(int j=0; j < 3 ; j ++)
         {
-            //indexed_vertices[i][j] = quantification(qp,indexed_vertices[i][j], rangeMax, mini[j]);
-            //sequence.push_back(quantification(qp,indexed_vertices[i][j], rangeMax, mini[j]));
+
             indexed_vertices[i/3][j] = dequantification(qp,output[i+j], rangeMax, mini[j]);
             
         }
     }
     
-
-    /*
-    std::cout<<"\nDecodage...\n";
-    
-    for(auto& point :output)
-    {
-        std::cout<<point<<"";
-    }*/
-
     std::cout<<"\n Fini !\n";
     
     
@@ -672,63 +565,7 @@ int main( void )
 
     //saveImage( folderOut, (char*)"originale_",inputName,imageG);
 
-    for(int i = 0 ; i < 128 ; i++)
-        for(int j = 0 ; j < 128 ; j++)
-        {
-            mapHeight[i][j]=(5.*(double)imageG[2*i][2*j])/255.;
-        }
-    for(int i = 0 ; i < sommets ; i++)
-        for(int j = 0 ; j < sommets ; j++)
-        {
-            mapNoise[i][j] = (double)2.* OctavePerlin(j, i,0.8, 1,1.5) ;
-            //std::cout<<mapNoise[i][j]<<std::endl;
-        }
     
-    PerlinNoise pn2(114);
-    std::vector<std::vector<double>> mapNoise2;
-    mapNoise2.resize(sommets);
-    for(auto& mn : mapNoise2)mn.resize(sommets);
-
-    for(int i = 0 ; i < sommets ; i+=2)
-        for(int j = 0 ; j < sommets ; j+=2)
-        {
-            mapNoise2[i][j] = (double)2.* pn2.noise(j, i, 0.8) ;
-            mapNoise2[i+1][j] = (double)2.* pn2.noise(j, i, 0.8) ;
-            mapNoise2[i][j+1] = (double)2.* pn2.noise(j, i, 0.8) ;
-            mapNoise2[i+1][j+1] = (double)2.* pn2.noise(j, i, 0.8) ;
-            //std::cout<<mapNoise2[i][j]<<std::endl;
-        }
-
-    for(int i = 0 ; i < sommets ; i++)
-        for(int j = 0 ; j < sommets ; j++)
-        {
-            indexed_vertices2.push_back( glm::vec3((float)i*size - (sommets/2)*size ,(float)j*size- (sommets/2)*size, mapHeight[i][j]+0.2*mapNoise[i][j]+0.01*mapNoise2[i][j] ));//size*rand()/RAND_MAX) );
-            
-             
-        }
-        
-    for(int i = 0 ; i < sommets; i++)
-        for(int j = 0; j < sommets ; j++)
-        {
-
-
-            indexed_uvs.push_back( glm::vec2(1.-(float)(i)/(sommets+1) ,1.-(float)(j)/(sommets+1) ));
-   
-        }
-        
-
-     for(int i = 0 ; i < sommets -1; i++)
-        for(int j = 0 ; j < sommets-1 ; j++)
-        {
-            indices2.push_back(i*sommets +j);
-            indices2.push_back(i*sommets +j+1); 
-            indices2.push_back((i+1)*sommets +j); 
-
-            indices2.push_back(i*sommets +j+1); 
-            indices2.push_back((i+1)*sommets +j); 
-            indices2.push_back((i+1)*sommets +j+1); 
-
-        }
         
         
         

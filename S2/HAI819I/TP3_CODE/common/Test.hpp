@@ -20,6 +20,7 @@ class Test
         };
         void run()
         {   
+            /*
             SceneGraphComposite* car = new SceneGraphComposite();
 
             SceneGraphComposite* essieu = new SceneGraphComposite();
@@ -89,11 +90,12 @@ class Test
             roue4->gameObject->mesh->print();
             essieu->gameObject->mesh->print();
             car->gameObject->mesh->print();
-
+            */
 
         }
         void runRotation()
         {
+            /*
             SceneGraphComposite* car = new SceneGraphComposite();
 
             SceneGraphComposite* essieu = new SceneGraphComposite();
@@ -164,7 +166,7 @@ class Test
             roue4->gameObject->mesh->print();
             essieu->gameObject->mesh->print();
             car->gameObject->mesh->print();
-
+            */
 
         }
 
