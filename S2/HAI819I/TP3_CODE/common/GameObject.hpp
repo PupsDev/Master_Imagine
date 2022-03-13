@@ -16,85 +16,38 @@ class GameObject
         GameObject()
         {
             this->mesh=new Mesh();
-            this->transformation;
-            this->parentTransformation;
-        }
-        void apply()
-        { 
-            //orientation->print();
-            //transformation->print();
-            //parentTransformation->print();  
-
-            //Transform* trans = transformation->multiply(parentTransformation);
-            //Transform* trans = parentTransformation->multiply(transformation);
-            //trans = trans->multiply(trans);
-            //Transform* trans = parentTransformation->multiply(transformation);
-            //trans->print();
-            for(auto& point : mesh->points)
-            {
-                for(auto& trans : parentTransformation)
-                {
-                    point = trans->applyToPoint(point);
-                }
-                for(auto& trans : transformation)                {
-                    point = trans->applyToPoint(point);
-                }
-                //point = orientation->applyToPoint(point);
-                //point = parentTransformation->applyToPointRevolution(point);
-                //point = transformation->applyToPointRevolution(point);
-                
-            }
-            
-        }
-        void apply(Transform * t)
-        { 
-
-            for(auto& point : mesh->points)
-            {
-                //point = orientation->applyToPoint(point);
-                //point = parentTransformation->applyToPointRevolution(point);
-                //point = transformation->applyToPointRevolution(point);
-                point = t->applyToPoint(point);
-            }
+            this->transformation=new Transform();
             
         }
 
+        void compute(Transform *t)
+        { 
+            //transformation = t->multiply(transformation);
+            transformation = new Transform(t->model * transformation->model );
+            //transformation->printmat4(transformation->model);
+            for(auto &point : mesh->points)
+            {
+                point = transformation->apply(point);
+            }
+        }
         void inverse()
-        {   
-            //Transform* trans = parentTransformation->multiply(transformation);
-             //transformation->print();  
-            //Transform* itrans = trans->inverse();  
-             //Transform* trans = transformation->multiply(itrans);  
-             //trans->inverse();  
-            
-            //transformation->print();  
-            //itrans->print();
-            //parentTransformation->inverse();
-            for(auto& point : mesh->points)
+        {
+            glm::mat4 i = glm::inverse(transformation->model);
+            transformation = new Transform(i );
+
+            for(auto &point : mesh->points)
             {
-                //point = parentTransformation->inversePoint(point);
-                //point = itrans->inversePoint(point);
-                int size = transformation.size();
-                for(int i = 0 ; i < size;i++)                {
-                    Transform * itrans = transformation[size-i-1]->inverse(); 
-                    point = itrans->applyToPoint(point);
-                }
-                size = parentTransformation.size();
-                for(int i = 0 ; i < size;i++)                {
-                    Transform * itrans = parentTransformation[size-i-1]->inverse(); 
-                    point = itrans->applyToPoint(point);
-                }
-                
+                point = transformation->apply(point);
             }
+            transformation = new Transform(glm::mat4(1.));
 
         }
 
 
-    
         Mesh * mesh;
 
-        std::vector<Transform*> transformation;
-        std::vector<Transform*> parentTransformation;
+        Transform* transformation;
+
         std::list<  Component * > components;
 };
 #endif

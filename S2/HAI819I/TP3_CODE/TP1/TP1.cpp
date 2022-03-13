@@ -19,6 +19,8 @@ GLFWwindow* window;
 #include <glm/gtx/quaternion.hpp>
 #include <iostream>
 #include <string>
+#include "glm/ext.hpp"
+#include "glm/gtx/string_cast.hpp"
 using namespace glm;
 
 #include <common/shader.hpp>
@@ -58,6 +60,7 @@ float zoom = 1.;
 int sommets = 64;
 double resolution=32.;
 int orbital = 1;
+int b = 1;
 
 std::vector<glm::vec2> indexed_uvs;
 std::vector<unsigned short> indices2; 
@@ -322,7 +325,7 @@ int main( void )
     
     
     earthGraph->add(moonGraph);
-    earthGraph->add(marsGraph);
+    //earthGraph->add(marsGraph);
     //earthGraph->inverse();
     //earthGraph->apply();
     
@@ -399,7 +402,7 @@ int main( void )
         Transform * moonTranslation= new Transform(glm::vec3(3.f,0.,0.0) );
 
         //Transform * moonOrientation = new Transform(rotationAxe2);
-        
+        /*/
         earthGraph->gameObject->transformation.clear();
         marsGraph->gameObject->transformation.clear();
         moonGraph->gameObject->transformation.clear();
@@ -412,22 +415,32 @@ int main( void )
         
         moonGraph->gameObject->transformation.push_back(moonTranslation);
         moonGraph->gameObject->transformation.push_back(earthOrientation2);
-        
+        */
         //glm::mat4 mat = earthTranslation->getMat4(); // moonTranslation->getMat4()* earthOrientation->getMat4()* earthTranslation->getMat4();
         //Transform * mo = new Transform(Transform::convertMat4(glm::rotate(mat, (float)M_PI_2/4.f,glm::vec3(0.f,1.f,0.0))));
         //moonGraph->gameObject->transformation.push_back(mo);
         
 
-        
 
-        earthGraph->apply();
+        Transform * identity = new Transform(glm::mat4(1.));
+
+        glm::mat4 eo = earthOrientation->getMat4();
+        glm::mat4 et = earthTranslation->getMat4();
+        glm::mat4 res = eo*et;
+        Transform * t = new Transform(res);
+        Transform * moon = new Transform(earthOrientation2->getMat4() * moonTranslation->getMat4());
+
+        earthGraph->gameObject->transformation = t;
+        moonGraph->gameObject->transformation = moon;
+
+        earthGraph->compute(identity);
 
         sendGPU(buffer,mesh_sun);
         sendGPU(bufferEarth,mesh_earth);
         sendGPU(bufferMars,mesh_mars);
         sendGPU(bufferMoon,mesh_moon);
-
-        earthGraph->inverse();
+        moonGraph->gameObject->inverse();
+        earthGraph->gameObject->inverse();
 
         glUseProgram(programID);
         glActiveTexture(GL_TEXTURE0);

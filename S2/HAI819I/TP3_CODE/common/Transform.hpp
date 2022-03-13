@@ -15,6 +15,8 @@ class Transform
         glm::mat3 m; // rotation
         glm::vec3 translation; // translate
 
+        glm::mat4 model = glm::mat4(1.f);
+
         Transform()
         {
             this->s =1.;
@@ -49,6 +51,13 @@ class Transform
             
              
          }
+        Transform(glm::mat4 mat)
+         {
+            this->model = mat;
+            
+             
+         }
+         
          void print()
          {
              std::cout<<"\nscale: "<<"\n";
@@ -69,6 +78,21 @@ class Transform
             
 
          }
+        void printmat4(glm::mat4 m)
+         {
+
+            for(int i = 0 ; i < 4;i++)
+            {
+                for(int j=0;j<4;j++)
+                {
+                    std::cout<<glm::value_ptr(m)[i*4+j]<<" ";
+                }
+                std::cout<<"\n";
+
+            }
+            
+
+         }
         static glm::mat3 convertMat4(glm::mat4 mat)
                 {
             const float *matrix = glm::value_ptr(mat);
@@ -86,7 +110,14 @@ class Transform
         glm::mat4 getMat4()
         {
 
-            return  glm::mat4(m)+glm::translate(glm::mat4(), translation );;
+            return  glm::translate(glm::mat4(), translation )*glm::mat4(m)*glm::mat4(s);
+        }
+        glm::vec3 apply(glm::vec3 p)
+        {
+            glm::vec4 pt = glm::vec4(p,1.);
+            pt = this->model * pt;
+            glm::vec3 res = glm::vec3(pt.x,pt.y,pt.z);
+            return res;
         }
         glm::vec3 applyToPoint(glm::vec3 p)
         {

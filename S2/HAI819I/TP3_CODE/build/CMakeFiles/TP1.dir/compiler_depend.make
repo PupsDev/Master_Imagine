@@ -312,16 +312,6 @@ CMakeFiles/TP1.dir/TP1/TP1.cpp.o: ../TP1/TP1.cpp \
   ../external/glm-0.9.7.1/glm/gtx/norm.hpp \
   ../external/glm-0.9.7.1/glm/gtx/norm.inl \
   ../external/glm-0.9.7.1/glm/gtx/quaternion.inl \
-  ../common/shader.hpp \
-  ../common/PerlinNoise.h \
-  ../common/texture.hpp \
-  ../common/objloader.hpp \
-  ../common/vboindexer.hpp \
-  ../common/functions.cpp \
-  ../common/image_ppm.h \
-  /usr/include/c++/10/math.h \
-  ../common/Test.hpp \
-  ../common/Transform.hpp \
   ../external/glm-0.9.7.1/glm/ext.hpp \
   ../external/glm-0.9.7.1/glm/gtc/bitfield.hpp \
   ../external/glm-0.9.7.1/glm/gtc/bitfield.inl \
@@ -451,6 +441,16 @@ CMakeFiles/TP1.dir/TP1/TP1.cpp.o: ../TP1/TP1.cpp \
   ../external/glm-0.9.7.1/glm/detail/intrinsic_matrix.hpp \
   ../external/glm-0.9.7.1/glm/detail/intrinsic_matrix.inl \
   ../external/glm-0.9.7.1/glm/gtx/simd_mat4.inl \
+  ../common/shader.hpp \
+  ../common/PerlinNoise.h \
+  ../common/texture.hpp \
+  ../common/objloader.hpp \
+  ../common/vboindexer.hpp \
+  ../common/functions.cpp \
+  ../common/image_ppm.h \
+  /usr/include/c++/10/math.h \
+  ../common/Test.hpp \
+  ../common/Transform.hpp \
   ../common/sceneGraph.hpp \
   ../common/GameObject.hpp \
   /usr/include/c++/10/memory \
@@ -3054,6 +3054,18 @@ CMakeFiles/TP1.dir/common/vboindexer.cpp.o: ../common/vboindexer.cpp \
 
 ../common/sceneGraph.hpp:
 
+../common/Transform.hpp:
+
+/usr/include/c++/10/math.h:
+
+../common/image_ppm.h:
+
+../common/vboindexer.hpp:
+
+/usr/include/x86_64-linux-gnu/c++/10/bits/basic_file.h:
+
+../common/shader.hpp:
+
 ../common/controls.hpp:
 
 ../external/glm-0.9.7.1/glm/detail/intrinsic_matrix.inl:
@@ -3190,27 +3202,15 @@ CMakeFiles/TP1.dir/common/vboindexer.cpp.o: ../common/vboindexer.cpp \
 
 ../external/glm-0.9.7.1/glm/gtc/matrix_inverse.inl:
 
+../common/objloader.hpp:
+
+../external/glm-0.9.7.1/glm/gtc/matrix_integer.hpp:
+
 ../external/glm-0.9.7.1/glm/gtc/matrix_access.inl:
 
 ../external/glm-0.9.7.1/glm/gtc/epsilon.inl:
 
 ../external/glm-0.9.7.1/glm/gtc/epsilon.hpp:
-
-../common/Transform.hpp:
-
-/usr/include/c++/10/math.h:
-
-../common/image_ppm.h:
-
-../common/vboindexer.hpp:
-
-../external/glm-0.9.7.1/glm/gtc/matrix_integer.hpp:
-
-../common/objloader.hpp:
-
-/usr/include/x86_64-linux-gnu/c++/10/bits/basic_file.h:
-
-../common/shader.hpp:
 
 ../external/glm-0.9.7.1/glm/gtx/normalize_dot.hpp:
 
@@ -3506,9 +3506,9 @@ CMakeFiles/TP1.dir/common/vboindexer.cpp.o: ../common/vboindexer.cpp \
 
 /usr/include/c++/10/bits/vector.tcc:
 
-../external/glm-0.9.7.1/glm/gtc/matrix_inverse.hpp:
-
 ../common/PerlinNoise.h:
+
+../external/glm-0.9.7.1/glm/gtc/matrix_inverse.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/uintn-identity.h:
 
@@ -3920,9 +3920,9 @@ CMakeFiles/TP1.dir/common/vboindexer.cpp.o: ../common/vboindexer.cpp \
 
 ../external/glm-0.9.7.1/glm/detail/type_mat3x2.inl:
 
-../external/glm-0.9.7.1/glm/gtx/matrix_query.inl:
-
 ../common/Test.hpp:
+
+../external/glm-0.9.7.1/glm/gtx/matrix_query.inl:
 
 /usr/include/x86_64-linux-gnu/c++/10/bits/atomic_word.h:
 

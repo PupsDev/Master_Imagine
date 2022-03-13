@@ -12,8 +12,8 @@ class SceneGraphInterface
     public:
         //virtual ~SceneGraphInterface();
         SceneGraphInterface();
-        virtual void apply() = 0;
-        virtual void inverse() = 0;
+
+        virtual void compute(Transform *t) = 0;
 
 
     
@@ -29,8 +29,7 @@ class SceneGraphLeaf : public SceneGraphInterface
 {
     public:
         SceneGraphLeaf();
-        void apply() override;
-        void inverse() override;
+        void compute(Transform *t) override;
 
 
 };
@@ -38,10 +37,10 @@ class SceneGraphComposite : public SceneGraphInterface
 {
     public:
         SceneGraphComposite();
-        void apply() override ;
-        void inverse() override ;
+
+        void compute(Transform *t) override ;
 
         void add(SceneGraphInterface* child);
-        void update();
+
 };
 #endif
